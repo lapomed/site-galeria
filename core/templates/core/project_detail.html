@@ -182,68 +182,30 @@
   {% endif %}
 </div>
 
-<!-- Artifact Modal -->
-  <div
-    id="artifactModal"
-    class="fixed inset-0 z-[100] hidden"
-    aria-labelledby="modal-title"
-    role="dialog"
-    aria-modal="true"
-  >
-    <!-- Backdrop -->
-    <!-- Backdrop -->
-    <div
-      class="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity opacity-0 z-40"
-      id="modalBackdrop"
-    ></div>
-
-    <div class="fixed inset-0 z-50 w-screen overflow-y-auto" id="modalScrollContainer">
-      <div
-        class="flex min-h-screen items-center justify-center p-4 text-center"
-      >
-        <!-- Modal Panel -->
-        <div
-          class="relative transform overflow-hidden rounded-lg bg-black text-left shadow-2xl transition-all my-8 w-full max-w-4xl border border-gray-700"
-          id="modalPanel"
-        >
-          <!-- Header / Close -->
-          <div class="absolute top-0 right-0 pt-4 pr-4 z-50">
-            <button
-              type="button"
-              onclick="closeArtifactModal()"
-              class="rounded-md bg-black/50 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-colors"
-            >
-              <span class="sr-only">Fechar</span>
-              <svg
-                class="h-8 w-8"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
-
-          <!-- Content -->
-          <div class="w-full h-[85vh] bg-black p-0 m-0 overflow-hidden flex items-center justify-center [&_iframe]:!w-full [&_iframe]:!h-full" style="height: 85vh;" id="modalContent">
-            <!-- Embed will be injected here -->
-          </div>
+<!-- Flowbite-based Artifact Modal (Refined for Centering and Full Fill) -->
+<div id="artifactModal" tabindex="-1" aria-hidden="true" class="hidden overflow-hidden fixed inset-0 z-[9999] justify-center items-center w-full h-full bg-black/90 backdrop-blur-md">
+    <div class="relative p-2 md:p-10 w-full h-full flex items-center justify-center">
+        <!-- Modal content -->
+        <div class="relative bg-black rounded-lg shadow-2xl border border-gray-800 w-full h-full flex flex-col overflow-hidden">
+            <!-- Modal header (Overlay close button) -->
+            <div class="absolute top-2 right-2 z-[100] p-2">
+                <button type="button" onclick="closeArtifactModal()" class="text-gray-400 bg-black/60 hover:bg-white hover:text-black rounded-full text-sm w-12 h-12 inline-flex justify-center items-center transition-all border border-gray-700 hover:border-white shadow-2xl" data-modal-hide="artifactModal">
+                    <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                    <span class="sr-only">Close modal</span>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <div class="p-0 h-full w-full flex items-center justify-center bg-black [&_iframe]:!w-full [&_iframe]:!h-full [&_iframe]:border-0 [&_img]:max-h-full [&_img]:max-w-full [&_img]:object-contain" id="modalContent">
+               <!-- Content injected here -->
+            </div>
         </div>
-      </div>
     </div>
-  </div>
+</div>
 
   <script>
     const modal = document.getElementById("artifactModal");
-    const modalBackdrop = document.getElementById("modalBackdrop");
-    const modalPanel = document.getElementById("modalPanel");
     const modalContent = document.getElementById("modalContent");
     const body = document.body;
 
@@ -252,41 +214,29 @@
       const content = element.getAttribute("data-content");
       
       if (!content) return;
-
-      // Reset scroll position to ensure modal is centered/top visible
-      document.getElementById('modalScrollContainer').scrollTop = 0;
   
       // Inject content based on type
       if (type === 'embed') {
           modalContent.innerHTML = content;
       } else if (type === 'image') {
-          modalContent.innerHTML = `<img src="${content}" class="w-full h-full object-contain" alt="Artifact Image">`;
+          modalContent.innerHTML = `<img src="${content}" class="max-w-full max-h-full object-contain" alt="Artifact Image">`;
       }
   
-      // Show Modal
+      // Show Modal (Flowbite style: remove hidden, add flex)
       modal.classList.remove("hidden");
-      // Simple animation delay
-      setTimeout(() => {
-        modalBackdrop.classList.remove("opacity-0");
-        modalPanel.classList.add("scale-100", "opacity-100");
-        modalPanel.classList.remove("scale-95", "opacity-0");
-      }, 10);
+      modal.classList.add("flex");
   
       // Prevent scrolling on body
       body.style.overflow = "hidden";
     }
 
     function closeArtifactModal() {
-      // Animate out
-      modalBackdrop.classList.add("opacity-0");
-      modalPanel.classList.remove("scale-100", "opacity-100");
-      modalPanel.classList.add("scale-95", "opacity-0");
-
-      setTimeout(() => {
-        modal.classList.add("hidden");
-        modalContent.innerHTML = ""; // Stop video/3d
-        body.style.overflow = "auto"; // Restore scroll
-      }, 300);
+      // Hide Modal
+      modal.classList.remove("flex");
+      modal.classList.add("hidden");
+      
+      modalContent.innerHTML = ""; // Stop video/3d
+      body.style.overflow = "auto"; // Restore scroll
     }
 
     // Close on Escape
@@ -296,8 +246,12 @@
       }
     });
 
-    // Close on Backdrop Click
-    modalBackdrop.addEventListener("click", closeArtifactModal);
+    // Close on Backdrop Click (checking if clicked element is the outer wrapper)
+    modal.addEventListener("click", function(event) {
+        if (event.target === modal) {
+            closeArtifactModal();
+        }
+    });
   </script>
 </div>
 {% endblock %}
