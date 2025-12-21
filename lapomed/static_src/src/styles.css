@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-white text-gray-900;
+  }
+  body.no-scroll {
+    @apply overflow-hidden h-screen flex flex-col !important;
+  }
+  body.no-scroll main {
+    @apply flex-1 w-full relative overflow-hidden;
+  }
+  body.no-scroll footer {
+    @apply mt-auto;
+  }
+}
+
+@layer components {
+  /* --- HEADER & NAVIGATION --- */
+  .main-nav {
+    @apply fixed top-0 inset-x-0 z-50 bg-white/70 backdrop-blur-md transition-all duration-300 !important;
+    height: 60px !important;
+    border: none !important;
+  }
+
+  .nav-link {
+    @apply flex items-center px-5 text-[13px] font-extrabold uppercase tracking-widest text-[#383838] no-underline relative transition-all duration-300;
+    height: 60px !important;
+  }
+
+  .nav-link::after {
+    content: "";
+    @apply absolute bottom-0 left-5 right-5 h-[2px] bg-black scale-x-0 transition-transform duration-300 ease-in-out;
+  }
+
+  .nav-link:hover {
+    @apply text-black;
+  }
+
+  .nav-link:hover::after {
+    @apply scale-x-100;
+  }
+
+  /* --- HOME CAROUSEL --- */
+  .carousel-zoom-bg {
+    animation: kenBurns 40s linear infinite alternate;
+    transform-origin: center;
+  }
+
+  @keyframes kenBurns {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.1); }
+  }
+
+  .animate-fade-in-fast {
+    animation: fadeInFast 0.5s ease-out forwards;
+  }
+
+  @keyframes fadeInFast {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .indicator-bar {
+    @apply w-12 h-1 bg-white cursor-pointer transition-all duration-500 !important;
+  }
+
+  .indicator-bar:hover {
+    @apply opacity-80 !important;
+  }
+}

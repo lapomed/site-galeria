@@ -1,0 +1,55 @@
+{% extends 'core/base.html' %} {% block content %}
+<div
+  class="project-detail-hero"
+  style="background-image: url('{% if project.cover_image %}{{ project.cover_image.url }}{% endif %}');"
+>
+  <div class="overlay"></div>
+  <div class="container hero-content">
+    <span class="detail-subtitle">{{ project.location }}</span>
+    <h1 class="detail-title">{{ project.title }}</h1>
+    <p class="detail-meta">
+      Cadastrado em: {{ project.created_at|date:"d/m/Y" }}
+    </p>
+  </div>
+</div>
+
+<div class="container project-body">
+  <section class="project-description">
+    <h2>Sobre o Projeto</h2>
+    <p>{{ project.description|linebreaks }}</p>
+  </section>
+
+  <section class="artifacts-section">
+    <h3 class="section-title">Artefatos do Projeto</h3>
+
+    <div class="artifacts-grid">
+      {% for artifact in project.artifacts.all %}
+      <div class="artifact-card">
+        <div class="artifact-image">
+          {% if artifact.image %}
+          <img src="{{ artifact.image.url }}" alt="{{ artifact.title }}" />
+          {% endif %}
+        </div>
+        <div class="artifact-content">
+          <h4>{{ artifact.title }}</h4>
+          <p>{{ artifact.description }}</p>
+          {% if artifact.sketchfab_embed %}
+          <div class="sketchfab-container">
+            {{ artifact.sketchfab_embed|safe }}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% empty %}
+      <p>Nenhum artefato cadastrado para este projeto ainda.</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  <div class="back-link">
+    <a href="{% url 'project_list' %}" class="btn-text"
+      >← Voltar para Projetos</a
+    >
+  </div>
+</div>
+{% endblock %}
