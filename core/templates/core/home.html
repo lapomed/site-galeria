@@ -2,13 +2,18 @@
 {% load static %}
 {% block body_class %}no-scroll{% endblock %}
 {% block content %}
-<div id="default-carousel" class="relative w-full h-full" data-carousel="slide">
+<div
+  id="default-carousel"
+  class="relative w-full h-full"
+  data-carousel="slide"
+  data-carousel-interval="8000"
+>
   <!-- Carousel wrapper -->
   <div class="relative overflow-hidden h-full">
     {% for slide in slides %}
-    <div class="hidden duration-1000 ease-in-out h-full" data-carousel-item>
+    <div class="hidden duration-[3000ms] ease-in-out h-full" data-carousel-item>
       <div
-        class="absolute inset-0 bg-cover bg-center transition-opacity duration-1000 carousel-zoom-bg"
+        class="absolute inset-0 bg-cover bg-center transition-opacity duration-[3000ms] carousel-zoom-bg"
         style="background-image: url('{{ slide.image.url }}');"
       >
         <!-- Overlay -->

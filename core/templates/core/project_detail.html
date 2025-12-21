@@ -49,8 +49,40 @@
         class="bg-gray-900/50 rounded-lg overflow-hidden border border-gray-800 hover:border-yellow-500/50 transition-colors"
       >
         {% if artifact.sketchfab_embed %}
-        <div class="aspect-video w-full">
-          {{ artifact.sketchfab_embed|safe }}
+        <div class="group relative aspect-video w-full bg-black">
+          <!-- Embed Container -->
+          <div class="w-full h-full">{{ artifact.sketchfab_embed|safe }}</div>
+
+          <!-- Expand Button Overlay -->
+          <div
+            class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none flex items-center justify-center"
+          >
+            <button
+              onclick="openArtifactModal(this)"
+              class="pointer-events-auto transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-2 px-6 rounded-full flex items-center gap-2 shadow-lg hover:shadow-yellow-500/50"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
+                />
+              </svg>
+              Expandir Modelo
+            </button>
+          </div>
+
+          <!-- Hidden Source for Modal -->
+          <textarea class="hidden artifact-embed-source">
+{{ artifact.sketchfab_embed }}</textarea
+          >
         </div>
         {% else %} {% if artifact.image %}
         <img
@@ -80,3 +112,114 @@
   </div>
 </div>
 {% endblock %}
+
+<!-- Artifact Modal -->
+<div
+  id="artifactModal"
+  class="fixed inset-0 z-[100] hidden"
+  aria-labelledby="modal-title"
+  role="dialog"
+  aria-modal="true"
+>
+  <!-- Backdrop -->
+  <div
+    class="fixed inset-0 bg-black/95 backdrop-blur-md transition-opacity opacity-0"
+    id="modalBackdrop"
+  ></div>
+
+  <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+    <div
+      class="flex min-h-full items-center justify-center p-4 text-center sm:p-0"
+    >
+      <!-- Modal Panel -->
+      <div
+        class="relative transform overflow-hidden rounded-lg bg-black text-left shadow-2xl transition-all sm:my-8 w-full max-w-6xl border border-gray-800"
+        id="modalPanel"
+      >
+        <!-- Header / Close -->
+        <div class="absolute top-0 right-0 pt-4 pr-4 z-50">
+          <button
+            type="button"
+            onclick="closeArtifactModal()"
+            class="rounded-md bg-black/50 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-colors"
+          >
+            <span class="sr-only">Fechar</span>
+            <svg
+              class="h-8 w-8"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Content -->
+        <div class="w-full aspect-[16/9] bg-gray-900" id="modalContent">
+          <!-- Embed will be injected here -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const modal = document.getElementById("artifactModal");
+  const modalBackdrop = document.getElementById("modalBackdrop");
+  const modalPanel = document.getElementById("modalPanel");
+  const modalContent = document.getElementById("modalContent");
+  const body = document.body;
+
+  function openArtifactModal(button) {
+    // Traverse DOM to find the hidden textarea sibling
+    const container = button.closest(".group");
+    const embedCode = container.querySelector(".artifact-embed-source").value;
+
+    if (!embedCode) return;
+
+    // Inject content
+    modalContent.innerHTML = embedCode;
+
+    // Show Modal
+    modal.classList.remove("hidden");
+    // Simple animation delay
+    setTimeout(() => {
+      modalBackdrop.classList.remove("opacity-0");
+      modalPanel.classList.add("scale-100", "opacity-100");
+      modalPanel.classList.remove("scale-95", "opacity-0");
+    }, 10);
+
+    // Prevent scrolling on body
+    body.style.overflow = "hidden";
+  }
+
+  function closeArtifactModal() {
+    // Animate out
+    modalBackdrop.classList.add("opacity-0");
+    modalPanel.classList.remove("scale-100", "opacity-100");
+    modalPanel.classList.add("scale-95", "opacity-0");
+
+    setTimeout(() => {
+      modal.classList.add("hidden");
+      modalContent.innerHTML = ""; // Stop video/3d
+      body.style.overflow = "auto"; // Restore scroll
+    }, 300);
+  }
+
+  // Close on Escape
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape" && !modal.classList.contains("hidden")) {
+      closeArtifactModal();
+    }
+  });
+
+  // Close on Backdrop Click
+  modalBackdrop.addEventListener("click", closeArtifactModal);
+</script>
