@@ -32,15 +32,35 @@ class Project(models.Model):
         return self.title
 
 class Artifact(models.Model):
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='artifacts', verbose_name="Projeto")
-    title = models.CharField(max_length=200, verbose_name="Nome do Artefato")
-    description = models.TextField(verbose_name="Descrição do Artefato")
-    image = models.ImageField(upload_to='artifacts/', verbose_name="Imagem do Artefato")
-    sketchfab_embed = models.TextField(blank=True, verbose_name="Embed 3D (Sketchfab)", help_text="Cole o código iframe do Sketchfab aqui.")
+    project = models.ForeignKey(Project, related_name='artifacts', on_delete=models.CASCADE)
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    image = models.ImageField(upload_to='artifacts/', blank=True, null=True)
+    sketchfab_embed = models.TextField(blank=True, help_text="Cole o código do iframe do Sketchfab aqui")
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name = "Artefato"
         verbose_name_plural = "Artefatos"
 
     def __str__(self):
+        return f"{self.project.title} - {self.title}"
+
+class Collection(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    cover_image = models.ImageField(upload_to='collections/')
+    projects = models.ManyToManyField(Project, related_name='collections', blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
         return self.title
+
+class CollectionImage(models.Model):
+    collection = models.ForeignKey(Collection, related_name='images', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='collections/gallery/')
+    order = models.IntegerField(default=0)
+
+    class Meta:
+        ordering = ['order']
+

@@ -1,39 +1,241 @@
 {% extends 'core/base.html' %} {% block content %}
-<div class="pt-24 pb-12 bg-[#d1d1d1] flex-grow">
-  <div class="container mx-auto px-4">
-    <h1 class="text-3xl font-serif text-white mb-8 tracking-widest uppercase">
-      Projetos
-    </h1>
+<div class="flex-grow bg-[#d1d1d1]">
+  <!-- Search Toolbar -->
+  <div
+    class="bg-gray-100 border-b border-gray-300 pt-4 pb-4 px-4 sticky top-0 z-30 shadow-sm"
+  >
+    <div
+      class="container mx-auto flex flex-col md:flex-row items-center justify-between gap-4"
+    >
+      <!-- Left: Search Input (Smaller width) -->
+      <!-- implementacao futura-->
+
+      <!-- Center: Tabs (SITES | COLLECTIONS) -->
+      <div class="flex items-center gap-8">
+        <button
+          onclick="switchTab('sites')"
+          id="btn-sites"
+          class="text-sm font-bold uppercase tracking-widest pb-1 border-b-2 border-yellow-500 text-black transition-colors"
+        >
+          Projetos
+        </button>
+        <button
+          onclick="switchTab('collections')"
+          id="btn-collections"
+          class="text-sm font-bold uppercase tracking-widest pb-1 border-b-2 border-transparent text-gray-400 hover:text-gray-600 transition-colors"
+        >
+          Coleções
+        </button>
+      </div>
+
+      <!-- Right: Placeholder for Media Types or Spacing -->
+      <div class="hidden md:block w-64 text-right">
+        <!-- Optional: Dropdown placeholder -->
+        <span class="text-xs text-gray-400">Media Types ▼</span>
+      </div>
+    </div>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1">
-    {% for project in projects %}
-    <a
-      href="{% url 'project_detail' project.slug %}"
-      class="relative group h-80 overflow-hidden block"
-    >
+  <!-- Full Width Content Area -->
+  <div class="w-full">
+    <!-- TAB: SITES (Existing Grid) -->
+    <div id="tab-sites" class="block">
       <div
-        class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
-        style="background-image: url('{{ project.cover_image.url }}');"
-      ></div>
-      <div
-        class="absolute inset-0 bg-linear-to-t from-black/90 via-black/20 to-transparent"
-      ></div>
-      <div class="absolute bottom-0 left-0 p-8 w-full">
-        <span
-          class="text-xs text-white bg-black/50 px-2 py-1 rounded-sm uppercase tracking-widest mb-2 inline-block"
-          >{{ project.location }}</span
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-0"
+      >
+        {% for project in projects %}
+        <a
+          href="{% url 'project_detail' project.slug %}"
+          class="relative group h-80 overflow-hidden block"
         >
-        <h3 class="text-2xl font-serif text-white tracking-wide">
-          {{ project.title }}
-        </h3>
+          <div
+            class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
+            style="background-image: url('{{ project.cover_image.url }}');"
+          ></div>
+          <div
+            class="absolute inset-0 bg-linear-to-t from-black/90 via-black/20 to-transparent"
+          ></div>
+          <div class="absolute bottom-0 left-0 p-8 w-full">
+            <span
+              class="text-xs text-white bg-black/50 px-2 py-1 rounded-sm uppercase tracking-widest mb-2 inline-block"
+              >{{ project.location }}</span
+            >
+            <h3 class="text-2xl font-serif text-white tracking-wide">
+              {{ project.title }}
+            </h3>
+          </div>
+        </a>
+        {% empty %}
+        <div class="col-span-full py-20 text-center">
+          <p class="text-gray-500 font-serif">Nenhum projeto cadastrado.</p>
+        </div>
+        {% endfor %}
       </div>
-    </a>
-    {% empty %}
-    <div class="col-span-full py-20 text-center">
-      <p class="text-gray-500 font-serif">Nenhum projeto cadastrado.</p>
     </div>
-    {% endfor %}
+
+    <!-- TAB: COLLECTIONS (Dynamic Data) -->
+    <div id="tab-collections" class="hidden space-y-0">
+      {% for collection in collections %}
+      <div
+        class="flex flex-col lg:flex-row h-[950px] w-full border-b border-gray-800 bg-gray-900 group/collection relative"
+      >
+        <!-- Left Hero -->
+        <div
+          class="w-full lg:w-1/3 relative p-8 lg:p-12 flex flex-col justify-end items-start border-r border-gray-800 overflow-hidden shrink-0 z-10 bg-gray-900"
+        >
+          <!-- Cover Image (Background) -->
+          <div
+            class="absolute inset-0 bg-cover bg-center transition-transform duration-[20s] ease-linear group-hover/collection:scale-110 grayscale opacity-60"
+            style="background-image: url('{{ collection.cover_image.url }}');"
+          ></div>
+          <!-- Semi-Transparent Gradient Overlay -->
+          <!-- Removed hard solid block, kept smooth gradient for text readability -->
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"
+          ></div>
+
+          <div class="relative z-10 w-full mb-8">
+            <h2
+              class="text-white font-serif text-4xl md:text-5xl mb-4 leading-tight tracking-wide drop-shadow-lg border-l-4 border-white pl-4"
+            >
+              {{ collection.title }}
+            </h2>
+            <p
+              class="text-white text-sm md:text-base mb-8 leading-relaxed line-clamp-4 drop-shadow-md font-light"
+            >
+              {{ collection.description }}
+            </p>
+            <!-- White Button -->
+            <a
+              href="#"
+              class="inline-block bg-white hover:bg-gray-200 text-black font-bold py-3 px-8 uppercase text-xs tracking-widest transition-transform hover:scale-105 shadow-lg"
+            >
+              LEARN MORE
+            </a>
+          </div>
+        </div>
+
+        <!-- Right Grid/Carousel (Mini Gallery) -->
+        <div
+          class="w-full lg:w-2/3 relative bg-gray-950 overflow-hidden group/carousel"
+        >
+          <!-- Navigation Overlay (Right) -->
+          {% if collection.projects.count > 4 %}
+          <div
+            class="absolute top-0 bottom-0 right-0 w-16 z-20 bg-gradient-to-l from-black/80 to-transparent flex items-center justify-center pointer-events-none group-hover/carousel:opacity-100 transition-opacity duration-300"
+          >
+            <div class="p-2 border-2 border-white/30 rounded-full">
+              <svg
+                class="w-8 h-8 text-white drop-shadow-md"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </div>
+          </div>
+          {% endif %}
+
+          <!-- CSS Grid with 2 Rows and Horizontal Flow (Landscape Aspect Ratio) -->
+          <div
+            class="grid grid-rows-2 grid-flow-col auto-cols-[100%] sm:auto-cols-[20rem] md:auto-cols-[30rem] lg:auto-cols-[40rem] h-full overflow-x-auto snap-x snapping-container scrollbar-hide"
+          >
+            {% for project in collection.projects.all %}
+            <a
+              href="{% url 'project_detail' project.slug %}"
+              class="relative w-full h-full border-r border-b border-gray-800 group/card overflow-hidden snap-start"
+            >
+              <!-- Image -->
+              <div
+                class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover/card:scale-110"
+                style="background-image: url('{{ project.cover_image.url }}');"
+              ></div>
+              <!-- Hover Overlay -->
+              <div
+                class="absolute inset-0 bg-black/40 group-hover/card:bg-black/20 transition-colors duration-300"
+              ></div>
+
+              <!-- Text Overlay -->
+              <div
+                class="absolute bottom-0 left-0 p-4 w-full bg-linear-to-t from-black/90 to-transparent translate-y-2 group-hover/card:translate-y-0 transition-transform duration-300"
+              >
+                <h4
+                  class="text-white font-serif text-lg leading-tight drop-shadow-md"
+                >
+                  {{ project.title }}
+                </h4>
+                <span
+                  class="text-[10px] text-gray-300 uppercase tracking-wider block mt-1"
+                  >{{ project.location }}</span
+                >
+              </div>
+            </a>
+            {% endfor %}
+            <!-- Filler slots if few items (Optional, helps grid look) -->
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <!-- Fallback / Empty State -->
+      <div class="py-32 text-center bg-gray-100 w-full">
+        <h3 class="text-2xl font-serif text-gray-400 mb-2">
+          Coleções em Breve
+        </h3>
+        <p class="text-gray-500">
+          Estamos curando novas jornadas para você explorar.
+        </p>
+      </div>
+      {% endfor %}
+    </div>
   </div>
+
+  <script>
+    function switchTab(tabName) {
+      const sitesTab = document.getElementById("tab-sites");
+      const collectionsTab = document.getElementById("tab-collections");
+      const btnSites = document.getElementById("btn-sites");
+      const btnCollections =
+        document.getElementById("btn-Collections") ||
+        document.getElementById("btn-collections"); // capitalization check
+
+      if (tabName === "sites") {
+        sitesTab.classList.remove("hidden");
+        sitesTab.classList.add("block");
+        collectionsTab.classList.add("hidden");
+        collectionsTab.classList.remove("block");
+
+        // Style Updates
+        btnSites.classList.remove("border-transparent", "text-gray-400");
+        btnSites.classList.add("border-yellow-500", "text-black");
+
+        btnCollections.classList.add("border-transparent", "text-gray-400");
+        btnCollections.classList.remove("border-yellow-500", "text-black");
+      } else {
+        sitesTab.classList.add("hidden");
+        sitesTab.classList.remove("block");
+        collectionsTab.classList.remove("hidden");
+        collectionsTab.classList.add("block");
+
+        // Style Updates
+        btnCollections.classList.remove("border-transparent", "text-gray-400");
+        btnCollections.classList.add("border-yellow-500", "text-black");
+
+        btnSites.classList.add("border-transparent", "text-gray-400");
+        btnSites.classList.remove("border-yellow-500", "text-black");
+      }
+    }
+
+    // Check URL params for tab on load (Optional enhancement)
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("tab") === "collections") {
+      switchTab("collections");
+    }
+  </script>
 </div>
 {% endblock %}

@@ -43,62 +43,51 @@
       Artefatos e Modelos 3D
     </h2>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+    <div class="grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px;">
       {% for artifact in project.artifacts.all %}
       <div
-        class="bg-gray-900/50 rounded-lg overflow-hidden border border-gray-800 hover:border-yellow-500/50 transition-colors"
+        class="group bg-gray-900 border border-gray-800 hover:border-yellow-500 rounded flex flex-col cursor-pointer transition-all hover:shadow-lg"
+        onclick="openArtifactModal(this)"
+        data-type="{% if artifact.sketchfab_embed %}embed{% elif artifact.image %}image{% endif %}"
+        data-content="{% if artifact.sketchfab_embed %}{{ artifact.sketchfab_embed|escape }}{% elif artifact.image %}{{ artifact.image.url }}{% endif %}"
       >
-        {% if artifact.sketchfab_embed %}
-        <div class="group relative aspect-video w-full bg-black">
-          <!-- Embed Container -->
-          <div class="w-full h-full">{{ artifact.sketchfab_embed|safe }}</div>
-
-          <!-- Expand Button Overlay -->
-          <div
-            class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none flex items-center justify-center"
-          >
-            <button
-              onclick="openArtifactModal(this)"
-              class="pointer-events-auto transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-2 px-6 rounded-full flex items-center gap-2 shadow-lg hover:shadow-yellow-500/50"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
-                />
-              </svg>
-              Expandir Modelo
-            </button>
-          </div>
-
-          <!-- Hidden Source for Modal -->
-          <textarea class="hidden artifact-embed-source">
-{{ artifact.sketchfab_embed }}</textarea
-          >
+        <!-- Thumbnail (Smaller) -->
+        <div class="relative w-full aspect-square bg-black overflow-hidden">
+          {% if artifact.image %}
+            <img src="{{ artifact.image.url }}" alt="{{ artifact.title }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-80 group-hover:opacity-100">
+            {% if artifact.sketchfab_embed %}
+              <!-- Play Icon Overlay -->
+              <div class="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/10">
+                  <div class="w-8 h-8 bg-yellow-500/90 rounded-full flex items-center justify-center shadow-md">
+                     <svg class="w-4 h-4 text-black ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                  </div>
+              </div>
+            {% endif %}
+          {% else %}
+             <!-- Fallback Icon -->
+             <div class="w-full h-full flex items-center justify-center bg-gray-800 text-gray-600">
+                 {% if artifact.sketchfab_embed %}
+                    <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"/></svg>
+                 {% else %}
+                    <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                 {% endif %}
+             </div>
+          {% endif %}
         </div>
-        {% else %} {% if artifact.image %}
-        <img
-          src="{{ artifact.image.url }}"
-          alt="{{ artifact.title }}"
-          class="w-full h-auto"
-        />
-        {% endif %} {% endif %}
 
-        <div class="p-8">
-          <h3 class="text-xl font-serif text-white mb-4 tracking-wide">
+        <!-- Meta Data (Visible) -->
+        <div class="p-3">
+          <span class="text-[9px] text-yellow-500 uppercase font-bold block mb-1">
+              {% if artifact.sketchfab_embed %}Modelo 3D{% else %}Imagem{% endif %}
+          </span>
+          <h4 class="text-xs font-bold text-white leading-tight line-clamp-2 mb-1 group-hover:text-yellow-400 transition-colors">
             {{ artifact.title }}
-          </h3>
-          <p class="text-gray-400 leading-relaxed">
+          </h4>
+          {% if artifact.description %}
+          <p class="text-[10px] text-gray-400 line-clamp-2">
             {{ artifact.description }}
           </p>
+          {% endif %}
         </div>
       </div>
       {% empty %}
@@ -110,116 +99,205 @@
       {% endfor %}
     </div>
   </div>
-</div>
-{% endblock %}
 
-<!-- Artifact Modal -->
-<div
-  id="artifactModal"
-  class="fixed inset-0 z-[100] hidden"
-  aria-labelledby="modal-title"
-  role="dialog"
-  aria-modal="true"
->
-  <!-- Backdrop -->
-  <div
-    class="fixed inset-0 bg-black/95 backdrop-blur-md transition-opacity opacity-0"
-    id="modalBackdrop"
-  ></div>
-
-  <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
-    <div
-      class="flex min-h-full items-center justify-center p-4 text-center sm:p-0"
-    >
-      <!-- Modal Panel -->
-      <div
-        class="relative transform overflow-hidden rounded-lg bg-black text-left shadow-2xl transition-all sm:my-8 w-full max-w-6xl border border-gray-800"
-        id="modalPanel"
+  <!-- Related Collections Section -->
+  {% if project.collection_set.all %}
+  <div class="py-20 bg-gray-950 border-t border-gray-900">
+    <div class="container mx-auto px-4">
+      <h2
+        class="text-3xl font-serif text-white mb-12 tracking-widest uppercase text-center"
       >
-        <!-- Header / Close -->
-        <div class="absolute top-0 right-0 pt-4 pr-4 z-50">
-          <button
-            type="button"
-            onclick="closeArtifactModal()"
-            class="rounded-md bg-black/50 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-colors"
-          >
-            <span class="sr-only">Fechar</span>
-            <svg
-              class="h-8 w-8"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-        </div>
+        Coleções Relacionadas
+      </h2>
 
-        <!-- Content -->
-        <div class="w-full aspect-[16/9] bg-gray-900" id="modalContent">
-          <!-- Embed will be injected here -->
+      <div class="relative group/carousel">
+        <!-- Scroll Hints (Arrows) -->
+        {% if project.collection_set.count > 3 %}
+        <div
+          class="absolute top-1/2 right-2 z-20 pointer-events-none text-white/50 animate-pulse"
+        >
+          <svg
+            class="w-8 h-8 drop-shadow-md"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5l7 7-7 7"
+            />
+          </svg>
+        </div>
+        {% endif %}
+
+        <div
+          class="flex overflow-x-auto snap-x snapping-container scrollbar-hide gap-6 pb-8"
+        >
+          {% for collection in project.collection_set.all %}
+          <div
+            class="min-w-[85vw] md:min-w-[400px] lg:min-w-[500px] h-[400px] relative group/card snap-start border border-gray-800 hover:border-yellow-500/50 transition-colors bg-gray-900"
+          >
+            <!-- Cover Image -->
+            <div
+              class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover/card:scale-105 opacity-60 grayscale group-hover/card:grayscale-0"
+              style="background-image: url('{{ collection.cover_image.url }}');"
+            ></div>
+
+            <!-- Overlay -->
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"
+            ></div>
+
+            <!-- Content -->
+            <div class="absolute bottom-0 left-0 p-8 w-full">
+              <span
+                class="text-yellow-500 text-xs uppercase tracking-widest font-bold mb-2 block"
+                >Coleção</span
+              >
+              <h3
+                class="text-2xl font-serif text-white mb-4 leading-tight shadow-black drop-shadow-lg"
+              >
+                {{ collection.title }}
+              </h3>
+              <p
+                class="text-gray-300 text-sm line-clamp-2 mb-6 opacity-0 group-hover/card:opacity-100 transition-opacity duration-300 transform translate-y-4 group-hover/card:translate-y-0"
+              >
+                {{ collection.description }}
+              </p>
+              <a
+                href="{% url 'project_list' %}?tab=collections"
+                class="inline-block text-white border-b border-yellow-500 text-xs uppercase tracking-widest pb-1 hover:text-yellow-400 transition-colors"
+              >
+                Explorar Coleção
+              </a>
+            </div>
+          </div>
+          {% endfor %}
         </div>
       </div>
     </div>
   </div>
+  {% endif %}
 </div>
 
-<script>
-  const modal = document.getElementById("artifactModal");
-  const modalBackdrop = document.getElementById("modalBackdrop");
-  const modalPanel = document.getElementById("modalPanel");
-  const modalContent = document.getElementById("modalContent");
-  const body = document.body;
+<!-- Artifact Modal -->
+  <div
+    id="artifactModal"
+    class="fixed inset-0 z-[100] hidden"
+    aria-labelledby="modal-title"
+    role="dialog"
+    aria-modal="true"
+  >
+    <!-- Backdrop -->
+    <!-- Backdrop -->
+    <div
+      class="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity opacity-0 z-40"
+      id="modalBackdrop"
+    ></div>
 
-  function openArtifactModal(button) {
-    // Traverse DOM to find the hidden textarea sibling
-    const container = button.closest(".group");
-    const embedCode = container.querySelector(".artifact-embed-source").value;
+    <div class="fixed inset-0 z-50 w-screen overflow-y-auto" id="modalScrollContainer">
+      <div
+        class="flex min-h-screen items-center justify-center p-4 text-center"
+      >
+        <!-- Modal Panel -->
+        <div
+          class="relative transform overflow-hidden rounded-lg bg-black text-left shadow-2xl transition-all my-8 w-full max-w-4xl border border-gray-700"
+          id="modalPanel"
+        >
+          <!-- Header / Close -->
+          <div class="absolute top-0 right-0 pt-4 pr-4 z-50">
+            <button
+              type="button"
+              onclick="closeArtifactModal()"
+              class="rounded-md bg-black/50 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-colors"
+            >
+              <span class="sr-only">Fechar</span>
+              <svg
+                class="h-8 w-8"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
 
-    if (!embedCode) return;
+          <!-- Content -->
+          <div class="w-full h-[85vh] bg-black p-0 m-0 overflow-hidden flex items-center justify-center [&_iframe]:!w-full [&_iframe]:!h-full" style="height: 85vh;" id="modalContent">
+            <!-- Embed will be injected here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    // Inject content
-    modalContent.innerHTML = embedCode;
+  <script>
+    const modal = document.getElementById("artifactModal");
+    const modalBackdrop = document.getElementById("modalBackdrop");
+    const modalPanel = document.getElementById("modalPanel");
+    const modalContent = document.getElementById("modalContent");
+    const body = document.body;
 
-    // Show Modal
-    modal.classList.remove("hidden");
-    // Simple animation delay
-    setTimeout(() => {
-      modalBackdrop.classList.remove("opacity-0");
-      modalPanel.classList.add("scale-100", "opacity-100");
-      modalPanel.classList.remove("scale-95", "opacity-0");
-    }, 10);
+    function openArtifactModal(element) {
+      const type = element.getAttribute("data-type");
+      const content = element.getAttribute("data-content");
+      
+      if (!content) return;
 
-    // Prevent scrolling on body
-    body.style.overflow = "hidden";
-  }
-
-  function closeArtifactModal() {
-    // Animate out
-    modalBackdrop.classList.add("opacity-0");
-    modalPanel.classList.remove("scale-100", "opacity-100");
-    modalPanel.classList.add("scale-95", "opacity-0");
-
-    setTimeout(() => {
-      modal.classList.add("hidden");
-      modalContent.innerHTML = ""; // Stop video/3d
-      body.style.overflow = "auto"; // Restore scroll
-    }, 300);
-  }
-
-  // Close on Escape
-  document.addEventListener("keydown", function (event) {
-    if (event.key === "Escape" && !modal.classList.contains("hidden")) {
-      closeArtifactModal();
+      // Reset scroll position to ensure modal is centered/top visible
+      document.getElementById('modalScrollContainer').scrollTop = 0;
+  
+      // Inject content based on type
+      if (type === 'embed') {
+          modalContent.innerHTML = content;
+      } else if (type === 'image') {
+          modalContent.innerHTML = `<img src="${content}" class="w-full h-full object-contain" alt="Artifact Image">`;
+      }
+  
+      // Show Modal
+      modal.classList.remove("hidden");
+      // Simple animation delay
+      setTimeout(() => {
+        modalBackdrop.classList.remove("opacity-0");
+        modalPanel.classList.add("scale-100", "opacity-100");
+        modalPanel.classList.remove("scale-95", "opacity-0");
+      }, 10);
+  
+      // Prevent scrolling on body
+      body.style.overflow = "hidden";
     }
-  });
 
-  // Close on Backdrop Click
-  modalBackdrop.addEventListener("click", closeArtifactModal);
-</script>
+    function closeArtifactModal() {
+      // Animate out
+      modalBackdrop.classList.add("opacity-0");
+      modalPanel.classList.remove("scale-100", "opacity-100");
+      modalPanel.classList.add("scale-95", "opacity-0");
+
+      setTimeout(() => {
+        modal.classList.add("hidden");
+        modalContent.innerHTML = ""; // Stop video/3d
+        body.style.overflow = "auto"; // Restore scroll
+      }, 300);
+    }
+
+    // Close on Escape
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && !modal.classList.contains("hidden")) {
+        closeArtifactModal();
+      }
+    });
+
+    // Close on Backdrop Click
+    modalBackdrop.addEventListener("click", closeArtifactModal);
+  </script>
+</div>
+{% endblock %}
