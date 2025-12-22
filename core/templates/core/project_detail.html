@@ -183,13 +183,13 @@
 </div>
 
 <!-- Flowbite-based Artifact Modal (50% Size, Centered) -->
-<div id="artifactModal" tabindex="-1" aria-hidden="true" class="hidden overflow-hidden fixed inset-0 z-[9999] justify-center items-center w-full h-full bg-black/90 backdrop-blur-md">
+<div id="artifactModal" tabindex="-1" aria-hidden="true" class="hidden overflow-hidden fixed inset-0 z-[9999] justify-center items-center w-full h-full bg-black/90 backdrop-blur-md" style="background-color: rgba(0, 0, 0, 0.9);">
     <div class="relative w-full h-full flex items-center justify-center p-4">
         <!-- Modal content (50-60% of viewport) -->
         <div class="relative bg-black rounded-lg shadow-2xl border border-gray-800 w-full max-w-5xl h-[60vh] flex flex-col overflow-hidden">
             <!-- Modal header (Overlay close button) -->
             <div class="absolute top-2 right-2 z-[100] p-2">
-                <button type="button" onclick="closeArtifactModal()" class="text-gray-400 bg-black/60 hover:bg-white hover:text-black rounded-full text-sm w-12 h-12 inline-flex justify-center items-center transition-all border border-gray-700 hover:border-white shadow-2xl" data-modal-hide="artifactModal">
+                <button type="button" onclick="closeArtifactModal()" class="text-gray-400 bg-black/60 hover:bg-white hover:text-black rounded-full text-sm w-12 h-12 inline-flex justify-center items-center transition-all border border-gray-700 hover:border-white shadow-2xl">
                     <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
                     </svg>
@@ -197,7 +197,7 @@
                 </button>
             </div>
             <!-- Modal body -->
-            <div class="p-0 h-full w-full flex items-center justify-center bg-black [&_iframe]:!w-full [&_iframe]:!h-full [&_iframe]:!border-0 [&_.sketchfab-embed-wrapper]:!w-full [&_.sketchfab-embed-wrapper]:!h-full [&_.sketchfab-embed-wrapper]:!m-0 [&_img]:max-h-full [&_img]:max-w-full [&_img]:object-contain" id="modalContent">
+            <div class="p-0 h-full w-full bg-black [&_iframe]:!w-full [&_iframe]:!h-full [&_iframe]:!border-0 [&_iframe]:!block [&_.sketchfab-embed-wrapper]:!w-full [&_.sketchfab-embed-wrapper]:!h-full [&_.sketchfab-embed-wrapper]:!m-0 [&_.sketchfab-embed-wrapper]:!p-0 [&_.sketchfab-embed-wrapper]:!block [&_.sketchfab-embed-wrapper_p]:!hidden [&_img]:max-h-full [&_img]:max-w-full [&_img]:object-contain" id="modalContent">
                <!-- Content injected here -->
             </div>
         </div>
