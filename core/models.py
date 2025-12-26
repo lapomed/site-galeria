@@ -37,6 +37,12 @@ class Artifact(models.Model):
     description = models.TextField(blank=True)
     image = models.ImageField(upload_to='artifacts/', blank=True, null=True)
     sketchfab_embed = models.TextField(blank=True, help_text="Cole o código do iframe do Sketchfab aqui")
+    model_file = models.FileField(
+        upload_to='artifacts/models/', 
+        blank=True, 
+        null=True,
+        help_text="Upload de arquivo 3D (GLB, GLTF, USDZ)"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -45,6 +51,16 @@ class Artifact(models.Model):
 
     def __str__(self):
         return f"{self.project.title} - {self.title}"
+    
+    def get_content_type(self):
+        """Retorna o tipo de conteúdo do artefato"""
+        if self.model_file:
+            return '3d_model'
+        elif self.sketchfab_embed:
+            return 'sketchfab_embed'
+        elif self.image:
+            return 'image'
+        return None
 
 class Collection(models.Model):
     title = models.CharField(max_length=200)

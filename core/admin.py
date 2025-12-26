@@ -4,6 +4,7 @@ from .models import Slide, Project, Artifact, Collection, CollectionImage
 class ArtifactInline(admin.TabularInline):
     model = Artifact
     extra = 1
+    fields = ('title', 'description', 'image', 'model_file', 'sketchfab_embed')
 
 class CollectionInline(admin.TabularInline):
     model = Collection.projects.through
