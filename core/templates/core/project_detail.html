@@ -244,27 +244,24 @@
                             </div>
                         </div>
                         
-                        <!-- Dica de Uso -->
-                        <div class="pt-6 border-t border-gray-700">
-                            <div class="bg-gradient-to-br from-yellow-500/10 to-yellow-600/10 border border-yellow-500/20 rounded-lg p-4">
-                                <p class="text-yellow-200 text-xs leading-relaxed">
-                                    💡 <strong class="text-yellow-400">Dica:</strong> Clique e arraste para rotacionar. Use o scroll para zoom.
-                                </p>
-                            </div>
-                        </div>
+                       
                     </div>
                 </div>
                 
-                <!-- Divisor Redimensionável -->
-                <div id="resizer" class="w-1 bg-gray-700 hover:bg-yellow-500 cursor-col-resize transition-colors relative group">
-                    <div class="absolute inset-y-0 -left-1 -right-1"></div>
-                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div class="bg-yellow-500 rounded-full p-1">
+                <!-- Divisor Redimensionável (área clicável maior) -->
+                <div id="resizer" class="w-2 bg-gray-700 hover:bg-yellow-500 cursor-col-resize transition-colors relative group flex items-center justify-center" style="min-width: 8px;">
+                    <!-- Área de hit invisível maior -->
+                    <div class="absolute inset-y-0 -left-2 -right-2 cursor-col-resize"></div>
+                    <!-- Indicador visual -->
+                    <div class="absolute inset-y-0 left-0 right-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                        <div class="bg-yellow-500 rounded-full p-1.5 shadow-lg">
                             <svg class="w-3 h-3 text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M8 9l4-4 4 4m0 6l-4 4-4-4"/>
                             </svg>
                         </div>
                     </div>
+                    <!-- Linha vertical visível -->
+                    <div class="absolute inset-y-0 left-1/2 transform -translate-x-1/2 w-0.5 bg-gray-600 group-hover:bg-yellow-400 transition-colors"></div>
                 </div>
                 
                 <!-- Coluna Central - Visualizador 3D -->
