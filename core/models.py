@@ -10,8 +10,8 @@ class Slide(models.Model):
 
     class Meta:
         ordering = ['order']
-        verbose_name = "Slide (Carousel)"
-        verbose_name_plural = "Slides (Carousel)"
+        verbose_name = "🏠 Home › Slide (Carousel)"
+        verbose_name_plural = "🏠 Home › Slides (Carousel)"
 
     def __str__(self):
         return self.title
@@ -25,8 +25,8 @@ class Project(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = "Projeto"
-        verbose_name_plural = "Projetos"
+        verbose_name = "🏛️ Projetos › Projeto"
+        verbose_name_plural = "🏛️ Projetos › Projetos"
 
     def __str__(self):
         return self.title
@@ -50,8 +50,8 @@ class Artifact(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = "Artefato"
-        verbose_name_plural = "Artefatos"
+        verbose_name = "🏛️ Projetos › Artefato"
+        verbose_name_plural = "🏛️ Projetos › Artefatos"
 
     def __str__(self):
         return f"{self.project.title} - {self.title}"
@@ -139,7 +139,7 @@ class Timeline(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ['-year']  # Mais recente primeiro
+        ordering = ['-year']
         verbose_name = "Marco Histórico"
         verbose_name_plural = "Linha do Tempo"
 

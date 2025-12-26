@@ -161,15 +161,28 @@ JAZZMIN_SETTINGS = {
     "navigation_expanded": True,
     "hide_apps": [],
     "hide_models": [],
-    "order_with_respect_to": ["core", "auth"],
+    
+    # Customização de ícones
     "icons": {
         "auth": "fas fa-users-cog",
         "auth.user": "fas fa-user",
         "auth.Group": "fas fa-users",
-        "core.Project": "fas fa-project-diagram",
+        
+        # Core
+        "core": "fas fa-home",
         "core.Slide": "fas fa-images",
+        "core.Project": "fas fa-project-diagram",
         "core.Artifact": "fas fa-monument",
+        "core.Collection": "fas fa-folder-open",
+        
+        # Quem Somos
+        "core.AboutSection": "fas fa-info-circle",
+        "core.TeamMember": "fas fa-user-tie",
+        "core.Timeline": "fas fa-history",
+        "core.ResearchArea": "fas fa-microscope",
+        "core.Partnership": "fas fa-handshake",
     },
+    
     "default_icon_parents": "fas fa-chevron-circle-right",
     "default_icon_children": "fas fa-circle",
     "related_modal_active": True,

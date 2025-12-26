@@ -4,6 +4,13 @@ from .models import (
     AboutSection, TeamMember, Timeline, ResearchArea, Partnership
 )
 
+# ===== CONFIGURAÇÃO DO SITE ADMIN =====
+admin.site.site_header = "LAPOMED - Administração"
+admin.site.site_title = "LAPOMED Admin"
+admin.site.index_title = "Painel de Controle"
+
+
+# ===== INLINES =====
 class ArtifactInline(admin.TabularInline):
     model = Artifact
     extra = 1
@@ -15,33 +22,51 @@ class CollectionInline(admin.TabularInline):
     verbose_name = "Adicionar a Coleção"
     verbose_name_plural = "Adicionar a Coleções"
 
+class CollectionImageInline(admin.TabularInline):
+    model = CollectionImage
+    extra = 3
+
+
+# ===== HOME / CAROUSEL =====
+@admin.register(Slide)
+class SlideAdmin(admin.ModelAdmin):
+    list_display = ('title', 'active', 'order')
+    list_editable = ('active', 'order')
+    verbose_name = "Slide do Carousel (Home)"
+    verbose_name_plural = "Slides do Carousel (Home)"
+
+
+# ===== PROJETOS =====
 @admin.register(Project)
 class ProjectAdmin(admin.ModelAdmin):
     list_display = ('title', 'location', 'created_at')
     search_fields = ('title', 'location')
     inlines = [ArtifactInline, CollectionInline]
+    verbose_name = "Projeto Arqueológico"
+    verbose_name_plural = "Projetos Arqueológicos"
 
-@admin.register(Slide)
-class SlideAdmin(admin.ModelAdmin):
-    list_display = ('title', 'active', 'order')
-    list_editable = ('active', 'order')
-
-class CollectionImageInline(admin.TabularInline):
-    model = CollectionImage
-    extra = 3
 
 @admin.register(Collection)
 class CollectionAdmin(admin.ModelAdmin):
     list_display = ('title', 'created_at')
     inlines = [CollectionImageInline]
-    exclude = ('projects',) # Projetos são adicionados via tela de Projeto
+    exclude = ('projects',)
+    verbose_name = "Coleção de Projetos"
+    verbose_name_plural = "Coleções de Projetos"
 
 
-# ===== ADMIN PARA PÁGINA "QUEM SOMOS" =====
+# ===== QUEM SOMOS =====
+class QuemSomosAdminMixin:
+    """Mixin para adicionar agrupamento visual no admin"""
+    class Media:
+        css = {
+            'all': ('admin/css/quem-somos-group.css',)
+        }
+
 
 @admin.register(AboutSection)
 class AboutSectionAdmin(admin.ModelAdmin):
-    """Admin para seções 'Sobre o LAPOMED'"""
+    """📄 Seções 'Sobre o LAPOMED'"""
     list_display = ('title', 'active', 'order', 'updated_at')
     list_editable = ('active', 'order')
     list_filter = ('active',)
@@ -58,11 +83,15 @@ class AboutSectionAdmin(admin.ModelAdmin):
             'fields': ('active', 'order')
         }),
     )
+    
+    class Meta:
+        verbose_name = "📄 Seção Sobre (Quem Somos)"
+        verbose_name_plural = "📄 Seções Sobre (Quem Somos)"
 
 
 @admin.register(TeamMember)
 class TeamMemberAdmin(admin.ModelAdmin):
-    """Admin para membros da equipe"""
+    """👥 Membros da Equipe"""
     list_display = ('name', 'role', 'active', 'order')
     list_editable = ('active', 'order')
     list_filter = ('active', 'role')
@@ -78,30 +107,42 @@ class TeamMemberAdmin(admin.ModelAdmin):
             'fields': ('active', 'order')
         }),
     )
+    
+    class Meta:
+        verbose_name = "👥 Membro da Equipe (Quem Somos)"
+        verbose_name_plural = "👥 Equipe (Quem Somos)"
 
 
 @admin.register(Timeline)
 class TimelineAdmin(admin.ModelAdmin):
-    """Admin para linha do tempo"""
+    """📅 Linha do Tempo"""
     list_display = ('year', 'title', 'active', 'created_at')
     list_editable = ('active',)
     list_filter = ('active', 'year')
     search_fields = ('title', 'description')
     ordering = ('-year',)
+    
+    class Meta:
+        verbose_name = "📅 Marco Histórico (Quem Somos)"
+        verbose_name_plural = "📅 Linha do Tempo (Quem Somos)"
 
 
 @admin.register(ResearchArea)
 class ResearchAreaAdmin(admin.ModelAdmin):
-    """Admin para áreas de pesquisa"""
+    """🔬 Áreas de Pesquisa"""
     list_display = ('title', 'icon', 'active', 'order')
     list_editable = ('active', 'order')
     list_filter = ('active',)
     search_fields = ('title', 'description')
+    
+    class Meta:
+        verbose_name = "🔬 Área de Pesquisa (Quem Somos)"
+        verbose_name_plural = "🔬 Áreas de Pesquisa (Quem Somos)"
 
 
 @admin.register(Partnership)
 class PartnershipAdmin(admin.ModelAdmin):
-    """Admin para parcerias"""
+    """🤝 Parcerias"""
     list_display = ('name', 'website', 'active', 'order')
     list_editable = ('active', 'order')
     list_filter = ('active',)
@@ -114,3 +155,12 @@ class PartnershipAdmin(admin.ModelAdmin):
             'fields': ('active', 'order')
         }),
     )
+    
+    class Meta:
+        verbose_name = "🤝 Parceria (Quem Somos)"
+        verbose_name_plural = "🤝 Parcerias (Quem Somos)"
+
+
+# ===== CUSTOMIZAÇÃO DO ADMIN INDEX =====
+# Agrupamento personalizado no index
+admin.site.index_template = 'admin/custom_index.html'
