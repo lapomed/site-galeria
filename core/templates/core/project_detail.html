@@ -226,7 +226,7 @@
                         </div>
                         
                         <!-- Metadados -->
-                        <div class="pt-6 border-t border-gray-700">
+                        <div class="pt-6 border-t border-gray-900">
                             <h5 class="text-gray-400 text-xs uppercase font-semibold mb-4">Metadados</h5>
                             <div class="space-y-3">
                                 <div class="bg-gray-800 rounded-lg p-3">
@@ -249,23 +249,27 @@
                 </div>
                 
                 <!-- Divisor Redimensionável -->
-                <div id="resizer" class="w-1 bg-gray-600 hover:bg-yellow-500 cursor-col-resize transition-all duration-200 relative group" style="min-width: 12px;">
+                <div id="resizer" class="w-2 hover:bg-yellow-500/80 cursor-col-resize transition-all duration-300 relative group flex items-center justify-center" style="min-width: 10px; background-color: #3c424d;">
                     <!-- Área de hit maior -->
-                    <div class="absolute inset-y-0 -left-3 -right-3 cursor-col-resize"></div>
+                    <div class="absolute inset-y-0 -left-4 -right-4 cursor-col-resize z-10"></div>
                     
-                    <!-- Indicador visual (6 pontos) -->
-                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col gap-1 pointer-events-none">
-                        <div class="w-1 h-1 bg-gray-400 group-hover:bg-gray-900 rounded-full"></div>
-                        <div class="w-1 h-1 bg-gray-400 group-hover:bg-gray-900 rounded-full"></div>
-                        <div class="w-1 h-1 bg-gray-400 group-hover:bg-gray-900 rounded-full"></div>
-                        <div class="w-1 h-1 bg-gray-400 group-hover:bg-gray-900 rounded-full"></div>
-                        <div class="w-1 h-1 bg-gray-400 group-hover:bg-gray-900 rounded-full"></div>
-                        <div class="w-1 h-1 bg-gray-400 group-hover:bg-gray-900 rounded-full"></div>
+                    <!-- Ícone de grip sempre visível (centralizado por flexbox) -->
+                    <div class="relative z-20 pointer-events-none">
+                        <div class="bg-gray-500 group-hover:bg-yellow-400 rounded-md p-2 shadow-xl transition-all duration-300 group-hover:scale-125 border" style="border-color: #444649;">
+                            <svg class="w-4 h-4 text-white group-hover:text-white" fill="currentColor" viewBox="0 0 16 16" style="border-color: #3c424d;">
+                                <circle cx="4" cy="4" r="1.5"/>
+                                <circle cx="12" cy="4" r="1.5"/>
+                                <circle cx="4" cy="8" r="1.5"/>
+                                <circle cx="12" cy="8" r="1.5"/>
+                                <circle cx="4" cy="12" r="1.5"/>
+                                <circle cx="12" cy="12" r="1.5"/>
+                            </svg>
+                        </div>
                     </div>
                 </div>
                 
                 <!-- Coluna Central - Visualizador 3D -->
-                <div class="flex-1 bg-gray-800 relative overflow-hidden" id="modalContent">
+                <div class="flex-1 bg-gray-300 relative overflow-hidden" id="modalContent">
                    <!-- Content injected here -->
                 </div>
             </div>
