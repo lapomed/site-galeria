@@ -248,31 +248,19 @@
                     </div>
                 </div>
                 
-                <!-- Divisor Redimensionável com indicador visual -->
-                <div id="resizer" class="w-2 bg-gray-700 hover:bg-gray-600 cursor-col-resize transition-all duration-200 relative group flex items-center justify-center" style="min-width: 8px;">
-                    <!-- Área de hit invisível maior -->
-                    <div class="absolute inset-y-0 -left-2 -right-2 cursor-col-resize"></div>
+                <!-- Divisor Redimensionável -->
+                <div id="resizer" class="w-1 bg-gray-600 hover:bg-yellow-500 cursor-col-resize transition-all duration-200 relative group" style="min-width: 12px;">
+                    <!-- Área de hit maior -->
+                    <div class="absolute inset-y-0 -left-3 -right-3 cursor-col-resize"></div>
                     
-                    <!-- Linha vertical visível -->
-                    <div class="absolute inset-y-0 left-1/2 transform -translate-x-1/2 w-0.5 bg-gray-600 group-hover:bg-yellow-400 transition-colors duration-200"></div>
-                    
-                    <!-- Indicador de grip (sempre visível) -->
-                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-                        <div class="bg-gray-800 group-hover:bg-yellow-500 rounded-lg p-2 shadow-lg transition-all duration-200 border border-gray-600 group-hover:border-yellow-400 group-hover:scale-110">
-                            <!-- Ícone de grip (3 linhas verticais) -->
-                            <div class="flex gap-0.5">
-                                <div class="w-0.5 h-4 bg-gray-500 group-hover:bg-gray-900 rounded-full transition-colors"></div>
-                                <div class="w-0.5 h-4 bg-gray-500 group-hover:bg-gray-900 rounded-full transition-colors"></div>
-                                <div class="w-0.5 h-4 bg-gray-500 group-hover:bg-gray-900 rounded-full transition-colors"></div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Tooltip ao passar o mouse -->
-                    <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-                        <div class="bg-gray-900 text-yellow-400 text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap border border-yellow-500/30">
-                            Arraste para redimensionar
-                        </div>
+                    <!-- Indicador visual (6 pontos) -->
+                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col gap-1 pointer-events-none">
+                        <div class="w-1 h-1 bg-gray-400 group-hover:bg-gray-900 rounded-full"></div>
+                        <div class="w-1 h-1 bg-gray-400 group-hover:bg-gray-900 rounded-full"></div>
+                        <div class="w-1 h-1 bg-gray-400 group-hover:bg-gray-900 rounded-full"></div>
+                        <div class="w-1 h-1 bg-gray-400 group-hover:bg-gray-900 rounded-full"></div>
+                        <div class="w-1 h-1 bg-gray-400 group-hover:bg-gray-900 rounded-full"></div>
+                        <div class="w-1 h-1 bg-gray-400 group-hover:bg-gray-900 rounded-full"></div>
                     </div>
                 </div>
                 
