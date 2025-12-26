@@ -49,6 +49,8 @@
         class="group bg-gray-900 border border-gray-800 hover:border-yellow-500 rounded flex flex-col cursor-pointer transition-all hover:shadow-lg"
         onclick="openArtifactModal(this)"
         data-title="{{ artifact.title }}"
+        data-description="{{ artifact.description|default:'Sem descrição disponível' }}"
+        data-annotations="{{ artifact.annotations|default:'' }}"
         data-type="{% if artifact.model_file %}3d_model{% elif artifact.sketchfab_embed %}embed{% elif artifact.image %}image{% endif %}"
         data-content="{% if artifact.model_file %}{{ artifact.model_file.url }}{% elif artifact.sketchfab_embed %}{{ artifact.sketchfab_embed|escape }}{% elif artifact.image %}{{ artifact.image.url }}{% endif %}"
       >
@@ -183,11 +185,11 @@
   {% endif %}
 </div>
 
-<!-- Flowbite-based Artifact Modal (Estilo Sketchfab) -->
-<div id="artifactModal" tabindex="-1" aria-hidden="true" class="hidden fixed inset-0 z-[9999] overflow-y-auto overflow-x-hidden flex justify-center items-center bg-black/95">
-    <div class="relative p-4 w-full max-w-7xl h-full md:h-auto flex items-center justify-center">
+<!-- Flowbite-based Artifact Modal (Estilo Sketchfab com Info Lateral) -->
+<div id="artifactModal" tabindex="-1" aria-hidden="true" class="hidden fixed inset-0 overflow-y-auto overflow-x-hidden flex justify-center items-center" style="z-index: 99999; background-color: rgba(0, 0, 0, 0.95);">
+    <div class="relative p-4 w-full h-full flex items-center justify-center">
         <!-- Modal content -->
-        <div class="relative bg-gray-900 rounded-lg shadow-2xl w-full" style="height: 85vh;">
+        <div class="relative bg-gray-900 rounded-lg shadow-2xl w-full flex flex-col" style="height: 90vh; max-width: 95vw;">
             <!-- Modal header -->
             <div class="flex items-center justify-between p-4 border-b border-gray-700 bg-gray-800">
                 <h3 class="text-lg font-semibold text-white" id="modalTitle">
@@ -200,9 +202,55 @@
                     <span class="sr-only">Fechar</span>
                 </button>
             </div>
-            <!-- Modal body -->
-            <div class="p-0 bg-gray-800" style="height: calc(85vh - 57px);" id="modalContent">
-               <!-- Content injected here -->
+            
+            <!-- Modal body - 3 colunas -->
+            <div class="flex-1 flex overflow-hidden">
+                <!-- Coluna Esquerda - Informações -->
+                <div class="w-[30%] bg-gray-800 p-6 overflow-y-auto border-r border-gray-700">
+                    <h4 class="text-sm font-bold text-gray-400 uppercase tracking-wide mb-4">Informações</h4>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-xs text-gray-500 uppercase">Título</label>
+                            <p class="text-white font-medium" id="infoTitle">-</p>
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-500 uppercase">Descrição</label>
+                            <p class="text-gray-300 text-sm" id="infoDescription">-</p>
+                        </div>
+                        <div id="infoAnnotations" class="hidden">
+                            <label class="text-xs text-gray-500 uppercase">Anotações</label>
+                            <p class="text-gray-300 text-sm" id="infoAnnotationsText">-</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Coluna Central - Visualizador 3D -->
+                <div class="flex-1 bg-gray-800" id="modalContent">
+                   <!-- Content injected here -->
+                </div>
+                
+                <!-- Coluna Direita - Informações Técnicas -->
+                <div class="w-[30%] bg-gray-800 p-6 overflow-y-auto border-l border-gray-700">
+                    <h4 class="text-sm font-bold text-gray-400 uppercase tracking-wide mb-4">Detalhes Técnicos</h4>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-xs text-gray-500 uppercase">Tipo</label>
+                            <p class="text-white font-medium" id="infoType">-</p>
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-500 uppercase">Formato</label>
+                            <p class="text-gray-300 text-sm" id="infoFormat">-</p>
+                        </div>
+                        <div class="mt-6">
+                            <h5 class="text-xs text-gray-500 uppercase mb-2">Controles</h5>
+                            <ul class="text-sm text-gray-400 space-y-1">
+                                <li>🖱️ Arrastar: Rotacionar</li>
+                                <li>🔍 Scroll: Zoom</li>
+                                <li>✌️ Dois dedos: Pan</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -218,16 +266,46 @@
       const type = element.getAttribute("data-type");
       const content = element.getAttribute("data-content");
       const title = element.getAttribute("data-title") || "Visualizador 3D";
+      const description = element.getAttribute("data-description") || "Sem descrição disponível";
+      const annotations = element.getAttribute("data-annotations") || "";
       
       if (!content) return;
       
       // Set modal title
       modalTitle.textContent = title;
+      
+      // Fill info panels
+      document.getElementById("infoTitle").textContent = title;
+      document.getElementById("infoDescription").textContent = description;
+      
+      // Show annotations if available
+      if (annotations) {
+        document.getElementById("infoAnnotations").classList.remove("hidden");
+        document.getElementById("infoAnnotationsText").textContent = annotations;
+      } else {
+        document.getElementById("infoAnnotations").classList.add("hidden");
+      }
+      
+      // Set type info
+      let typeLabel = "";
+      let formatLabel = "";
+      if (type === '3d_model') {
+        typeLabel = "Modelo 3D Nativo";
+        formatLabel = "GLB/GLTF";
+      } else if (type === 'embed') {
+        typeLabel = "Modelo 3D (Sketchfab)";
+        formatLabel = "Embed/Iframe";
+      } else if (type === 'image') {
+        typeLabel = "Imagem";
+        formatLabel = "JPG/PNG";
+      }
+      document.getElementById("infoType").textContent = typeLabel;
+      document.getElementById("infoFormat").textContent = formatLabel;
   
       // Inject content based on type
       if (type === '3d_model') {
-          // Renderizar modelo 3D nativo com Google Model Viewer (tema escuro)
-          modalContent.innerHTML = '<model-viewer src="' + content + '" camera-controls touch-action="pan-y" auto-rotate auto-rotate-delay="0" rotation-per-second="30deg" shadow-intensity="1" environment-image="neutral" exposure="1" ar ar-modes="webxr scene-viewer quick-look" style="width: 100%; height: 100%; --poster-color: #1f2937; background-color: #1f2937;" loading="eager"></model-viewer>';
+          // Renderizar modelo 3D nativo SEM auto-rotate
+          modalContent.innerHTML = '<model-viewer src="' + content + '" camera-controls touch-action="pan-y" shadow-intensity="1" environment-image="neutral" exposure="1" ar ar-modes="webxr scene-viewer quick-look" style="width: 100%; height: 100%; --poster-color: #1f2937; background-color: #1f2937;" loading="eager"></model-viewer>';
       } else if (type === 'embed') {
           modalContent.innerHTML = content;
       } else if (type === 'image') {
