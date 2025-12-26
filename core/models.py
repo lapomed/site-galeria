@@ -43,6 +43,10 @@ class Artifact(models.Model):
         null=True,
         help_text="Upload de arquivo 3D (GLB, GLTF, USDZ)"
     )
+    annotations = models.TextField(
+        blank=True,
+        help_text="Anotações sobre o modelo 3D (opcional) - informações técnicas, descobertas, etc."
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
