@@ -1,0 +1,287 @@
+{% extends 'core/base.html' %} {% load static %} {% block title %}Quem Somos |
+Lapomed{% endblock %} {% block content %}
+<div class="min-h-screen bg-white">
+  <!-- Hero Section -->
+  <section
+    class="relative h-[40vh] bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center overflow-hidden"
+  >
+    <div class="absolute inset-0 opacity-10">
+      <div
+        class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')]"
+      ></div>
+    </div>
+    <div class="relative z-10 text-center px-4">
+      <h1
+        class="font-serif text-5xl md:text-6xl font-bold text-white mb-4 animate-fade-in-fast"
+      >
+        Quem Somos
+      </h1>
+      <p class="text-gray-300 text-lg md:text-xl max-w-2xl mx-auto">
+        Conheça o LAPOMED e nossa missão na pesquisa arqueológica
+      </p>
+    </div>
+  </section>
+
+  <!-- About Sections -->
+  {% if about_sections %}
+  <section class="py-20 px-4">
+    <div class="max-w-7xl mx-auto">
+      {% for section in about_sections %}
+      <div
+        class="mb-20 {% if forloop.counter|divisibleby:2 %}flex-row-reverse{% endif %} flex flex-col md:flex-row gap-12 items-center"
+      >
+        {% if section.image %}
+        <div class="md:w-1/2">
+          <img
+            src="{{ section.image.url }}"
+            alt="{{ section.title }}"
+            class="rounded-2xl shadow-2xl w-full h-auto object-cover"
+          />
+        </div>
+        {% endif %}
+        <div class="{% if section.image %}md:w-1/2{% else %}w-full{% endif %}">
+          <h2 class="font-serif text-4xl font-bold text-gray-900 mb-6">
+            {{ section.title }}
+          </h2>
+          <div
+            class="prose prose-lg max-w-none text-gray-700 leading-relaxed mb-8"
+          >
+            {{ section.content|linebreaks }}
+          </div>
+
+          {% if section.mission or section.vision %}
+          <div class="grid md:grid-cols-2 gap-6 mt-8">
+            {% if section.mission %}
+            <div
+              class="bg-gradient-to-br from-yellow-50 to-yellow-100 p-6 rounded-xl border-l-4 border-yellow-500"
+            >
+              <h3 class="font-bold text-gray-900 mb-3 flex items-center gap-2">
+                <span class="text-2xl">🎯</span> Missão
+              </h3>
+              <p class="text-gray-700 text-sm leading-relaxed">
+                {{ section.mission }}
+              </p>
+            </div>
+            {% endif %} {% if section.vision %}
+            <div
+              class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl border-l-4 border-blue-500"
+            >
+              <h3 class="font-bold text-gray-900 mb-3 flex items-center gap-2">
+                <span class="text-2xl">🔭</span> Visão
+              </h3>
+              <p class="text-gray-700 text-sm leading-relaxed">
+                {{ section.vision }}
+              </p>
+            </div>
+            {% endif %}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- Research Areas -->
+  {% if research_areas %}
+  <section class="py-20 px-4 bg-gray-50">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-16">
+        <h2 class="font-serif text-4xl font-bold text-gray-900 mb-4">
+          Áreas de Pesquisa
+        </h2>
+        <p class="text-gray-600 text-lg">
+          Nossos principais focos de investigação
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for area in research_areas %}
+        <div
+          class="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100"
+        >
+          <div class="text-5xl mb-4">{{ area.icon|default:"📚" }}</div>
+          <h3 class="font-bold text-xl text-gray-900 mb-3">{{ area.title }}</h3>
+          <p class="text-gray-600 leading-relaxed">{{ area.description }}</p>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- Team Members -->
+  {% if team_members %}
+  <section class="py-20 px-4">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-16">
+        <h2 class="font-serif text-4xl font-bold text-gray-900 mb-4">
+          Nossa Equipe
+        </h2>
+        <p class="text-gray-600 text-lg">
+          Pesquisadores dedicados à arqueologia
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for member in team_members %}
+        <div
+          class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
+        >
+          <div class="aspect-square overflow-hidden bg-gray-200">
+            <img
+              src="{{ member.photo.url }}"
+              alt="{{ member.name }}"
+              class="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
+            />
+          </div>
+          <div class="p-6">
+            <h3 class="font-bold text-xl text-gray-900 mb-1">
+              {{ member.name }}
+            </h3>
+            <p class="text-yellow-600 font-semibold text-sm mb-4">
+              {{ member.role }}
+            </p>
+            <p class="text-gray-600 text-sm leading-relaxed mb-4">
+              {{ member.bio|truncatewords:30 }}
+            </p>
+
+            <div class="flex gap-3 pt-4 border-t border-gray-100">
+              {% if member.email %}
+              <a
+                href="mailto:{{ member.email }}"
+                class="text-gray-400 hover:text-gray-900 transition-colors"
+                title="E-mail"
+              >
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"
+                  />
+                  <path
+                    d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"
+                  />
+                </svg>
+              </a>
+              {% endif %} {% if member.lattes %}
+              <a
+                href="{{ member.lattes }}"
+                target="_blank"
+                class="text-gray-400 hover:text-gray-900 transition-colors"
+                title="Currículo Lattes"
+              >
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"
+                  />
+                  <path
+                    d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"
+                  />
+                </svg>
+              </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- Timeline -->
+  {% if timeline %}
+  <section class="py-20 px-4 bg-gray-900 text-white">
+    <div class="max-w-5xl mx-auto">
+      <div class="text-center mb-16">
+        <h2 class="font-serif text-4xl font-bold mb-4">Nossa História</h2>
+        <p class="text-gray-400 text-lg">Marcos importantes do LAPOMED</p>
+      </div>
+
+      <div class="relative">
+        <!-- Linha vertical -->
+        <div
+          class="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-yellow-500/30"
+        ></div>
+
+        {% for event in timeline %}
+        <div
+          class="relative mb-12 {% if forloop.counter|divisibleby:2 %}flex-row-reverse text-right{% endif %} flex items-center gap-8"
+        >
+          <!-- Ano -->
+          <div
+            class="w-1/2 {% if forloop.counter|divisibleby:2 %}text-left pl-8{% else %}pr-8{% endif %}"
+          >
+            <div
+              class="inline-block bg-yellow-500 text-gray-900 font-bold px-6 py-2 rounded-full text-lg mb-4"
+            >
+              {{ event.year }}
+            </div>
+            <h3 class="font-bold text-2xl mb-3">{{ event.title }}</h3>
+            <p class="text-gray-400 leading-relaxed">{{ event.description }}</p>
+          </div>
+
+          <!-- Ponto central -->
+          <div
+            class="absolute left-1/2 transform -translate-x-1/2 w-6 h-6 bg-yellow-500 rounded-full border-4 border-gray-900 z-10"
+          ></div>
+
+          <!-- Imagem (se houver) -->
+          <div
+            class="w-1/2 {% if forloop.counter|divisibleby:2 %}pr-8{% else %}pl-8{% endif %}"
+          >
+            {% if event.image %}
+            <img
+              src="{{ event.image.url }}"
+              alt="{{ event.title }}"
+              class="rounded-xl shadow-2xl w-full h-48 object-cover"
+            />
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- Partnerships -->
+  {% if partnerships %}
+  <section class="py-20 px-4">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-16">
+        <h2 class="font-serif text-4xl font-bold text-gray-900 mb-4">
+          Parcerias
+        </h2>
+        <p class="text-gray-600 text-lg">Instituições que colaboram conosco</p>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+        {% for partner in partnerships %}
+        <a
+          href="{% if partner.website %}{{ partner.website }}{% else %}#{% endif %}"
+          target="_blank"
+          class="bg-white p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 flex flex-col items-center justify-center group"
+          title="{{ partner.name }}"
+        >
+          <img
+            src="{{ partner.logo.url }}"
+            alt="{{ partner.name }}"
+            class="w-full h-24 object-contain mb-4 grayscale group-hover:grayscale-0 transition-all duration-300"
+          />
+          <p class="text-gray-900 font-semibold text-sm text-center">
+            {{ partner.name }}
+          </p>
+          {% if partner.description %}
+          <p class="text-gray-500 text-xs text-center mt-2">
+            {{ partner.description|truncatewords:10 }}
+          </p>
+          {% endif %}
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}
