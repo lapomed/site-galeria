@@ -48,6 +48,7 @@
       <div
         class="group bg-gray-900 border border-gray-800 hover:border-yellow-500 rounded flex flex-col cursor-pointer transition-all hover:shadow-lg"
         onclick="openArtifactModal(this)"
+        data-title="{{ artifact.title }}"
         data-type="{% if artifact.model_file %}3d_model{% elif artifact.sketchfab_embed %}embed{% elif artifact.image %}image{% endif %}"
         data-content="{% if artifact.model_file %}{{ artifact.model_file.url }}{% elif artifact.sketchfab_embed %}{{ artifact.sketchfab_embed|escape }}{% elif artifact.image %}{{ artifact.image.url }}{% endif %}"
       >
@@ -182,22 +183,25 @@
   {% endif %}
 </div>
 
-<!-- Flowbite-based Artifact Modal (50% Size, Centered) -->
-<div id="artifactModal" tabindex="-1" aria-hidden="true" class="hidden overflow-hidden fixed inset-0 z-[9999] justify-center items-center w-full h-full bg-black/90 backdrop-blur-md" style="background-color: rgba(0, 0, 0, 0.9);">
-    <div class="relative w-full h-full flex items-center justify-center p-4">
-        <!-- Modal content (50-60% of viewport) -->
-        <div class="relative bg-white rounded-lg shadow-2xl border border-gray-300 w-full max-w-6xl h-[80vh] flex flex-col overflow-hidden" style="height: 80vh;">
-            <!-- Modal header (Overlay close button) -->
-            <div class="absolute top-0 right-0 z-[10000] p-3">
-                <button type="button" onclick="closeArtifactModal()" class="text-gray-600 bg-white/90 hover:bg-gray-100 hover:text-black rounded-full text-sm w-10 h-10 inline-flex justify-center items-center transition-all border border-gray-300 shadow-lg" style="pointer-events: auto;">
-                    <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+<!-- Flowbite-based Artifact Modal (Estilo Sketchfab) -->
+<div id="artifactModal" tabindex="-1" aria-hidden="true" class="hidden fixed inset-0 z-[9999] overflow-y-auto overflow-x-hidden flex justify-center items-center bg-black/95">
+    <div class="relative p-4 w-full max-w-7xl h-full md:h-auto flex items-center justify-center">
+        <!-- Modal content -->
+        <div class="relative bg-gray-900 rounded-lg shadow-2xl w-full" style="height: 85vh;">
+            <!-- Modal header -->
+            <div class="flex items-center justify-between p-4 border-b border-gray-700 bg-gray-800">
+                <h3 class="text-lg font-semibold text-white" id="modalTitle">
+                    Visualizador 3D
+                </h3>
+                <button type="button" onclick="closeArtifactModal()" class="text-gray-400 bg-transparent hover:bg-gray-700 hover:text-white rounded-lg text-sm w-8 h-8 inline-flex justify-center items-center">
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
                     </svg>
-                    <span class="sr-only">Close modal</span>
+                    <span class="sr-only">Fechar</span>
                 </button>
             </div>
             <!-- Modal body -->
-            <div class="p-0 h-full w-full bg-gray-100 [&_iframe]:!w-full [&_iframe]:!h-full [&_iframe]:!border-0 [&_iframe]:!block [&_.sketchfab-embed-wrapper]:!w-full [&_.sketchfab-embed-wrapper]:!h-full [&_.sketchfab-embed-wrapper]:!m-0 [&_.sketchfab-embed-wrapper]:!p-0 [&_.sketchfab-embed-wrapper]:!block [&_.sketchfab-embed-wrapper_p]:!hidden [&_img]:max-h-full [&_img]:max-w-full [&_img]:object-contain" id="modalContent">
+            <div class="p-0 bg-gray-800" style="height: calc(85vh - 57px);" id="modalContent">
                <!-- Content injected here -->
             </div>
         </div>
@@ -207,22 +211,27 @@
   <script>
     const modal = document.getElementById("artifactModal");
     const modalContent = document.getElementById("modalContent");
+    const modalTitle = document.getElementById("modalTitle");
     const body = document.body;
 
     function openArtifactModal(element) {
       const type = element.getAttribute("data-type");
       const content = element.getAttribute("data-content");
+      const title = element.getAttribute("data-title") || "Visualizador 3D";
       
       if (!content) return;
+      
+      // Set modal title
+      modalTitle.textContent = title;
   
       // Inject content based on type
       if (type === '3d_model') {
-          // Renderizar modelo 3D nativo com Google Model Viewer
-          modalContent.innerHTML = '<model-viewer src="' + content + '" camera-controls touch-action="pan-y" auto-rotate auto-rotate-delay="0" rotation-per-second="30deg" shadow-intensity="1" environment-image="neutral" exposure="1" ar ar-modes="webxr scene-viewer quick-look" style="width: 100%; height: 100%; position: relative; --poster-color: #e5e7eb; background-color: #e5e7eb;" loading="eager"></model-viewer>';
+          // Renderizar modelo 3D nativo com Google Model Viewer (tema escuro)
+          modalContent.innerHTML = '<model-viewer src="' + content + '" camera-controls touch-action="pan-y" auto-rotate auto-rotate-delay="0" rotation-per-second="30deg" shadow-intensity="1" environment-image="neutral" exposure="1" ar ar-modes="webxr scene-viewer quick-look" style="width: 100%; height: 100%; --poster-color: #1f2937; background-color: #1f2937;" loading="eager"></model-viewer>';
       } else if (type === 'embed') {
           modalContent.innerHTML = content;
       } else if (type === 'image') {
-          modalContent.innerHTML = '<img src="' + content + '" class="max-w-full max-h-full object-contain" alt="Artifact Image">';
+          modalContent.innerHTML = '<img src="' + content + '" class="w-full h-full object-contain" alt="Artifact Image">';
       }
   
       // Show Modal (Flowbite style: remove hidden, add flex)
