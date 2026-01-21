@@ -21,3 +21,11 @@
     - [x] Configurar volumes para persistência (SQLite/Media)
 - [x] **Fase 3.4: Homologação** <!-- id: 8 -->
     - [x] Testar build e execução completa
+
+## Fase 4: Preparação para Deploy (Railway/PostgreSQL)
+- [x] Configurar `config.py` para variáveis de ambiente <!-- id: 9 -->
+- [x] Integrar `config.py` no `settings.py` e limpar duplicatas <!-- id: 10 -->
+- [x] Criar script `entrypoint.sh` para automação de deploy <!-- id: 11 -->
+- [x] Atualizar `Dockerfile` para usar `entrypoint.sh` e suporte a Railway <!-- id: 12 -->
+- [x] Adicionar dependência `psycopg2-binary` para PostgreSQL <!-- id: 13 -->
+- [x] Validar configurações de `ALLOWED_HOSTS` dinâmico <!-- id: 14 -->

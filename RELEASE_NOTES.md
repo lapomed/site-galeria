@@ -1,3 +1,26 @@
+# Release Notes - v1.2.0 (PostgreSQL & Deploy Readiness)
+**Data: 21 de Janeiro de 2026**
+
+## Visão Geral
+Esta atualização prepara o sistema para deploy em ambientes como Railway, introduzindo suporte a PostgreSQL, variáveis de ambiente centralizadas e automação via entrypoint script.
+
+## Funcionalidades Implementadas
+
+### 1. Suporte a PostgreSQL e Variáveis de Ambiente
+- **Configuração Híbrida**: O sistema agora detecta automaticamente se deve usar PostgreSQL (via `DATABASE_URL`) ou SQLite (fallback local).
+- **Centralização com `config.py`**: Todas as variáveis sensíveis (`SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS`) são agora gerenciadas via variáveis de ambiente com valores default seguros.
+- **Limpeza no `settings.py`**: Remoção de configurações hardcoded e duplicatas, tornando o arquivo mais limpo e modular.
+
+### 2. Automação de Deploy
+- **Entrypoint Script**: Criado `entrypoint.sh` que gerencia migrações, coleta de arquivos estáticos e escolhe entre Gunicorn (produção) ou runserver (desenvolvimento) de forma inteligente.
+- **Compatibilidade com Railway/PaaS**: Ajuste no `Dockerfile` para respeitar a variável `PORT` dinâmica e uso de `ENTRYPOINT`.
+
+### 3. Dependências e Segurança
+- **Database Driver**: Inclusão de `psycopg2-binary` no `pyproject.toml`.
+- **Hosts Dinâmicos**: `ALLOWED_HOSTS` agora aceita uma lista separada por vírgulas via ambiente.
+
+---
+
 # Release Notes - v1.1.0 (Dockerization & Infrastructure)
 **Data: 21 de Janeiro de 2026**
 

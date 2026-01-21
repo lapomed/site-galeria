@@ -11,21 +11,20 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import sys
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Adiciona o diretório raiz ao path para importar o config
+sys.path.insert(0, str(BASE_DIR))
+
+# Importa configurações centralizadas
+from config import SECRET_KEY, DEBUG, ALLOWED_HOSTS, DATABASES
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-hlplb31p-t8d53!#*j$ziqa*dtp*5p8dw@3t8&fzn(pe5f4r(m"
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -76,13 +75,7 @@ WSGI_APPLICATION = "lapomed_gallery.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
+# Configuração suporta PostgreSQL via DATABASE_URL e SQLite local (importado do config)
 
 
 # Password validation
