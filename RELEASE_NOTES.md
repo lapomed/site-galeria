@@ -1,3 +1,32 @@
+# Release Notes - v1.1.0 (Dockerization & Infrastructure)
+**Data: 21 de Janeiro de 2026**
+
+## Visão Geral
+Esta atualização foca na modernização da infraestrutura do projeto, garantindo um ambiente de desenvolvimento isolado, reprodutível e performático através da Dockerização e migração para o gerenciador de pacotes `uv`.
+
+## Funcionalidades Implementadas
+
+### 1. Dockerização Completa (BMAD-METHOD)
+- **Dockerfile Multi-stage**: Separação do build de frontend (Node.js/Tailwind) e backend (Python/Django) para reduzir o tamanho da imagem final.
+- **Docker Compose**: Orquestração simplificada com persistência de dados local (PVC-like) para `db.sqlite3` e pasta `media`.
+- **Configuração de Porta**: Sistema padronizado para rodar na porta **4008** (Interno e Externo).
+- **Script de Automação**: Criação do `docker-run.sh` para facilitar o build, migração e inicialização rápida do ambiente.
+
+### 2. Gestão de Dependências Python com `uv`
+- **Migração para UV**: Substituição de ambientes virtuais manuais pelo `uv`, garantindo builds determinísticos via `uv.lock` e `pyproject.toml`.
+- **Velocidade**: Ganho significativo de performance na instalação de dependências e gerenciamento de pacotes.
+
+### 3. Ajustes de Infraestrutura e Segurança
+- **.dockerignore**: Implementado para manter a imagem limpa e segura (removendo arquivos sensíveis e desnecessários).
+- **Configuração de Ambiente**: Preparação para uso de variáveis de ambiente no container.
+
+## Tecnologias Atualizadas
+- **Container**: Docker 20.x+ / Docker Compose
+- **Python Manager**: `uv` (Astral)
+- **Runtime**: Python 3.13-slim
+
+---
+
 # Release Notes - v1.0.0 (Initial Release)
 
 ## Visão Geral

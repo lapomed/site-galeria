@@ -10,8 +10,8 @@ class Slide(models.Model):
 
     class Meta:
         ordering = ['order']
-        verbose_name = "🏠 Home › Slide (Carousel)"
-        verbose_name_plural = "🏠 Home › Slides (Carousel)"
+        verbose_name = "🏠 Home - Slide do Carousel"
+        verbose_name_plural = "🏠 Home - Slides do Carousel"
 
     def __str__(self):
         return self.title
@@ -25,8 +25,8 @@ class Project(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = "🏛️ Projetos › Projeto"
-        verbose_name_plural = "🏛️ Projetos › Projetos"
+        verbose_name = "🏛️ Projetos - Projeto"
+        verbose_name_plural = "🏛️ Projetos - Projetos"
 
     def __str__(self):
         return self.title
@@ -50,8 +50,8 @@ class Artifact(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = "🏛️ Projetos › Artefato"
-        verbose_name_plural = "🏛️ Projetos › Artefatos"
+        verbose_name = "🏛️ Projetos - Artefato"
+        verbose_name_plural = "🏛️ Projetos - Artefatos"
 
     def __str__(self):
         return f"{self.project.title} - {self.title}"
@@ -94,6 +94,7 @@ class AboutSection(models.Model):
     image = models.ImageField(upload_to='about/', blank=True, null=True, verbose_name="Imagem")
     mission = models.TextField(blank=True, verbose_name="Missão")
     vision = models.TextField(blank=True, verbose_name="Visão")
+    values = models.TextField(blank=True, verbose_name="Valores")
     active = models.BooleanField(default=True, verbose_name="Ativo")
     order = models.IntegerField(default=0, verbose_name="Ordem")
     created_at = models.DateTimeField(auto_now_add=True)
@@ -101,8 +102,8 @@ class AboutSection(models.Model):
 
     class Meta:
         ordering = ['order']
-        verbose_name = "Seção Sobre"
-        verbose_name_plural = "Seções Sobre"
+        verbose_name = "👥 Quem Somos - Seção Sobre"
+        verbose_name_plural = "👥 Quem Somos - Seções Sobre"
 
     def __str__(self):
         return self.title
@@ -122,8 +123,8 @@ class TeamMember(models.Model):
 
     class Meta:
         ordering = ['order', 'name']
-        verbose_name = "Membro da Equipe"
-        verbose_name_plural = "Membros da Equipe"
+        verbose_name = "👥 Quem Somos - Membro da Equipe"
+        verbose_name_plural = "👥 Quem Somos - Equipe"
 
     def __str__(self):
         return f"{self.name} - {self.role}"
@@ -140,8 +141,8 @@ class Timeline(models.Model):
 
     class Meta:
         ordering = ['-year']
-        verbose_name = "Marco Histórico"
-        verbose_name_plural = "Linha do Tempo"
+        verbose_name = "👥 Quem Somos - Marco Histórico"
+        verbose_name_plural = "👥 Quem Somos - Linha do Tempo"
 
     def __str__(self):
         return f"{self.year} - {self.title}"
@@ -163,8 +164,8 @@ class ResearchArea(models.Model):
 
     class Meta:
         ordering = ['order']
-        verbose_name = "Área de Pesquisa"
-        verbose_name_plural = "Áreas de Pesquisa"
+        verbose_name = "👥 Quem Somos - Área de Pesquisa"
+        verbose_name_plural = "👥 Quem Somos - Áreas de Pesquisa"
 
     def __str__(self):
         return self.title
@@ -182,8 +183,8 @@ class Partnership(models.Model):
 
     class Meta:
         ordering = ['order', 'name']
-        verbose_name = "Parceria"
-        verbose_name_plural = "Parcerias"
+        verbose_name = "👥 Quem Somos - Parceria"
+        verbose_name_plural = "👥 Quem Somos - Parcerias"
 
     def __str__(self):
         return self.name

@@ -1,17 +1,23 @@
-# Feature: Implementação de Coleções (Backend e Frontend)
+# TODO - Ajustes Visuais e Funcionais
 
-## Objetivo
-Criar o modelo de Coleções (Collections) no banco de dados para gerenciar o conteúdo dinamicamente e ajustar o layout da aba "Collections" para ser mais alto e incluir um carrossel/grid de projetos.
+## Fase 1: Ajustes de Renderização e Brand (Agosto/2024)
+- [x] Corrigir renderização de tags HTML na intro do "Quem Somos" (`about.html`) <!-- id: 0 -->
+- [x] Substituir logo textual por imagem no Header (`base.html`) <!-- id: 1 -->
+- [x] Inserir logo no Footer alinhado às redes sociais (`base.html`) <!-- id: 2 -->
 
-## Fases de Implementação
+## Fase 2: Polimento UI/UX
+- [ ] Validar responsividade do novo logo no mobile <!-- id: 3 -->
+- [ ] Verificar contraste do logo no footer <!-- id: 4 -->
 
-- [x] Backend
-    - [x] Criar model `Collection` em `core/models.py` (Titulo, Descrição, Imagem de Capa, Relacionamento ManyToMany com `Project`).
-    - [x] Criar e rodar migrações.
-    - [x] Registrar `Collection` no `core/admin.py`.
-    - [x] Atualizar `core/views.py` para buscar coleções e passar para o template.
-- [x] Frontend (`core/templates/core/project_list.html`)
-    - [x] Atualizar loop da aba Collections para usar dados do banco.
-    - [x] Aumentar altura da linha da coleção (`h-[600px]` ou mais).
-    - [x] Implementar Grid 2x2 de projetos na direita com funcionalidade de Carrossel (ou scroll horizontal snap) para suportar mais de 4 projetos.
-    - [x] Adicionar setas de navegação (visual) para o carrossel.
+## Fase 3: Dockerização do Sistema (BMAD-METHOD)
+- [x] **Fase 3.1: Preparação Python (UV)** <!-- id: 5 -->
+    - [x] Inicializar `uv init` e criar `pyproject.toml`
+    - [x] Mapear e instalar dependências atuais
+- [x] **Fase 3.2: Dockerfile Multi-stage** <!-- id: 6 -->
+    - [x] Criar Build stage para Tailwind (Node)
+    - [x] Criar Runtime stage para Django (Python)
+- [x] **Fase 3.3: Orquestração (Docker Compose)** <!-- id: 7 -->
+    - [x] Criar `docker-compose.yml`
+    - [x] Configurar volumes para persistência (SQLite/Media)
+- [x] **Fase 3.4: Homologação** <!-- id: 8 -->
+    - [x] Testar build e execução completa
