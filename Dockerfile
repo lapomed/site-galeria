@@ -43,8 +43,8 @@ COPY . .
 # Copia os assets compilados do stage anterior (ajustado para o caminho correto)
 COPY --from=frontend-builder /app/lapomed/static/css/dist/styles.css ./lapomed/static/css/dist/styles.css
 
-# Expõe a porta do Django
-EXPOSE 4008
+# Expõe a porta do Django (Railway usa a variável PORT)
+EXPOSE ${PORT:-4008}
 
-# Comando de execução
-CMD ["uv", "run", "python", "manage.py", "runserver", "0.0.0.0:4008"]
+# Comando de execução usando a variável PORT do Railway
+CMD ["sh", "-c", "uv run python manage.py runserver 0.0.0.0:${PORT:-4008}"]
