@@ -4,7 +4,6 @@ __pycache__
 *.pyc
 db.sqlite3
 media/
-static/
 staticfiles/
 node_modules/
 lapomed/static_src/node_modules/
