@@ -15,7 +15,10 @@ SECRET_KEY = os.getenv(
 
 DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 't')
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+ALLOWED_HOSTS = os.getenv(
+    'ALLOWED_HOSTS', 
+    'localhost,127.0.0.1,0.0.0.0,.railway.app'
+).split(',')
 
 # Database
 DATABASE_URL = os.getenv('DATABASE_URL', '')
