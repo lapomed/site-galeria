@@ -64,7 +64,15 @@
   }
 
   .indicator-bar {
-    @apply w-12 h-1 bg-white cursor-pointer transition-all duration-500 !important;
+    @apply h-[3px] bg-white cursor-pointer transition-all duration-500 !important;
+    width: 32px;
+    opacity: 0.4;
+  }
+
+  .indicator-bar.active,
+  .indicator-bar[aria-current="true"] {
+    width: 52px;
+    opacity: 1;
   }
 
   .indicator-bar:hover {

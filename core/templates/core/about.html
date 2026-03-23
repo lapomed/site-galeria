@@ -128,10 +128,10 @@ Lapomed{% endblock %} {% block content %}
   <div class="submenu-wrapper hidden md:block">
     <div class="max-w-7xl mx-auto px-12 h-full">
       <div class="flex justify-end items-center h-full space-x-10">
-        <a href="#mission" class="submenu-item active">Mission</a>
-        <a href="#about-detail" class="submenu-item">About</a>
-        <a href="#people" class="submenu-item">People</a>
-        <a href="#history" class="submenu-item">History</a>
+        <a href="#mission" class="submenu-item active">Missão</a>
+        <a href="#about-detail" class="submenu-item">Sobre</a>
+        {% if team_members %}<a href="#people" class="submenu-item">Equipe</a>{% endif %}
+        {% if timeline %}<a href="#history" class="submenu-item">História</a>{% endif %}
       </div>
     </div>
   </div>

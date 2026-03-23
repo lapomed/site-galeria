@@ -5,11 +5,13 @@ services:
       - "4008:4008"
     volumes:
       - .:/app
-      - ./db.sqlite3:/app/db.sqlite3
+      - /app/.venv
       - ./media:/app/media
     environment:
       - DEBUG=True
-      # Escapando os caracteres especiais para o Docker Compose
-      - SECRET_KEY=django-insecure-hlplb31p-t8d53!#*j$$ziqa*dtp*5p8dw@3t8&fzn(pe5f4r(m
+      - SECRET_KEY=django-insecure-hlplb31p-t8d53
       - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
-    command: uv run python manage.py runserver 0.0.0.0:4008
+    command: >
+      bash -c "uv run python manage.py migrate --noinput &&
+               uv run python manage.py collectstatic --noinput &&
+               uv run python manage.py runserver 0.0.0.0:4008"
