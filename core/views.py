@@ -6,7 +6,7 @@ from .models import (
 )
 
 def home(request):
-    slides = Slide.objects.filter(active=True).order_by('order')
+    slides = Slide.objects.filter(active=True).order_by('id')
     return render(request, 'core/home.html', {'slides': slides})
 
 def project_list(request):

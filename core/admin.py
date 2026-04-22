@@ -30,8 +30,9 @@ class CollectionImageInline(admin.TabularInline):
 # ===== HOME / CAROUSEL =====
 @admin.register(Slide)
 class SlideAdmin(admin.ModelAdmin):
-    list_display = ('title', 'active', 'order')
-    list_editable = ('active', 'order')
+    list_display = ('id', 'title', 'active')
+    list_editable = ('active',)
+    ordering = ('id',)
 
 
 # ===== PROJETOS =====
