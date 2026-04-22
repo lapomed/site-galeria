@@ -12,7 +12,7 @@
   <!-- Carousel wrapper -->
   <div class="relative overflow-hidden h-full">
     {% for slide in slides %}
-    <div class="hidden duration-[3000ms] ease-in-out h-full" data-carousel-item>
+    <div class="hidden duration-[3000ms] ease-in-out h-full" data-carousel-item="{% if forloop.first %}active{% endif %}">
       <div
         class="absolute inset-0 bg-cover bg-center transition-opacity duration-[3000ms] carousel-zoom-bg"
         style="background-image: url('{{ slide.image.url }}');"
