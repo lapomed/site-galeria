@@ -71,7 +71,7 @@ TINYMCE_DEFAULT_CONFIG = {
         "bullist numlist outdent indent | link image | removeformat | code | help"
     ),
     # Upload de imagens — endpoint protegido por staff_member_required
-    "images_upload_url": "/admin/tinymce-upload/",
+    "images_upload_url": "/rich-text/upload/",
     "images_upload_credentials": True,
     "automatic_uploads": True,
     "file_picker_types": "image",
