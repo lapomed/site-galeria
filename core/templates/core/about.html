@@ -190,59 +190,17 @@ Lapomed{% endblock %} {% block content %}
           <img 
             src="{% static 'logo/logo_lapomed_sem fundo.jpeg' %}" 
             alt="LAPOMED Logo" 
-            class="h-20 w-auto object-contain"
+            class="h-36 w-auto object-contain"
           >
         </div>
         <div
-          class="text-gray-500 text-lg leading-relaxed max-w-4xl mx-auto font-light"
+          class="text-gray-700 text-lg leading-relaxed max-w-4xl mx-auto font-normal"
         >
           {% if intro.content %}
             {{ intro.content|linebreaks|safe }}
           {% else %}
             <p>Somos pioneiros no Brasil em Arqueometria Espacial, dedicado ao desenvolvimento de pesquisas avançadas nas áreas de arqueologia espacial, arqueologia da paisagem, geoarqueologia e microarqueologia.</p>
           {% endif %}
-        </div>
-      </div>
-      <div class="pillar-grid mb-32" style="margin-bottom: 120px !important">
-        <!-- MISSÃO -->
-        <div class="pillar-box">
-          <div class="text-4xl text-[#ffcc00] mb-6">✦</div>
-          <h3
-            class="text-xs font-black uppercase tracking-[0.2em] text-black mb-6"
-          >
-            Missão
-          </h3>
-          <div class="text-gray-500 text-sm leading-relaxed">
-            {% if intro.mission %}{{ intro.mission }}{% else %}Preservar o
-            patrimônio digitalmente através da excelência científica.{% endif %}
-          </div>
-        </div>
-        <!-- VISÃO -->
-        <div class="pillar-box">
-          <div class="text-4xl text-[#ffcc00] mb-6">👁</div>
-          <h3
-            class="text-xs font-black uppercase tracking-[0.2em] text-black mb-6"
-          >
-            Visão
-          </h3>
-          <div class="text-gray-500 text-sm leading-relaxed">
-            {% if intro.vision %}{{ intro.vision }}{% else %}Ser a principal
-            referência em arqueometria espacial e inovação tecnológica no
-            Brasil.{% endif %}
-          </div>
-        </div>
-        <!-- VALORES -->
-        <div class="pillar-box">
-          <div class="text-4xl text-[#ffcc00] mb-6">🎯</div>
-          <h3
-            class="text-xs font-black uppercase tracking-[0.2em] text-black mb-6"
-          >
-            Valores
-          </h3>
-          <div class="text-gray-500 text-sm leading-relaxed">
-            {% if intro.values %} {{ intro.values }} {% else %} Integridade,
-            precisão técnica, colaboração e respeito ao patrimônio histórico. {% endif %}
-          </div>
         </div>
       </div>
       {% endwith %}
