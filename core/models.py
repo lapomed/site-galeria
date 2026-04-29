@@ -1,4 +1,5 @@
 from django.db import models
+from tinymce.models import HTMLField
 
 class Slide(models.Model):
     title = models.CharField(max_length=200, verbose_name="Título")
@@ -18,7 +19,7 @@ class Slide(models.Model):
 class Project(models.Model):
     title = models.CharField(max_length=200, verbose_name="Nome do Projeto")
     slug = models.SlugField(unique=True, verbose_name="Slug (URL)")
-    description = models.TextField(verbose_name="Descrição")
+    description = HTMLField(verbose_name="Descrição")
     location = models.CharField(max_length=200, verbose_name="Localização")
     cover_image = models.ImageField(upload_to='projects/', verbose_name="Imagem de Capa")
     created_at = models.DateTimeField(auto_now_add=True)

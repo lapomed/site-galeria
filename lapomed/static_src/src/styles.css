@@ -78,4 +78,21 @@
   .indicator-bar:hover {
     @apply opacity-80 !important;
   }
+
+  /* --- RICH TEXT (TinyMCE output) --- */
+  .rich-text p { @apply mb-4; }
+  .rich-text p:last-child { @apply mb-0; }
+  .rich-text h1 { @apply text-3xl font-bold mt-8 mb-4 text-gray-900; }
+  .rich-text h2 { @apply text-2xl font-bold mt-8 mb-4 text-gray-900; }
+  .rich-text h3 { @apply text-xl font-semibold mt-6 mb-3 text-gray-900; }
+  .rich-text h4 { @apply text-lg font-semibold mt-6 mb-2 text-gray-900; }
+  .rich-text ul { @apply list-disc pl-6 mb-4 space-y-1; }
+  .rich-text ol { @apply list-decimal pl-6 mb-4 space-y-1; }
+  .rich-text li { @apply leading-relaxed; }
+  .rich-text a { @apply text-lapomed-gold underline hover:text-yellow-600; }
+  .rich-text strong { @apply font-bold text-gray-900; }
+  .rich-text em { @apply italic; }
+  .rich-text blockquote { @apply border-l-4 border-lapomed-gold pl-4 italic my-4 text-gray-600; }
+  .rich-text img { @apply max-w-full h-auto my-4 rounded; }
+  .rich-text hr { @apply my-8 border-gray-200; }
 }

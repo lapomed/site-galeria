@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "tailwind",
     "lapomed",
     "django_browser_reload",
+    "tinymce",
 ]
 
 MIDDLEWARE = [
@@ -55,6 +56,25 @@ MIDDLEWARE = [
 ]
 
 X_FRAME_OPTIONS = "SAMEORIGIN"
+
+TINYMCE_DEFAULT_CONFIG = {
+    "height": 500,
+    "menubar": "edit view insert format tools",
+    "plugins": (
+        "advlist autolink lists link charmap preview anchor "
+        "searchreplace visualblocks code fullscreen "
+        "insertdatetime media table help wordcount"
+    ),
+    "toolbar": (
+        "undo redo | blocks | bold italic underline | "
+        "alignleft aligncenter alignright alignjustify | "
+        "bullist numlist outdent indent | link | removeformat | code | help"
+    ),
+    "language": "pt_BR",
+    "branding": False,
+    "promotion": False,
+    "content_style": "body{font-family:Lato,sans-serif;font-size:15px}",
+}
 
 ROOT_URLCONF = "lapomed_gallery.urls"
 
