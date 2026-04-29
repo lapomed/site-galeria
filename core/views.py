@@ -7,9 +7,12 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from django.core.files.storage import default_storage
+from django.shortcuts import redirect
+from django.http import Http404
 from .models import (
     Slide, Project, Collection,
-    AboutSection, TeamMember, Timeline, ResearchArea, Partnership
+    AboutSection, TeamMember, Timeline, ResearchArea, Partnership,
+    Publication, LearningResource, VirtualTour,
 )
 
 def home(request):
@@ -47,6 +50,34 @@ def about(request):
 
 
 ALLOWED_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg", ".bmp"}
+
+
+def publications(request):
+    items = Publication.objects.filter(active=True).order_by('order', '-publication_date', '-created_at')
+    return render(request, 'core/publications.html', {'items': items})
+
+
+def learning_hub(request):
+    items = LearningResource.objects.filter(active=True).order_by('order', '-created_at')
+    return render(request, 'core/learning_hub.html', {'items': items})
+
+
+def digital_collections(request, category):
+    valid = {key for key, _ in Collection.CATEGORY_CHOICES}
+    if category not in valid:
+        raise Http404
+    items = Collection.objects.filter(category=category).order_by('-created_at')
+    label = dict(Collection.CATEGORY_CHOICES)[category]
+    return render(request, 'core/digital_collections.html', {
+        'items': items,
+        'category': category,
+        'category_label': label,
+    })
+
+
+def virtual_tours(request):
+    items = VirtualTour.objects.filter(active=True).order_by('order', '-created_at')
+    return render(request, 'core/virtual_tours.html', {'items': items})
 
 
 @csrf_exempt

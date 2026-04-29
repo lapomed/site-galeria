@@ -2,7 +2,8 @@ from django.contrib import admin
 from django.utils.html import format_html
 from .models import (
     Slide, Project, Artifact, Collection, CollectionImage,
-    AboutSection, TeamMember, Timeline, ResearchArea, Partnership
+    AboutSection, TeamMember, Timeline, ResearchArea, Partnership,
+    Publication, LearningResource, VirtualTour, SocialLink,
 )
 
 # ===== CONFIGURAÇÃO DO SITE ADMIN =====
@@ -65,7 +66,8 @@ class ProjectAdmin(admin.ModelAdmin):
 
 @admin.register(Collection)
 class CollectionAdmin(admin.ModelAdmin):
-    list_display = ('title', 'created_at')
+    list_display = ('title', 'category', 'created_at')
+    list_filter = ('category',)
     inlines = [CollectionImageInline]
     exclude = ('projects',)
 
@@ -147,3 +149,71 @@ class PartnershipAdmin(admin.ModelAdmin):
             'fields': ('active', 'order')
         }),
     )
+
+
+# ===== PUBLICAÇÕES =====
+@admin.register(Publication)
+class PublicationAdmin(admin.ModelAdmin):
+    list_display = ('title', 'authors', 'publication_date', 'active', 'order')
+    list_editable = ('active', 'order')
+    list_filter = ('active', 'publication_date')
+    search_fields = ('title', 'authors', 'abstract')
+    fieldsets = (
+        ('Identificação', {
+            'fields': ('title', 'authors', 'publication_date', 'cover_image')
+        }),
+        ('Conteúdo', {
+            'fields': ('abstract', 'pdf_file', 'external_url')
+        }),
+        ('Configurações', {
+            'fields': ('active', 'order')
+        }),
+    )
+
+
+# ===== HUB DE APRENDIZADO =====
+@admin.register(LearningResource)
+class LearningResourceAdmin(admin.ModelAdmin):
+    list_display = ('title', 'resource_type', 'active', 'order')
+    list_editable = ('active', 'order')
+    list_filter = ('active', 'resource_type')
+    search_fields = ('title', 'description')
+    fieldsets = (
+        ('Identificação', {
+            'fields': ('title', 'resource_type', 'thumbnail')
+        }),
+        ('Conteúdo', {
+            'fields': ('description', 'url')
+        }),
+        ('Configurações', {
+            'fields': ('active', 'order')
+        }),
+    )
+
+
+# ===== VISITAS VIRTUAIS 3D =====
+@admin.register(VirtualTour)
+class VirtualTourAdmin(admin.ModelAdmin):
+    list_display = ('title', 'active', 'order', 'created_at')
+    list_editable = ('active', 'order')
+    list_filter = ('active',)
+    search_fields = ('title', 'description')
+    fieldsets = (
+        ('Identificação', {
+            'fields': ('title', 'thumbnail')
+        }),
+        ('Conteúdo', {
+            'fields': ('description', 'embed_url', 'embed_code', 'model_file')
+        }),
+        ('Configurações', {
+            'fields': ('active', 'order')
+        }),
+    )
+
+
+# ===== REDES SOCIAIS =====
+@admin.register(SocialLink)
+class SocialLinkAdmin(admin.ModelAdmin):
+    list_display = ('network', 'url', 'active', 'order')
+    list_editable = ('url', 'active', 'order')
+    list_filter = ('active',)

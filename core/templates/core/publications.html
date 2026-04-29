@@ -1,0 +1,44 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block content %}
+<div class="bg-white pt-24">
+  <section class="py-32 px-6 min-h-[60vh]">
+    <div class="max-w-6xl mx-auto">
+      <header class="text-center mb-16">
+        <h1 class="font-serif text-5xl text-gray-900 mb-4 tracking-tight">Publicações</h1>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">Artigos, capítulos e relatórios produzidos pela equipe do LAPOMED.</p>
+      </header>
+
+      {% if items %}
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {% for item in items %}
+            <article class="bg-gray-50 rounded-xl overflow-hidden border border-gray-100 hover:shadow-md transition-shadow">
+              {% if item.cover_image %}
+                <img src="{{ item.cover_image.url }}" alt="{{ item.title }}" class="w-full h-48 object-cover">
+              {% endif %}
+              <div class="p-6">
+                <h2 class="font-serif text-xl text-gray-900 mb-2">{{ item.title }}</h2>
+                {% if item.authors %}<p class="text-sm text-gray-500 mb-2">{{ item.authors }}</p>{% endif %}
+                {% if item.publication_date %}<p class="text-xs uppercase tracking-widest text-gray-400 mb-3">{{ item.publication_date|date:"F Y" }}</p>{% endif %}
+                {% if item.abstract %}<div class="text-sm text-gray-700 mb-4 rich-text">{{ item.abstract|safe|truncatewords_html:30 }}</div>{% endif %}
+                <div class="flex gap-3">
+                  {% if item.pdf_file %}<a href="{{ item.pdf_file.url }}" target="_blank" class="text-sm font-bold text-lapomed-gold hover:underline">PDF</a>{% endif %}
+                  {% if item.external_url %}<a href="{{ item.external_url }}" target="_blank" rel="noopener" class="text-sm font-bold text-lapomed-gold hover:underline">Ver online</a>{% endif %}
+                </div>
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="text-center mt-16">
+          <div class="inline-flex flex-col items-center px-12 py-16 bg-gray-50 rounded-2xl border border-gray-100">
+            <div class="text-6xl mb-4">📚</div>
+            <p class="text-gray-700 font-medium text-xl mb-2">Em breve</p>
+            <p class="text-gray-500 max-w-md text-center">As publicações do laboratório serão listadas aqui.</p>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+</div>
+{% endblock %}

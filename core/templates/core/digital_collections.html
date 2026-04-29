@@ -1,0 +1,45 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block content %}
+<div class="bg-white pt-24">
+  <section class="py-32 px-6 min-h-[60vh]">
+    <div class="max-w-6xl mx-auto">
+      <header class="text-center mb-16">
+        <p class="text-xs font-bold uppercase tracking-widest text-lapomed-gold mb-3">Coleções Digitais</p>
+        <h1 class="font-serif text-5xl text-gray-900 mb-4 tracking-tight">{{ category_label }}</h1>
+      </header>
+
+      <nav class="flex justify-center gap-2 mb-16 flex-wrap">
+        <a href="{% url 'digital_collections' 'artefatos' %}"
+           class="px-5 py-2 text-xs font-bold uppercase tracking-widest rounded-full border transition-colors {% if category == 'artefatos' %}bg-gray-900 text-white border-gray-900{% else %}border-gray-200 text-gray-600 hover:text-gray-900 hover:border-gray-900{% endif %}">Artefatos</a>
+        <a href="{% url 'digital_collections' 'escavacoes' %}"
+           class="px-5 py-2 text-xs font-bold uppercase tracking-widest rounded-full border transition-colors {% if category == 'escavacoes' %}bg-gray-900 text-white border-gray-900{% else %}border-gray-200 text-gray-600 hover:text-gray-900 hover:border-gray-900{% endif %}">Escavações</a>
+        <a href="{% url 'digital_collections' 'edificacoes' %}"
+           class="px-5 py-2 text-xs font-bold uppercase tracking-widest rounded-full border transition-colors {% if category == 'edificacoes' %}bg-gray-900 text-white border-gray-900{% else %}border-gray-200 text-gray-600 hover:text-gray-900 hover:border-gray-900{% endif %}">Edificações / Monumentos</a>
+      </nav>
+
+      {% if items %}
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {% for item in items %}
+            <article class="bg-gray-50 rounded-xl overflow-hidden border border-gray-100 hover:shadow-md transition-shadow">
+              {% if item.cover_image %}<img src="{{ item.cover_image.url }}" alt="{{ item.title }}" class="w-full h-48 object-cover">{% endif %}
+              <div class="p-6">
+                <h2 class="font-serif text-xl text-gray-900 mb-2">{{ item.title }}</h2>
+                <p class="text-sm text-gray-600">{{ item.description|truncatewords:20 }}</p>
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="text-center mt-16">
+          <div class="inline-flex flex-col items-center px-12 py-16 bg-gray-50 rounded-2xl border border-gray-100">
+            <div class="text-6xl mb-4">🗂️</div>
+            <p class="text-gray-700 font-medium text-xl mb-2">Em breve</p>
+            <p class="text-gray-500 max-w-md text-center">A coleção de {{ category_label|lower }} será publicada aqui em breve.</p>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+</div>
+{% endblock %}

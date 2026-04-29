@@ -30,6 +30,11 @@
     height: 60px !important;
   }
 
+  /* Variante compacta usada quando ha muitos itens no header */
+  .nav-link-compact {
+    @apply px-3 text-[11px];
+  }
+
   .nav-link::after {
     content: "";
     @apply absolute bottom-0 left-5 right-5 h-[2px] bg-black scale-x-0 transition-transform duration-300 ease-in-out;

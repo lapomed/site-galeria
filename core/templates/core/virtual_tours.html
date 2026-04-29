@@ -1,0 +1,44 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block content %}
+<div class="bg-white pt-24">
+  <section class="py-32 px-6 min-h-[60vh]">
+    <div class="max-w-6xl mx-auto">
+      <header class="text-center mb-16">
+        <h1 class="font-serif text-5xl text-gray-900 mb-4 tracking-tight">Visitas Virtuais 3D</h1>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">Explore sítios arqueológicos e modelos 3D de alta resolução produzidos pelo laboratório.</p>
+      </header>
+
+      {% if items %}
+        <div class="grid md:grid-cols-2 gap-10">
+          {% for item in items %}
+            <article class="bg-gray-50 rounded-xl overflow-hidden border border-gray-100">
+              {% if item.embed_url %}
+                <div class="aspect-video bg-black">
+                  <iframe src="{{ item.embed_url }}" allow="autoplay; fullscreen; xr-spatial-tracking" allowfullscreen class="w-full h-full"></iframe>
+                </div>
+              {% elif item.embed_code %}
+                <div class="aspect-video bg-black">{{ item.embed_code|safe }}</div>
+              {% elif item.thumbnail %}
+                <img src="{{ item.thumbnail.url }}" alt="{{ item.title }}" class="w-full h-64 object-cover">
+              {% endif %}
+              <div class="p-6">
+                <h2 class="font-serif text-2xl text-gray-900 mb-3">{{ item.title }}</h2>
+                {% if item.description %}<div class="text-sm text-gray-700 rich-text">{{ item.description|safe }}</div>{% endif %}
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="text-center mt-16">
+          <div class="inline-flex flex-col items-center px-12 py-16 bg-gray-50 rounded-2xl border border-gray-100">
+            <div class="text-6xl mb-4">🥽</div>
+            <p class="text-gray-700 font-medium text-xl mb-2">Em breve</p>
+            <p class="text-gray-500 max-w-md text-center">Os tours virtuais 3D serão disponibilizados aqui.</p>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </section>
+</div>
+{% endblock %}

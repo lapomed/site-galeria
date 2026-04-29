@@ -67,11 +67,26 @@ class Artifact(models.Model):
         return None
 
 class Collection(models.Model):
+    CATEGORY_CHOICES = [
+        ('artefatos', 'Artefatos'),
+        ('escavacoes', 'Escavações'),
+        ('edificacoes', 'Edificações / Monumentos'),
+    ]
     title = models.CharField(max_length=200)
     description = models.TextField()
+    category = models.CharField(
+        max_length=20,
+        choices=CATEGORY_CHOICES,
+        default='artefatos',
+        verbose_name="Categoria",
+    )
     cover_image = models.ImageField(upload_to='collections/')
     projects = models.ManyToManyField(Project, related_name='collections', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "🗂️ Coleções Digitais - Coleção"
+        verbose_name_plural = "🗂️ Coleções Digitais - Coleções"
 
     def __str__(self):
         return self.title
@@ -188,3 +203,103 @@ class Partnership(models.Model):
 
     def __str__(self):
         return self.name
+
+
+# ===== PUBLICAÇÕES =====
+
+class Publication(models.Model):
+    title = models.CharField(max_length=300, verbose_name="Título")
+    authors = models.CharField(max_length=500, blank=True, verbose_name="Autores")
+    abstract = HTMLField(blank=True, verbose_name="Resumo")
+    publication_date = models.DateField(blank=True, null=True, verbose_name="Data de Publicação")
+    external_url = models.URLField(blank=True, verbose_name="Link Externo (DOI, repositório, etc)")
+    pdf_file = models.FileField(upload_to='publications/', blank=True, null=True, verbose_name="Arquivo PDF")
+    cover_image = models.ImageField(upload_to='publications/covers/', blank=True, null=True, verbose_name="Imagem de Capa")
+    active = models.BooleanField(default=True, verbose_name="Ativo")
+    order = models.IntegerField(default=0, verbose_name="Ordem")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['order', '-publication_date', '-created_at']
+        verbose_name = "📚 Publicações - Publicação"
+        verbose_name_plural = "📚 Publicações - Publicações"
+
+    def __str__(self):
+        return self.title
+
+
+# ===== HUB DE APRENDIZADO =====
+
+class LearningResource(models.Model):
+    RESOURCE_TYPES = [
+        ('article', 'Artigo'),
+        ('video', 'Vídeo'),
+        ('course', 'Curso'),
+        ('podcast', 'Podcast'),
+        ('book', 'Livro'),
+        ('other', 'Outro'),
+    ]
+    title = models.CharField(max_length=300, verbose_name="Título")
+    description = HTMLField(blank=True, verbose_name="Descrição")
+    resource_type = models.CharField(max_length=20, choices=RESOURCE_TYPES, default='article', verbose_name="Tipo")
+    url = models.URLField(blank=True, verbose_name="Link")
+    thumbnail = models.ImageField(upload_to='hub/', blank=True, null=True, verbose_name="Thumbnail")
+    active = models.BooleanField(default=True, verbose_name="Ativo")
+    order = models.IntegerField(default=0, verbose_name="Ordem")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['order', '-created_at']
+        verbose_name = "🎓 Hub - Recurso"
+        verbose_name_plural = "🎓 Hub - Recursos de Aprendizado"
+
+    def __str__(self):
+        return self.title
+
+
+# ===== VISITAS VIRTUAIS 3D =====
+
+class VirtualTour(models.Model):
+    title = models.CharField(max_length=300, verbose_name="Título")
+    description = HTMLField(blank=True, verbose_name="Descrição")
+    thumbnail = models.ImageField(upload_to='virtual_tours/', blank=True, null=True, verbose_name="Thumbnail")
+    embed_url = models.URLField(blank=True, verbose_name="URL Embed", help_text="Sketchfab, Matterport, Kuula etc.")
+    embed_code = models.TextField(blank=True, verbose_name="Código Embed (iframe)", help_text="Cole o iframe completo, se preferir")
+    model_file = models.FileField(upload_to='virtual_tours/models/', blank=True, null=True, verbose_name="Arquivo 3D")
+    active = models.BooleanField(default=True, verbose_name="Ativo")
+    order = models.IntegerField(default=0, verbose_name="Ordem")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['order', '-created_at']
+        verbose_name = "🥽 Visitas 3D - Tour"
+        verbose_name_plural = "🥽 Visitas 3D - Tours"
+
+    def __str__(self):
+        return self.title
+
+
+# ===== REDES SOCIAIS =====
+
+class SocialLink(models.Model):
+    NETWORKS = [
+        ('instagram', 'Instagram'),
+        ('facebook', 'Facebook'),
+        ('tiktok', 'TikTok'),
+        ('youtube', 'YouTube / Cortes'),
+        ('twitter', 'X / Twitter'),
+        ('linkedin', 'LinkedIn'),
+    ]
+    network = models.CharField(max_length=20, choices=NETWORKS, unique=True, verbose_name="Rede")
+    url = models.URLField(blank=True, verbose_name="URL")
+    label = models.CharField(max_length=100, blank=True, verbose_name="Rótulo (opcional)")
+    active = models.BooleanField(default=True, verbose_name="Ativo")
+    order = models.IntegerField(default=0, verbose_name="Ordem")
+
+    class Meta:
+        ordering = ['order']
+        verbose_name = "🔗 Redes - Link Social"
+        verbose_name_plural = "🔗 Redes - Links Sociais"
+
+    def __str__(self):
+        return self.label or self.get_network_display()

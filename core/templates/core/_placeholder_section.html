@@ -1,0 +1,23 @@
+{% load static %}
+<section class="py-32 px-6 bg-white min-h-[60vh]">
+  <div class="max-w-5xl mx-auto text-center">
+    <h1 class="font-serif text-5xl text-gray-900 mb-6 tracking-tight">{{ page_title }}</h1>
+    {% if page_subtitle %}
+      <p class="text-lg text-gray-600 mb-12 max-w-2xl mx-auto">{{ page_subtitle }}</p>
+    {% endif %}
+
+    {% if items %}
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12 text-left">
+        {% block grid %}{% endblock %}
+      </div>
+    {% else %}
+      <div class="mt-16 inline-flex flex-col items-center px-12 py-16 bg-gray-50 rounded-2xl border border-gray-100">
+        <div class="text-6xl mb-4">{{ empty_emoji|default:"✨" }}</div>
+        <p class="text-gray-700 font-medium text-xl mb-2">Em breve</p>
+        <p class="text-gray-500 max-w-md text-center">
+          {{ empty_message|default:"Estamos preparando este conteúdo. Volte em breve!" }}
+        </p>
+      </div>
+    {% endif %}
+  </div>
+</section>
