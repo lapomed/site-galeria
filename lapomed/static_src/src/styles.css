@@ -100,12 +100,11 @@
   .rich-text h2 { font-size: 1.5rem !important; @apply font-bold mt-8 mb-4 text-gray-900; }
   .rich-text h3 { font-size: 1.25rem !important; @apply font-semibold mt-6 mb-3 text-gray-900; }
   .rich-text h4 { font-size: 1.125rem !important; @apply font-semibold mt-6 mb-2 text-gray-900; }
-  /* <pre> aparece com frequencia em paste do Word/PDF e prejudica a leitura.
-     Renderiza como bloco normal (Lato, com quebra natural). Para codigo de
-     verdade, use <code> inline. */
+  /* <pre> em paste do Word/PDF eh sanitizado pelo filtro clean_rich_text.
+     A regra abaixo sobra como rede de seguranca caso algum <pre> escape. */
   .rich-text pre {
     font-family: inherit !important;
-    white-space: pre-wrap;
+    white-space: normal;
     background: transparent !important;
     padding: 0 !important;
     margin: 0 0 1rem 0 !important;

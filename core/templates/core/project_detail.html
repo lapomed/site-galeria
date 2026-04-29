@@ -1,4 +1,4 @@
-{% extends 'core/base.html' %} {% load static %} {% block content %}
+{% extends 'core/base.html' %} {% load static %} {% load rich_text_filters %} {% block content %}
 <div class="bg-[#0b0b0b] min-h-screen">
   <!-- Project Hero -->
   <div class="relative h-[60vh] w-full flex items-center justify-center">
@@ -29,7 +29,7 @@
       >
         Sobre o Projeto
       </h2>
-      <div class="rich-text text-gray-700 text-lg leading-relaxed max-w-none">{{ project.description|safe }}</div>
+      <div class="rich-text text-gray-700 text-lg leading-relaxed max-w-none">{{ project.description|clean_rich_text }}</div>
     </div>
   </div>
 
