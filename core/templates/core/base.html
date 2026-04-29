@@ -191,20 +191,32 @@
           <!-- Logo & Social Section -->
           <div class="flex flex-col md:flex-row items-center space-y-8 md:space-y-0">
             <!-- Footer Logo -->
-            <div style="padding-right: 40px; margin-right: 40px; border-right: 1px solid #eee;" class="md:block hidden">
+            <div style="padding-right: 40px; margin-right: 40px; border-right: 1px solid #eee; display: flex; align-items: center; gap: 32px;" class="md:flex hidden">
               <img
                 src="{% static 'logo/logo_lapomed_sem fundo.jpeg' %}"
                 alt="LAPOMED"
                 style="height: 180px; width: auto; margin-top: -30px; margin-bottom: -30px;"
                 class="object-contain"
               >
+              <img
+                src="{% static 'logo/logo_usp.png' %}"
+                alt="Universidade de São Paulo"
+                style="height: 110px; width: auto;"
+                class="object-contain"
+              >
             </div>
             <!-- Logo for mobile -->
-            <div class="md:hidden block mb-4">
-              <img 
-                src="{% static 'logo/logo_lapomed_sem fundo.jpeg' %}" 
-                alt="LAPOMED" 
+            <div class="md:hidden flex items-center gap-4 mb-4">
+              <img
+                src="{% static 'logo/logo_lapomed_sem fundo.jpeg' %}"
+                alt="LAPOMED"
                 style="height: 45px; width: auto;"
+                class="object-contain"
+              >
+              <img
+                src="{% static 'logo/logo_usp.png' %}"
+                alt="Universidade de São Paulo"
+                style="height: 35px; width: auto;"
                 class="object-contain"
               >
             </div>
