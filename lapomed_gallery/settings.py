@@ -70,10 +70,21 @@ TINYMCE_DEFAULT_CONFIG = {
         "alignleft aligncenter alignright alignjustify | "
         "bullist numlist outdent indent | link | removeformat | code | help"
     ),
+    # Esconde do menu Format os submenus que permitiriam trocar fonte/tamanho/cor
+    "removed_menuitems": "fontfamily fontsize forecolor backcolor",
     "language": "pt_BR",
     "branding": False,
     "promotion": False,
-    "content_style": "body{font-family:Lato,sans-serif;font-size:15px}",
+    # Forca a fonte do site (Lato) dentro do iframe do editor para que o autor
+    # ja escreva no visual final
+    "content_style": (
+        "@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap');"
+        "body{font-family:'Lato',sans-serif;font-size:16px;line-height:1.6;color:#374151}"
+        "h1,h2,h3,h4{font-family:'Lato',sans-serif;color:#111827}"
+    ),
+    # Mesmo se o usuario forcar via algum atalho, oferecer apenas Lato
+    "font_family_formats": "Lato=Lato,sans-serif",
+    "font_size_formats": "14px 16px 18px 20px 24px",
     # Limpa estilos inline indesejados ao colar de Word/PDF/sites externos
     # para nao herdar fontes/tamanhos que quebram o layout do site
     "paste_as_text": False,
