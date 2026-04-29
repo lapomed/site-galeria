@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.html import format_html
 from .models import (
     Slide, Project, Artifact, Collection, CollectionImage,
     AboutSection, TeamMember, Timeline, ResearchArea, Partnership
@@ -30,9 +31,28 @@ class CollectionImageInline(admin.TabularInline):
 # ===== HOME / CAROUSEL =====
 @admin.register(Slide)
 class SlideAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'active')
+    list_display = ('id', 'title', 'thumbnail', 'active')
     list_editable = ('active',)
     ordering = ('id',)
+    readonly_fields = ('thumbnail_preview',)
+
+    @admin.display(description='Imagem')
+    def thumbnail(self, obj):
+        if obj.image:
+            return format_html(
+                '<img src="{}" style="height:48px;width:auto;border-radius:4px;object-fit:cover;" />',
+                obj.image.url,
+            )
+        return '-'
+
+    @admin.display(description='Preview')
+    def thumbnail_preview(self, obj):
+        if obj.image:
+            return format_html(
+                '<img src="{}" style="max-height:240px;width:auto;border-radius:6px;" />',
+                obj.image.url,
+            )
+        return '-'
 
 
 # ===== PROJETOS =====
