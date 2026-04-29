@@ -16,7 +16,7 @@ admin.site.index_title = "Painel de Controle"
 class ArtifactInline(admin.TabularInline):
     model = Artifact
     extra = 1
-    fields = ('title', 'description', 'image', 'model_file', 'sketchfab_embed', 'annotations')
+    fields = ('title', 'category', 'description', 'image', 'model_file', 'sketchfab_embed', 'annotations')
 
 class CollectionInline(admin.TabularInline):
     model = Collection.projects.through
@@ -72,13 +72,13 @@ class ProjectAdmin(admin.ModelAdmin):
 
 @admin.register(Artifact)
 class ArtifactAdmin(admin.ModelAdmin):
-    list_display = ('title', 'project', 'created_at')
-    list_filter = ('project',)
+    list_display = ('title', 'project', 'category', 'created_at')
+    list_filter = ('category', 'project')
     search_fields = ('title', 'description')
     inlines = [ArtifactImageInline]
     fieldsets = (
         ('Identificação', {
-            'fields': ('project', 'title', 'description')
+            'fields': ('project', 'title', 'category', 'description')
         }),
         ('Mídia', {
             'fields': ('image', 'sketchfab_embed', 'model_file', 'annotations')

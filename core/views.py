@@ -10,7 +10,7 @@ from django.core.files.storage import default_storage
 from django.shortcuts import redirect
 from django.http import Http404
 from .models import (
-    Slide, Project, Collection,
+    Slide, Project, Artifact, Collection,
     AboutSection, TeamMember, Timeline, ResearchArea, Partnership,
     Publication, LearningResource, VirtualTour,
 )
@@ -66,10 +66,18 @@ def digital_collections(request, category):
     valid = {key for key, _ in Collection.CATEGORY_CHOICES}
     if category not in valid:
         raise Http404
-    items = Collection.objects.filter(category=category).order_by('-created_at')
+    collections = Collection.objects.filter(category=category).order_by('-created_at')
+    artifacts = (
+        Artifact.objects
+        .filter(category=category)
+        .select_related('project')
+        .prefetch_related('gallery')
+        .order_by('-created_at')
+    )
     label = dict(Collection.CATEGORY_CHOICES)[category]
     return render(request, 'core/digital_collections.html', {
-        'items': items,
+        'collections': collections,
+        'artifacts': artifacts,
         'category': category,
         'category_label': label,
     })

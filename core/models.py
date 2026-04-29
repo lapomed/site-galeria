@@ -32,9 +32,20 @@ class Project(models.Model):
         return self.title
 
 class Artifact(models.Model):
+    CATEGORY_CHOICES = [
+        ('artefatos', 'Artefatos'),
+        ('escavacoes', 'Escavações'),
+        ('edificacoes', 'Edificações / Monumentos'),
+    ]
     project = models.ForeignKey(Project, related_name='artifacts', on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
+    category = models.CharField(
+        max_length=20,
+        choices=CATEGORY_CHOICES,
+        default='artefatos',
+        verbose_name="Categoria",
+    )
     image = models.ImageField(upload_to='artifacts/', blank=True, null=True)
     sketchfab_embed = models.TextField(blank=True, help_text="Cole o código do iframe do Sketchfab aqui")
     model_file = models.FileField(

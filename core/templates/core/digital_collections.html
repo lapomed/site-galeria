@@ -2,14 +2,14 @@
 {% load static %}
 {% block content %}
 <div class="bg-white pt-24">
-  <section class="py-32 px-6 min-h-[60vh]">
-    <div class="max-w-6xl mx-auto">
-      <header class="text-center mb-16">
+  <section class="py-20 px-4 min-h-[60vh]">
+    <div class="max-w-7xl mx-auto">
+      <header class="text-center mb-12">
         <p class="text-xs font-bold uppercase tracking-widest text-lapomed-gold mb-3">Coleções Digitais</p>
         <h1 class="font-serif text-5xl text-gray-900 mb-4 tracking-tight">{{ category_label }}</h1>
       </header>
 
-      <nav class="flex justify-center gap-2 mb-16 flex-wrap">
+      <nav class="flex justify-center gap-2 mb-12 flex-wrap">
         <a href="{% url 'digital_collections' 'artefatos' %}"
            class="px-5 py-2 text-xs font-bold uppercase tracking-widest rounded-full border transition-colors {% if category == 'artefatos' %}bg-gray-900 text-white border-gray-900{% else %}border-gray-200 text-gray-600 hover:text-gray-900 hover:border-gray-900{% endif %}">Artefatos</a>
         <a href="{% url 'digital_collections' 'escavacoes' %}"
@@ -18,19 +18,67 @@
            class="px-5 py-2 text-xs font-bold uppercase tracking-widest rounded-full border transition-colors {% if category == 'edificacoes' %}bg-gray-900 text-white border-gray-900{% else %}border-gray-200 text-gray-600 hover:text-gray-900 hover:border-gray-900{% endif %}">Edificações / Monumentos</a>
       </nav>
 
-      {% if items %}
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {% for item in items %}
+      {% if artifacts %}
+        <h2 class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-6">Peças</h2>
+        <div class="bg-[#0b0b0b] rounded-xl p-6 mb-16">
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px;">
+            {% for artifact in artifacts %}
+              <div
+                class="group bg-gray-900 border border-gray-800 hover:border-yellow-500 rounded flex flex-col cursor-pointer transition-all hover:shadow-lg"
+                onclick="openArtifactModal(this)"
+                data-title="{{ artifact.title }}"
+                data-description="{{ artifact.description|default:'Sem descrição disponível' }}"
+                data-annotations="{{ artifact.annotations|default:'' }}"
+                data-type="{% if artifact.model_file %}3d_model{% elif artifact.sketchfab_embed %}embed{% elif artifact.image or artifact.gallery.all %}image{% endif %}"
+                data-content="{% if artifact.model_file %}{{ artifact.model_file.url }}{% elif artifact.sketchfab_embed %}{{ artifact.sketchfab_embed|escape }}{% elif artifact.image %}{{ artifact.image.url }}{% endif %}"
+                data-gallery="{% if artifact.image %}{{ artifact.image.url }}{% endif %}{% for img in artifact.gallery.all %}{% if artifact.image or not forloop.first %}|{% endif %}{{ img.image.url }}{% endfor %}"
+                data-gallery-captions="{% if artifact.image %}{{ artifact.title|escape }}{% endif %}{% for img in artifact.gallery.all %}{% if artifact.image or not forloop.first %}|{% endif %}{{ img.caption|escape }}{% endfor %}"
+              >
+                <div class="relative w-full aspect-square bg-black overflow-hidden">
+                  {% if artifact.image %}
+                    <img src="{{ artifact.image.url }}" alt="{{ artifact.title }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-80 group-hover:opacity-100">
+                    {% if artifact.sketchfab_embed or artifact.model_file %}
+                      <div class="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/10">
+                        <div class="w-8 h-8 bg-yellow-500/90 rounded-full flex items-center justify-center shadow-md">
+                          <svg class="w-4 h-4 text-black ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        </div>
+                      </div>
+                    {% endif %}
+                  {% else %}
+                    <div class="w-full h-full flex items-center justify-center bg-gray-800 text-gray-600">
+                      <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    </div>
+                  {% endif %}
+                </div>
+                <div class="p-3">
+                  <span class="text-[9px] text-yellow-500 uppercase font-bold block mb-1">
+                    {% if artifact.model_file %}Modelo 3D (GLB){% elif artifact.sketchfab_embed %}Modelo 3D{% else %}Imagem{% endif %}
+                  </span>
+                  <h4 class="text-xs font-bold text-white leading-tight line-clamp-2 mb-1 group-hover:text-yellow-400 transition-colors">{{ artifact.title }}</h4>
+                  <p class="text-[10px] text-gray-500">{{ artifact.project.title }}</p>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
+      {% if collections %}
+        <h2 class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-6">Coleções Curatoriais</h2>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+          {% for item in collections %}
             <article class="bg-gray-50 rounded-xl overflow-hidden border border-gray-100 hover:shadow-md transition-shadow">
               {% if item.cover_image %}<img src="{{ item.cover_image.url }}" alt="{{ item.title }}" class="w-full h-48 object-cover">{% endif %}
               <div class="p-6">
-                <h2 class="font-serif text-xl text-gray-900 mb-2">{{ item.title }}</h2>
+                <h3 class="font-serif text-xl text-gray-900 mb-2">{{ item.title }}</h3>
                 <p class="text-sm text-gray-600">{{ item.description|truncatewords:20 }}</p>
               </div>
             </article>
           {% endfor %}
         </div>
-      {% else %}
+      {% endif %}
+
+      {% if not artifacts and not collections %}
         <div class="text-center mt-16">
           <div class="inline-flex flex-col items-center px-12 py-16 bg-gray-50 rounded-2xl border border-gray-100">
             <div class="text-6xl mb-4">🗂️</div>
@@ -42,4 +90,8 @@
     </div>
   </section>
 </div>
+
+{% if artifacts %}
+{% include 'core/partials/_artifact_modal.html' %}
+{% endif %}
 {% endblock %}
