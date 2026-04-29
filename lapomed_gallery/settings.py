@@ -63,7 +63,7 @@ TINYMCE_DEFAULT_CONFIG = {
     "plugins": (
         "advlist autolink lists link charmap preview anchor "
         "searchreplace visualblocks code fullscreen "
-        "insertdatetime media table help wordcount"
+        "insertdatetime media table help wordcount paste"
     ),
     "toolbar": (
         "undo redo | blocks | bold italic underline | "
@@ -74,6 +74,18 @@ TINYMCE_DEFAULT_CONFIG = {
     "branding": False,
     "promotion": False,
     "content_style": "body{font-family:Lato,sans-serif;font-size:15px}",
+    # Limpa estilos inline indesejados ao colar de Word/PDF/sites externos
+    # para nao herdar fontes/tamanhos que quebram o layout do site
+    "paste_as_text": False,
+    "paste_remove_styles_if_webkit": True,
+    "paste_webkit_styles": "none",
+    "paste_merge_formats": True,
+    "invalid_styles": {
+        "*": "font-family font-size font color background-color line-height letter-spacing"
+    },
+    "valid_styles": {
+        "*": "text-align"
+    },
 }
 
 ROOT_URLCONF = "lapomed_gallery.urls"
