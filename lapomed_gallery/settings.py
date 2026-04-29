@@ -61,15 +61,20 @@ TINYMCE_DEFAULT_CONFIG = {
     "height": 500,
     "menubar": "edit view insert format tools",
     "plugins": (
-        "advlist autolink lists link charmap preview anchor "
+        "advlist autolink lists link image charmap preview anchor "
         "searchreplace visualblocks code fullscreen "
         "insertdatetime media table help wordcount paste"
     ),
     "toolbar": (
         "undo redo | blocks | bold italic underline | "
         "alignleft aligncenter alignright alignjustify | "
-        "bullist numlist outdent indent | link | removeformat | code | help"
+        "bullist numlist outdent indent | link image | removeformat | code | help"
     ),
+    # Upload de imagens — endpoint protegido por staff_member_required
+    "images_upload_url": "/admin/tinymce-upload/",
+    "images_upload_credentials": True,
+    "automatic_uploads": True,
+    "file_picker_types": "image",
     # Esconde do menu Format os submenus que permitiriam trocar fonte/tamanho/cor
     "removed_menuitems": "fontfamily fontsize forecolor backcolor",
     "language": "pt_BR",
