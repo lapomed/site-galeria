@@ -66,6 +66,22 @@ class Artifact(models.Model):
             return 'image'
         return None
 
+class ArtifactImage(models.Model):
+    """Galeria de imagens adicionais de um artefato (alem do `image` principal)."""
+    artifact = models.ForeignKey(Artifact, related_name='gallery', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='artifacts/gallery/')
+    caption = models.CharField(max_length=300, blank=True, verbose_name="Legenda")
+    order = models.IntegerField(default=0, verbose_name="Ordem")
+
+    class Meta:
+        ordering = ['order', 'id']
+        verbose_name = "🏛️ Projetos - Imagem do Artefato"
+        verbose_name_plural = "🏛️ Projetos - Galeria do Artefato"
+
+    def __str__(self):
+        return self.caption or f"Imagem #{self.id}"
+
+
 class Collection(models.Model):
     CATEGORY_CHOICES = [
         ('artefatos', 'Artefatos'),

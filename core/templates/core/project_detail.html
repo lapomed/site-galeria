@@ -49,8 +49,10 @@
         data-title="{{ artifact.title }}"
         data-description="{{ artifact.description|default:'Sem descrição disponível' }}"
         data-annotations="{{ artifact.annotations|default:'' }}"
-        data-type="{% if artifact.model_file %}3d_model{% elif artifact.sketchfab_embed %}embed{% elif artifact.image %}image{% endif %}"
+        data-type="{% if artifact.model_file %}3d_model{% elif artifact.sketchfab_embed %}embed{% elif artifact.image or artifact.gallery.all %}image{% endif %}"
         data-content="{% if artifact.model_file %}{{ artifact.model_file.url }}{% elif artifact.sketchfab_embed %}{{ artifact.sketchfab_embed|escape }}{% elif artifact.image %}{{ artifact.image.url }}{% endif %}"
+        data-gallery="{% if artifact.image %}{{ artifact.image.url }}{% endif %}{% for img in artifact.gallery.all %}{% if artifact.image or not forloop.first %}|{% endif %}{{ img.image.url }}{% endfor %}"
+        data-gallery-captions="{% if artifact.image %}{{ artifact.title|escape }}{% endif %}{% for img in artifact.gallery.all %}{% if artifact.image or not forloop.first %}|{% endif %}{{ img.caption|escape }}{% endfor %}"
       >
         <!-- Thumbnail (Smaller) -->
         <div class="relative w-full aspect-square bg-black overflow-hidden">
@@ -328,7 +330,17 @@
       } else if (type === 'embed') {
           modalContent.innerHTML = content;
       } else if (type === 'image') {
-          modalContent.innerHTML = '<img src="' + content + '" class="w-full h-full object-contain" alt="Artifact Image">';
+          // Galeria: pode ter 1+ imagens. Renderiza carousel se houver mais de 1.
+          const galleryRaw = element.getAttribute("data-gallery") || "";
+          const captionsRaw = element.getAttribute("data-gallery-captions") || "";
+          const urls = galleryRaw.split("|").filter(Boolean);
+          const captions = captionsRaw.split("|");
+          if (urls.length <= 1) {
+            const single = urls[0] || content;
+            modalContent.innerHTML = '<img src="' + single + '" class="w-full h-full object-contain" alt="Artifact Image">';
+          } else {
+            renderGalleryCarousel(urls, captions);
+          }
       }
   
       // Show Modal (Flowbite style: remove hidden, add flex)
@@ -337,6 +349,54 @@
   
       // Prevent scrolling on body
       body.style.overflow = "hidden";
+    }
+
+    let galleryState = { urls: [], captions: [], index: 0 };
+
+    function renderGalleryCarousel(urls, captions) {
+      galleryState = { urls: urls, captions: captions, index: 0 };
+      modalContent.innerHTML = `
+        <div class="relative w-full h-full flex items-center justify-center">
+          <img id="galleryImage" src="${urls[0]}" class="max-w-full max-h-full object-contain" alt="">
+          <button type="button" id="galleryPrev" aria-label="Anterior"
+            class="absolute left-3 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-yellow-500 text-white rounded-full w-11 h-11 flex items-center justify-center transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+          </button>
+          <button type="button" id="galleryNext" aria-label="Próximo"
+            class="absolute right-3 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-yellow-500 text-white rounded-full w-11 h-11 flex items-center justify-center transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </button>
+          <div id="galleryCounter" class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 text-white text-xs font-medium px-3 py-1 rounded-full">
+            1 / ${urls.length}
+          </div>
+          <div id="galleryCaption" class="absolute bottom-14 left-1/2 -translate-x-1/2 bg-black/60 text-white text-sm px-4 py-2 rounded max-w-[80%] text-center hidden"></div>
+        </div>
+      `;
+      document.getElementById('galleryPrev').addEventListener('click', () => galleryNavigate(-1));
+      document.getElementById('galleryNext').addEventListener('click', () => galleryNavigate(1));
+      updateGalleryCaption();
+    }
+
+    function galleryNavigate(delta) {
+      const total = galleryState.urls.length;
+      galleryState.index = (galleryState.index + delta + total) % total;
+      const img = document.getElementById('galleryImage');
+      const counter = document.getElementById('galleryCounter');
+      if (img) img.src = galleryState.urls[galleryState.index];
+      if (counter) counter.textContent = `${galleryState.index + 1} / ${total}`;
+      updateGalleryCaption();
+    }
+
+    function updateGalleryCaption() {
+      const cap = document.getElementById('galleryCaption');
+      if (!cap) return;
+      const text = (galleryState.captions[galleryState.index] || '').trim();
+      if (text) {
+        cap.textContent = text;
+        cap.classList.remove('hidden');
+      } else {
+        cap.classList.add('hidden');
+      }
     }
 
     function closeArtifactModal() {
@@ -348,10 +408,15 @@
       body.style.overflow = "auto"; // Restore scroll
     }
 
-    // Close on Escape
+    // Atalhos de teclado: Esc fecha; setas navegam na galeria
     document.addEventListener("keydown", function (event) {
-      if (event.key === "Escape" && !modal.classList.contains("hidden")) {
+      if (modal.classList.contains("hidden")) return;
+      if (event.key === "Escape") {
         closeArtifactModal();
+      } else if (event.key === "ArrowLeft" && galleryState.urls.length > 1) {
+        galleryNavigate(-1);
+      } else if (event.key === "ArrowRight" && galleryState.urls.length > 1) {
+        galleryNavigate(1);
       }
     });
 

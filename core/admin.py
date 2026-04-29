@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from .models import (
-    Slide, Project, Artifact, Collection, CollectionImage,
+    Slide, Project, Artifact, ArtifactImage, Collection, CollectionImage,
     AboutSection, TeamMember, Timeline, ResearchArea, Partnership,
     Publication, LearningResource, VirtualTour, SocialLink,
 )
@@ -27,6 +27,12 @@ class CollectionInline(admin.TabularInline):
 class CollectionImageInline(admin.TabularInline):
     model = CollectionImage
     extra = 3
+
+
+class ArtifactImageInline(admin.TabularInline):
+    model = ArtifactImage
+    extra = 3
+    fields = ('image', 'caption', 'order')
 
 
 # ===== HOME / CAROUSEL =====
@@ -62,6 +68,22 @@ class ProjectAdmin(admin.ModelAdmin):
     list_display = ('title', 'location', 'created_at')
     search_fields = ('title', 'location')
     inlines = [ArtifactInline, CollectionInline]
+
+
+@admin.register(Artifact)
+class ArtifactAdmin(admin.ModelAdmin):
+    list_display = ('title', 'project', 'created_at')
+    list_filter = ('project',)
+    search_fields = ('title', 'description')
+    inlines = [ArtifactImageInline]
+    fieldsets = (
+        ('Identificação', {
+            'fields': ('project', 'title', 'description')
+        }),
+        ('Mídia', {
+            'fields': ('image', 'sketchfab_embed', 'model_file', 'annotations')
+        }),
+    )
 
 
 @admin.register(Collection)
