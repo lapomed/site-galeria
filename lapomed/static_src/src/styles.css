@@ -100,9 +100,17 @@
   .rich-text h2 { font-size: 1.5rem !important; @apply font-bold mt-8 mb-4 text-gray-900; }
   .rich-text h3 { font-size: 1.25rem !important; @apply font-semibold mt-6 mb-3 text-gray-900; }
   .rich-text h4 { font-size: 1.125rem !important; @apply font-semibold mt-6 mb-2 text-gray-900; }
-  .rich-text pre,
+  /* <pre> aparece com frequencia em paste do Word/PDF e prejudica a leitura.
+     Renderiza como bloco normal (Lato, com quebra natural). Para codigo de
+     verdade, use <code> inline. */
+  .rich-text pre {
+    font-family: inherit !important;
+    white-space: pre-wrap;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 0 1rem 0 !important;
+  }
   .rich-text code { font-family: "Courier New", monospace !important; @apply bg-gray-100 px-2 py-1 rounded text-sm; }
-  .rich-text pre { @apply p-4 overflow-x-auto whitespace-pre-wrap; }
   .rich-text ul { @apply list-disc pl-6 mb-4 space-y-1; }
   .rich-text ol { @apply list-decimal pl-6 mb-4 space-y-1; }
   .rich-text li { @apply leading-relaxed; }
