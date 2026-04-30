@@ -7,9 +7,10 @@ class Slide(models.Model):
     image = models.ImageField(upload_to='slides/', verbose_name="Imagem")
     link = models.URLField(blank=True, verbose_name="Link (Opcional)")
     active = models.BooleanField(default=True, verbose_name="Ativo")
+    order = models.IntegerField(default=0, verbose_name="Ordem")
 
     class Meta:
-        ordering = ['id']
+        ordering = ['order', 'id']
         verbose_name = "🏠 Home - Slide do Carousel"
         verbose_name_plural = "🏠 Home - Slides do Carousel"
 

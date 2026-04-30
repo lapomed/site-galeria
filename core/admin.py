@@ -38,9 +38,9 @@ class ArtifactImageInline(admin.TabularInline):
 # ===== HOME / CAROUSEL =====
 @admin.register(Slide)
 class SlideAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'thumbnail', 'active')
-    list_editable = ('active',)
-    ordering = ('id',)
+    list_display = ('id', 'title', 'order', 'thumbnail', 'active')
+    list_editable = ('order', 'active')
+    ordering = ('order', 'id')
     readonly_fields = ('thumbnail_preview',)
 
     @admin.display(description='Imagem')
