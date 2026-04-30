@@ -14,8 +14,8 @@
     {% for slide in slides %}
     <div class="hidden duration-[3000ms] ease-in-out h-full" data-carousel-item="{% if forloop.first %}active{% endif %}">
       <div
-        class="absolute inset-0 bg-cover bg-center transition-opacity duration-[3000ms] carousel-zoom-bg"
-        style="background-image: url('{{ slide.image.url }}');"
+        class="absolute inset-0 bg-contain bg-center bg-no-repeat transition-opacity duration-[3000ms] carousel-zoom-bg"
+        style="background-image: url('{{ slide.image.url }}'); background-color: #0b0b0b;"
       >
         <div class="absolute inset-0 bg-black/40"></div>
       </div>
