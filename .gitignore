@@ -52,3 +52,12 @@ Thumbs.db
 
 # Tailwind / Static
 lapomed/static/css/dist/
+
+# Playwright MCP artifacts
+.playwright-mcp/
+*.png
+!static/**/*.png
+!lapomed/**/*.png
+
+# Claude scheduled tasks lock
+.claude/scheduled_tasks.lock
