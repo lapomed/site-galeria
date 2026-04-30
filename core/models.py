@@ -3,7 +3,7 @@ from tinymce.models import HTMLField
 
 class Slide(models.Model):
     title = models.CharField(max_length=200, verbose_name="Título")
-    subtitle = models.CharField(max_length=200, blank=True, verbose_name="Subtítulo")
+    subtitle = models.TextField(blank=True, verbose_name="Subtítulo / Descrição")
     image = models.ImageField(upload_to='slides/', verbose_name="Imagem")
     link = models.URLField(blank=True, verbose_name="Link (Opcional)")
     active = models.BooleanField(default=True, verbose_name="Ativo")
