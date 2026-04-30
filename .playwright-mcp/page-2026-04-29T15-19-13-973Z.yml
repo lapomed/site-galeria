@@ -1,0 +1,94 @@
+- generic [active] [ref=e1]:
+  - navigation [ref=e2]:
+    - generic [ref=e4]:
+      - link "LAPOMED Logo" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img "LAPOMED Logo" [ref=e7]
+      - generic [ref=e8]:
+        - link "Home" [ref=e9] [cursor=pointer]:
+          - /url: /
+        - link "Projetos" [ref=e10] [cursor=pointer]:
+          - /url: /projetos/
+        - link "Quem Somos" [ref=e11] [cursor=pointer]:
+          - /url: /quem-somos/
+        - link "Publicações" [ref=e12] [cursor=pointer]:
+          - /url: "#"
+        - link "Hub" [ref=e13] [cursor=pointer]:
+          - /url: "#"
+        - button "Coleções" [ref=e14] [cursor=pointer]:
+          - text: Coleções
+          - img [ref=e15]
+        - link "Visitas 3D" [ref=e17] [cursor=pointer]:
+          - /url: "#"
+        - button "Redes" [ref=e18] [cursor=pointer]:
+          - text: Redes
+          - img [ref=e19]
+        - link "Contato" [ref=e21] [cursor=pointer]:
+          - /url: "#"
+      - link "Galeria Digital" [ref=e23] [cursor=pointer]:
+        - /url: "#"
+  - main [ref=e24]:
+    - generic [ref=e25]:
+      - generic [ref=e29]:
+        - 'heading "PROJETO O PAMPA NEGRO: ARQUEOLOGIA DA ESCRAVIDÃO NA REGIÃO MERIDIONAL DO RIO GRANDE DO SUL (1780-1888)" [level=1] [ref=e30]'
+        - paragraph [ref=e31]: REGIÃO MERIDIONAL DO RIO GRANDE DO SUL (1780-1888)
+      - generic [ref=e33]:
+        - heading "Sobre o Projeto" [level=2] [ref=e34]
+        - generic [ref=e35]:
+          - paragraph [ref=e36]:
+            - strong [ref=e37]: "1. Projeto O Pampa Negro: Arqueologia da Escravidão"
+          - text: O projeto
+          - strong [ref=e38]: O Pampa Negro
+          - text: dedica-se à investigação arqueológica sistemática da escravidão nas charqueadas da região meridional do Rio Grande do Sul, abrangendo o arco temporal de 1780 a 1888. A pesquisa emprega metodologias de ponta em análise espacial, utilizando fotogrametria por UAV (veículos aéreos não tripulados) para a geração de modelos 3D de alta resolução e mapeamento digital detalhado. O objetivo primordial é reconstruir o ambiente construído desses complexos agroindustriais para compreender as complexas relações de vigilância, as dinâmicas do trabalho forçado e as manifestações de resistência das populações escravizadas no pampa gaúcho.
+          - paragraph
+          - paragraph [ref=e39]:
+            - strong [ref=e40]: 2. Investigação das paisagens arqueológicas das charqueadas
+          - paragraph [ref=e41]:
+            - text: Esta seção foca na análise das paisagens arqueológicas e culturais das charqueadas, examinando as deformações estruturais e os remanescentes arquitetônicos de senzalas, áreas de abate e pátios de secagem. A investigação busca identificar como a organização espacial foi deliberadamente projetada para a vigilância (surveillance) contínua dos trabalhadores. Através do cruzamento de dados arqueológicos e fontes históricas, o projeto analisa a agência dos escravizados na modificação desse espaço, buscando evidências de subversão da ordem imposta e a criação de espaços próprios de sociabilidade e resistência dentro do ambiente coercitivo da charqueada.
+            - strong [ref=e42]: 3. Proveniência e análise da Coleção Batuque
+            - text: O projeto contempla o estudo aprofundado da Coleção Batuque, atualmente depositada no Ethnological Museum of Berlin. Esta coleção é composta por 67 objetos sagrados de matriz africana, coletados por Pietzcker no início do século XX sob um contexto de repressão e confisco policial. A pesquisa de proveniência visa rastrear a trajetória desses itens desde o Rio Grande do Sul até a Alemanha, estabelecendo as bases para processos de repatriação digital e restituição simbólica. O estudo desses materiais é fundamental para a compreensão das práticas religiosas afro-brasileiras e sua persistência material frente à perseguição institucional.
+            - img [ref=e43]
+            - strong [ref=e44]: 4. Aquisição de dados de campo modernos
+            - text: As etapas de aquisição de dados de campo ocorrem concentrando-se nos sítios arqueológicos das charqueadas de Pelotas e arredores. São utilizadas técnicas de fotogrametria aérea e terrestre para capturar a volumetria precisa das ruínas e do terreno. As campanhas são coordenadas pela UFPEL em cooperação com o LAPOMED-USP, garantindo a integração de dados georreferenciados em sistemas de informação geográfica (SIG). Os dados coletados servem de base para a criação de "gêmeos digitais" que permitirão análises arqueológicas não invasivas e a preservação virtual do patrimônio ameaçado pela degradação ambiental.
+            - img [ref=e45]
+            - strong [ref=e46]: 5. Equipe
+            - text: Prof. Dr. Marcio Teixeira-Bastos, Departamento de Antropologia, Universidade de São Paulo (USP) Prof. Dr. Lucio Menezes Ferreira, Coordenador Geral, LEICMA/UFPEL Doutorando Leandro Infantini, Universidade Federal de Pelotas, UFPEL.
+            - strong [ref=e47]: 6. Referências
+          - paragraph [ref=e48]: "Buono, Amy J. 2015. Historicity, achronicity, and the materiality of cultures in colonial Brazil. Getty Research Journal 7: 19–34. doi: 10.1080/14655187.2021. Chaves, Antônio José Gonçalves. 1978. Memórias ecônomo-políticas sobre administração pública no Brasil [1822]. Porto Alegre: Erus. Fromont, Cécile. 2020. Paper, ink, vodun, and the Inquisition: tracing power, slavery, and witchcraft in the early modern Portuguese Atlantic. Journal of the American Academy of Religion 88 (2): 460–504. Funari, Pedro Paulo, and Lucio Menezes Ferreira. 2016. Historical Archaeology Outlook: a Latin American perspective. Historical Archaeology 50: 100–10. doi: 10.1007/BF03377336. Galloway, Patricia. 2006. Material culture and text: exploring the spaces within and between. In Historical archaeology, edited by Martin Hall and Stephen W. Silliman, 42–64. Oxford: Blackwell. Gómez, Pablo F. 2014. Transatlantic meanings: African rituals and material culture in the early modern Spanish Caribbean. In Materialities of ritual in the Black Atlantic, edited by Akinwumi Ogundiran and Paula Saunders, 125–42. Bloomington: Indiana University Press. Gordenstein, Samuel Lira. 2016. Planting axé in the city: urban terreiros and the growth of Candomblé in late nineteenth-century Salvador, Bahia, Brazil. Journal of African Diaspora Archaeology and Heritage 5 (2): 71–101. doi: 10.1080/21619441.2016.1204791. Graham, Richard. 2013. Alimentar a cidade: das vendedoras de rua à reforma liberal (Salvador, 1780–1860). São Paulo: Companhia das Letras. Hui, Yuk. 2020. Tecnodiversidade. São Paulo: Ubu Editora. Leone, Mark P., Jocelyn E. Knauf, and Amanda Tang. 2014. Ritual bundle in colonial Annapolis. In Materialities of ritual in the Black Atlantic, edited by Akinwumi Ogundiran and Paula Saunders, 198–215. Bloomington: Indiana University Press. Linebaugh, Peter, and Marcus Rediker. 2008. A hidra de muitas cabeças: marinheiros, escravos, plebes e a história oculta do Atlântico Revolucionário. São Paulo: Companhia das Letras. Mbiti, John S. 1990. African religions and philosophy. London: Heinemann. Novaes, Luciana de Castro Nunes. 2019. O Exu submerso: uma arqueologia da religião e da diáspora no Brasil. Curitiba, Brazil: Editora Appris. Ogundiran, Akinwumi, and Paula Saunders. 2014. On the materiality of Black ritual. In Materialities of ritual in the Black Atlantic, edited by Akinwumi Ogundiran and Paula Saunders, 1–27. Bloomington: Indiana University Press. Rarey, Matthew F. 2018. Assemblage, occlusion, and the art of survival in the Black Atlantic. American Arts 51 (4): 20–33. doi: 10.1162/afar_a_00430. Riello, Giorgio. 2008. Nature, production and regulation in eighteenth-century Britain and France: the case of the leather industry. Historical Research 81 (211): 75–99. doi: 10.1111/j.1468-2281.2007.00413.x. Sampeck, Kathryn, and Lucio Menezes Ferreira. 2020. Delineando a arqueologia Afro-Latino-americana. Vestígios: Revista Latino-Americana de Arqueologia Histórica 14 (1): 140–68. doi: 10.31239/vtg.v14i1.13895. Santos, Vanicléia S., Luis Cláudio Pereira Symanski, and Augustin Holl, eds. 2019. Arqueologia e história da cultura material na África e na diáspora africana. Curitiba: Brazil Publishing. Schmidt, Peter R. 2009. Tropes, materiality, and ritual embodiment of African iron smelting furnaces as human figures. Journal of Archaeological Method and Theory 16: 262–82. doi: 10.1007/s10816-009-9065-0. Singleton, Theresa A. 2015. Slavery behind the wall: an archaeology of a Cuban coffee plantation. Gainesville: University of Florida Press. Souza, Marcos André Torres de, and Diogo Menezes Costa. 2018. Introduction: Historical Archaeology and Environment. In Historical archaeology and environment, edited by Marcos André Torres de Souza and Diogo Menezes Costa, 1–18. London: Springer. Sweet, James H. 2009. Slaves, convicts, and exiles: African travellers in the Portuguese Atlantic world, 1720–1750. In Bridging the early modern Atlantic world: people, products, and practices on the move, edited by Caroline A. Williams, 193–202. Burlington, VT: Ashgate. Symanski, Luís Cláudio Pereira. 2016. Introduction: archaeology of African diaspora contexts in Brazil. Journal of African Diaspora Archaeology and Heritage 5 (2): 63–70. doi: 10.1080/21619441.2016.1204795. Symanski, Luís Cláudio Pereira, and Flávio dos Santos Gomes. 2016. Iron cosmology, slavery, and social control: the materiality of rebellion in the coffee plantations of the Paraíba Valley, southeastern Brazil. Journal of African Diaspora Archaeology and Heritage 5 (2): 174–97. doi: 10.1080/21619441.2016.1204794. Thompson, Robert Farris. 1983. Flash of the spirit: African and Afro-American art and philosophy. New York: Vintage Books."
+          - text: Universidade de São Paulo (USP) / Laboratório de Arqueologia e Antropologia das Populações do Oriente Médio (LAPOMED) / Universidade Federal de Pelotas (UFPEL) / Laboratório de Estudos Interdisciplinares em Cultura Material (LEICMA) / University of Bonn (Rheinische Friedrich-Wilhelms-Universität Bonn)
+      - generic [ref=e49]:
+        - heading "Artefatos e Modelos 3D" [level=2] [ref=e50]
+        - generic [ref=e52] [cursor=pointer]:
+          - img "Aquisição de dados de campo modernos" [ref=e54]
+          - generic [ref=e55]:
+            - generic [ref=e56]: Imagem
+            - heading "Aquisição de dados de campo modernos" [level=4] [ref=e57]
+            - paragraph [ref=e58]: 4. Aquisição de dados de campo modernos As etapas de aquisição de dados de campo ocorrem concentrando-se nos sítios arqueológicos das charqueadas de Pelotas e arredores. São utilizadas técnicas de fotogrametria aérea e terrestre para capturar a volumetria precisa das ruínas e do terreno. As campanhas são coordenadas pela UFPEL em cooperação com o LAPOMED-USP, garantindo a integração de dados georreferenciados em sistemas de informação geográfica (SIG). Os dados coletados servem de base para a criação de "gêmeos digitais" que permitirão análises arqueológicas não invasivas e a preservação virtual do patrimônio ameaçado pela degradação ambiental.
+  - contentinfo [ref=e59]:
+    - generic [ref=e61]:
+      - generic [ref=e62]:
+        - generic [ref=e63]:
+          - img "LAPOMED" [ref=e64]
+          - img "Universidade de São Paulo" [ref=e65]
+          - img "FAPESP" [ref=e66]
+          - img "INOVA USP" [ref=e67]
+        - generic [ref=e68]:
+          - generic [ref=e69]: Latest from Social
+          - generic [ref=e70]:
+            - link [ref=e71] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e72]
+            - link "Instagram do LAPOMED-USP" [ref=e74] [cursor=pointer]:
+              - /url: https://www.instagram.com/lapomedusp
+              - img [ref=e75]
+            - link [ref=e77] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e78]
+      - generic [ref=e80]:
+        - paragraph [ref=e81]: All Content © 2026 LAPOMED & Partners. All Rights Reserved.
+        - generic [ref=e82]:
+          - link "Privacy Policy" [ref=e83] [cursor=pointer]:
+            - /url: "#"
+          - generic [ref=e84]: "|"
+          - link "Contact" [ref=e85] [cursor=pointer]:
+            - /url: "#"

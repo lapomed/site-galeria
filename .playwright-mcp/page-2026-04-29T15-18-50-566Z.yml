@@ -1,0 +1,95 @@
+- generic [active] [ref=e1]:
+  - navigation [ref=e2]:
+    - generic [ref=e4]:
+      - link "LAPOMED Logo" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img "LAPOMED Logo" [ref=e7]
+      - generic [ref=e8]:
+        - link "Home" [ref=e9] [cursor=pointer]:
+          - /url: /
+        - link "Projetos" [ref=e10] [cursor=pointer]:
+          - /url: /projetos/
+        - link "Quem Somos" [ref=e11] [cursor=pointer]:
+          - /url: /quem-somos/
+        - link "Publicações" [ref=e12] [cursor=pointer]:
+          - /url: "#"
+        - link "Hub" [ref=e13] [cursor=pointer]:
+          - /url: "#"
+        - button "Coleções" [ref=e14] [cursor=pointer]:
+          - text: Coleções
+          - img [ref=e15]
+        - link "Visitas 3D" [ref=e17] [cursor=pointer]:
+          - /url: "#"
+        - button "Redes" [ref=e18] [cursor=pointer]:
+          - text: Redes
+          - img [ref=e19]
+        - link "Contato" [ref=e21] [cursor=pointer]:
+          - /url: "#"
+      - link "Galeria Digital" [ref=e23] [cursor=pointer]:
+        - /url: "#"
+  - main [ref=e24]:
+    - generic [ref=e25]:
+      - generic [ref=e27]:
+        - generic [ref=e28]:
+          - button "Projetos" [ref=e29] [cursor=pointer]
+          - button "Coleções" [ref=e30] [cursor=pointer]
+        - generic [ref=e31]: Media Types ▼
+      - generic [ref=e34]:
+        - 'link "O LARGO SÃO FRANCISCO EM 3D: PRESERVAÇÃO DIGITAL DE UM PATRIMÔNIO BICENTENÁRIO O Largo São Francisco, USP O LARGO SÃO FRANCISCO EM 3D: PRESERVAÇÃO DIGITAL DE UM PATRIMÔNIO BICENTENÁRIO" [ref=e35] [cursor=pointer]':
+          - /url: /projetos/o-largo-sao-francisco-em-3d-preservacao-digital/
+          - 'img "O LARGO SÃO FRANCISCO EM 3D: PRESERVAÇÃO DIGITAL DE UM PATRIMÔNIO BICENTENÁRIO" [ref=e36]'
+          - generic [ref=e38]:
+            - generic [ref=e39]: O Largo São Francisco, USP
+            - 'heading "O LARGO SÃO FRANCISCO EM 3D: PRESERVAÇÃO DIGITAL DE UM PATRIMÔNIO BICENTENÁRIO" [level=3] [ref=e40]'
+        - 'link "PROJETO O PAMPA NEGRO: ARQUEOLOGIA DA ESCRAVIDÃO NA REGIÃO MERIDIONAL DO RIO GRANDE DO SUL (1780-1888) REGIÃO MERIDIONAL DO RIO GRANDE DO SUL (1780-1888) PROJETO O PAMPA NEGRO: ARQUEOLOGIA DA ESCRAVIDÃO NA REGIÃO MERIDIONAL DO RIO GRANDE DO SUL (1780-1888)" [ref=e41] [cursor=pointer]':
+          - /url: /projetos/pampa-negro-arq-da-escavacao-na-regiao-meridional/
+          - 'img "PROJETO O PAMPA NEGRO: ARQUEOLOGIA DA ESCRAVIDÃO NA REGIÃO MERIDIONAL DO RIO GRANDE DO SUL (1780-1888)" [ref=e42]'
+          - generic [ref=e44]:
+            - generic [ref=e45]: REGIÃO MERIDIONAL DO RIO GRANDE DO SUL (1780-1888)
+            - 'heading "PROJETO O PAMPA NEGRO: ARQUEOLOGIA DA ESCRAVIDÃO NA REGIÃO MERIDIONAL DO RIO GRANDE DO SUL (1780-1888)" [level=3] [ref=e46]'
+        - link "PROGRAMA BRASILEIRO-TURCO DE ESCAVAÇÕES ARQUEOLÓGICAS NO MONTE HACIMUSALAR (CHOMA), TURQUIA Monte Hacımusalar, Choma, Turquia. PROGRAMA BRASILEIRO-TURCO DE ESCAVAÇÕES ARQUEOLÓGICAS NO MONTE HACIMUSALAR (CHOMA), TURQUIA" [ref=e47] [cursor=pointer]:
+          - /url: /projetos/prog-bra-turco-de-escavacoes-arqueologicas/
+          - img "PROGRAMA BRASILEIRO-TURCO DE ESCAVAÇÕES ARQUEOLÓGICAS NO MONTE HACIMUSALAR (CHOMA), TURQUIA" [ref=e48]
+          - generic [ref=e50]:
+            - generic [ref=e51]: Monte Hacımusalar, Choma, Turquia.
+            - heading "PROGRAMA BRASILEIRO-TURCO DE ESCAVAÇÕES ARQUEOLÓGICAS NO MONTE HACIMUSALAR (CHOMA), TURQUIA" [level=3] [ref=e52]
+        - link "ESCANEAMENTO 3D DAS MURALHAS DE JERASH, JORDÂNIA JERASH, JORDÂNIA ESCANEAMENTO 3D DAS MURALHAS DE JERASH, JORDÂNIA" [ref=e53] [cursor=pointer]:
+          - /url: /projetos/escaneamento-3d-das-muralhas-de-jerash-jordania/
+          - img "ESCANEAMENTO 3D DAS MURALHAS DE JERASH, JORDÂNIA" [ref=e54]
+          - generic [ref=e56]:
+            - generic [ref=e57]: JERASH, JORDÂNIA
+            - heading "ESCANEAMENTO 3D DAS MURALHAS DE JERASH, JORDÂNIA" [level=3] [ref=e58]
+        - 'link "MEDPONTOS (REDES PORTUÁRIAS DO MEDITERRÂNEO: TECNOLOGIA, ORGANIZAÇÃO, SOCIEDADE) São Paulo-Califórnia MEDPONTOS (REDES PORTUÁRIAS DO MEDITERRÂNEO: TECNOLOGIA, ORGANIZAÇÃO, SOCIEDADE)" [ref=e59] [cursor=pointer]':
+          - /url: /projetos/medpontos-redes-portuarias-do-mediterraneo/
+          - 'img "MEDPONTOS (REDES PORTUÁRIAS DO MEDITERRÂNEO: TECNOLOGIA, ORGANIZAÇÃO, SOCIEDADE)" [ref=e60]'
+          - generic [ref=e62]:
+            - generic [ref=e63]: São Paulo-Califórnia
+            - 'heading "MEDPONTOS (REDES PORTUÁRIAS DO MEDITERRÂNEO: TECNOLOGIA, ORGANIZAÇÃO, SOCIEDADE)" [level=3] [ref=e64]'
+  - contentinfo [ref=e65]:
+    - generic [ref=e67]:
+      - generic [ref=e68]:
+        - generic [ref=e69]:
+          - img "LAPOMED" [ref=e70]
+          - img "Universidade de São Paulo" [ref=e71]
+          - img "FAPESP" [ref=e72]
+          - img "INOVA USP" [ref=e73]
+        - generic [ref=e74]:
+          - generic [ref=e75]: Latest from Social
+          - generic [ref=e76]:
+            - link [ref=e77] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e78]
+            - link "Instagram do LAPOMED-USP" [ref=e80] [cursor=pointer]:
+              - /url: https://www.instagram.com/lapomedusp
+              - img [ref=e81]
+            - link [ref=e83] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e84]
+      - generic [ref=e86]:
+        - paragraph [ref=e87]: All Content © 2026 LAPOMED & Partners. All Rights Reserved.
+        - generic [ref=e88]:
+          - link "Privacy Policy" [ref=e89] [cursor=pointer]:
+            - /url: "#"
+          - generic [ref=e90]: "|"
+          - link "Contact" [ref=e91] [cursor=pointer]:
+            - /url: "#"

@@ -1,8 +1,10 @@
-{# Modal compartilhado para abrir Artefatos (3D, embed, imagem, galeria).
-   Inclua junto do bloco que dispara onclick="openArtifactModal(this)" e
-   exponha nos cards: data-title, data-description, data-annotations,
-   data-type ('3d_model'|'embed'|'image'), data-content e — para galerias —
-   data-gallery (URLs separadas por |) e data-gallery-captions. #}
+{% comment %}
+Modal compartilhado para abrir Artefatos (3D, embed, imagem, galeria).
+Inclua junto do bloco que dispara onclick="openArtifactModal(this)" e
+exponha nos cards: data-title, data-description, data-annotations,
+data-type ('3d_model'|'embed'|'image'), data-content e — para galerias —
+data-gallery (URLs separadas por |) e data-gallery-captions.
+{% endcomment %}
 
 <div id="artifactModal" tabindex="-1" aria-hidden="true" class="hidden fixed inset-0 overflow-y-auto overflow-x-hidden justify-center items-center" style="z-index: 99999; background-color: rgba(0, 0, 0, 0.95);">
     <div class="relative p-4 w-full h-full flex items-center justify-center">
