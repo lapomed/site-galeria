@@ -307,10 +307,13 @@ class LearningResource(models.Model):
 
 class VirtualTour(models.Model):
     title = models.CharField(max_length=300, verbose_name="Título")
+    slug = models.SlugField(max_length=300, blank=True, verbose_name="Slug (URL)")
+    tagline = models.CharField(max_length=300, blank=True, verbose_name="Tagline", help_text="Frase curta exibida abaixo do título no hero (uma linha)")
     location = models.CharField(max_length=200, blank=True, verbose_name="Localização", help_text="Ex: Beit She'an, Israel")
     language = models.CharField(max_length=50, blank=True, default="Português", verbose_name="Idioma")
     description = HTMLField(blank=True, verbose_name="Descrição")
     thumbnail = models.ImageField(upload_to='virtual_tours/', blank=True, null=True, verbose_name="Thumbnail")
+    hero_image = models.ImageField(upload_to='virtual_tours/heroes/', blank=True, null=True, verbose_name="Imagem Hero (alta resolução)", help_text="Opcional. Usa a thumbnail como fallback.")
     embed_url = models.URLField(blank=True, verbose_name="URL Embed", help_text="Sketchfab, Matterport, Kuula etc.")
     embed_code = models.TextField(blank=True, verbose_name="Código Embed (iframe)", help_text="Cole o iframe completo, se preferir")
     model_file = models.FileField(upload_to='virtual_tours/models/', blank=True, null=True, verbose_name="Arquivo 3D")

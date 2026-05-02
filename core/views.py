@@ -102,6 +102,11 @@ def virtual_tours(request):
     })
 
 
+def virtual_tour_detail(request, slug):
+    tour = get_object_or_404(VirtualTour, slug=slug, active=True)
+    return render(request, 'core/virtual_tour_detail.html', {'tour': tour})
+
+
 @csrf_exempt
 @require_POST
 def tinymce_image_upload(request):

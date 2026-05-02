@@ -35,7 +35,7 @@
             data-gallery=""
             data-gallery-captions=""
             data-tag="{% if item.location %}{{ item.location }}{% endif %}"
-            data-explore-url="{% if item.embed_url %}{{ item.embed_url }}{% endif %}"
+            data-explore-url="{% if item.slug %}{% url 'virtual_tour_detail' item.slug %}{% endif %}"
             data-explore-label="Publicado em {{ item.created_at|date:'Y' }} · {{ item.language|default:'Português' }}"
           >
             {% if item.thumbnail %}
@@ -60,8 +60,8 @@
                 <p class="text-gray-200 text-xs leading-relaxed line-clamp-3 mb-3">{{ item.description|striptags|truncatewords:20 }}</p>
               {% endif %}
               <div class="flex gap-2 mt-auto">
-                {% if item.embed_url %}
-                <a href="{{ item.embed_url }}" target="_blank" rel="noopener noreferrer"
+                {% if item.slug %}
+                <a href="{% url 'virtual_tour_detail' item.slug %}"
                    onclick="event.stopPropagation();"
                    class="flex-1 inline-flex items-center justify-center bg-lapomed-gold hover:brightness-95 text-gray-900 text-xs font-bold py-2 px-3 rounded-full transition-all">
                   Explore

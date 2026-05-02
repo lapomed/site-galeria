@@ -233,9 +233,13 @@ class VirtualTourAdmin(admin.ModelAdmin):
     list_editable = ('active', 'order')
     list_filter = ('active', 'language')
     search_fields = ('title', 'description', 'location')
+    prepopulated_fields = {'slug': ('title',)}
     fieldsets = (
         ('Identificação', {
-            'fields': ('title', 'location', 'language', 'thumbnail')
+            'fields': ('title', 'slug', 'tagline', 'location', 'language')
+        }),
+        ('Mídia', {
+            'fields': ('thumbnail', 'hero_image')
         }),
         ('Conteúdo', {
             'fields': ('description', 'embed_url', 'embed_code', 'model_file')

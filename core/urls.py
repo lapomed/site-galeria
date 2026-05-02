@@ -11,5 +11,6 @@ urlpatterns = [
     path('hub-aprendizado/', views.learning_hub, name='learning_hub'),
     path('colecoes/<str:category>/', views.digital_collections, name='digital_collections'),
     path('visitas-3d/', views.virtual_tours, name='virtual_tours'),
+    path('visitas-3d/<slug:slug>/', views.virtual_tour_detail, name='virtual_tour_detail'),
     path('rich-text/upload/', views.tinymce_image_upload, name='tinymce_image_upload'),
 ]
