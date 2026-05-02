@@ -53,6 +53,9 @@
         data-content="{% if artifact.model_file %}{{ artifact.model_file.url }}{% elif artifact.sketchfab_embed %}{{ artifact.sketchfab_embed|escape }}{% elif artifact.image %}{{ artifact.image.url }}{% endif %}"
         data-gallery="{% if artifact.image %}{{ artifact.image.url }}{% endif %}{% for img in artifact.gallery.all %}{% if artifact.image or not forloop.first %}|{% endif %}{{ img.image.url }}{% endfor %}"
         data-gallery-captions="{% if artifact.image %}{{ artifact.title|escape }}{% endif %}{% for img in artifact.gallery.all %}{% if artifact.image or not forloop.first %}|{% endif %}{{ img.caption|escape }}{% endfor %}"
+        data-tag="{% if artifact.model_file %}Modelo 3D{% elif artifact.sketchfab_embed %}Modelo 3D{% else %}Imagem{% endif %}"
+        data-explore-url=""
+        data-explore-label="Descubra <strong>{{ artifact.title|escape }}</strong> e mais em <span class='text-lapomed-gold font-bold'>{{ project.title|escape }}</span>."
       >
         <!-- Thumbnail (Smaller) -->
         <div class="relative w-full aspect-square bg-black overflow-hidden">
