@@ -229,13 +229,13 @@ class LearningResourceAdmin(admin.ModelAdmin):
 # ===== VISITAS VIRTUAIS 3D =====
 @admin.register(VirtualTour)
 class VirtualTourAdmin(admin.ModelAdmin):
-    list_display = ('title', 'active', 'order', 'created_at')
+    list_display = ('title', 'location', 'language', 'active', 'order', 'created_at')
     list_editable = ('active', 'order')
-    list_filter = ('active',)
-    search_fields = ('title', 'description')
+    list_filter = ('active', 'language')
+    search_fields = ('title', 'description', 'location')
     fieldsets = (
         ('Identificação', {
-            'fields': ('title', 'thumbnail')
+            'fields': ('title', 'location', 'language', 'thumbnail')
         }),
         ('Conteúdo', {
             'fields': ('description', 'embed_url', 'embed_code', 'model_file')

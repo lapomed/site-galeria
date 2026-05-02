@@ -307,6 +307,8 @@ class LearningResource(models.Model):
 
 class VirtualTour(models.Model):
     title = models.CharField(max_length=300, verbose_name="Título")
+    location = models.CharField(max_length=200, blank=True, verbose_name="Localização", help_text="Ex: Beit She'an, Israel")
+    language = models.CharField(max_length=50, blank=True, default="Português", verbose_name="Idioma")
     description = HTMLField(blank=True, verbose_name="Descrição")
     thumbnail = models.ImageField(upload_to='virtual_tours/', blank=True, null=True, verbose_name="Thumbnail")
     embed_url = models.URLField(blank=True, verbose_name="URL Embed", help_text="Sketchfab, Matterport, Kuula etc.")

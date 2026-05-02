@@ -86,8 +86,20 @@ def digital_collections(request, category):
 
 
 def virtual_tours(request):
-    items = VirtualTour.objects.filter(active=True).order_by('order', '-created_at')
-    return render(request, 'core/virtual_tours.html', {'items': items})
+    query = (request.GET.get('q') or '').strip()
+    items = VirtualTour.objects.filter(active=True)
+    if query:
+        items = items.filter(
+            Q(title__icontains=query) |
+            Q(description__icontains=query) |
+            Q(location__icontains=query)
+        )
+    items = items.order_by('order', '-created_at')
+    return render(request, 'core/virtual_tours.html', {
+        'items': items,
+        'query': query,
+        'total': VirtualTour.objects.filter(active=True).count(),
+    })
 
 
 @csrf_exempt
