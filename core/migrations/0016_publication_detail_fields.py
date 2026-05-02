@@ -7,7 +7,7 @@ def populate_slugs(apps, schema_editor):
     Publication = apps.get_model("core", "Publication")
     used = set()
     for pub in Publication.objects.all():
-        base = slugify(pub.title)[:280] or f"publicacao-{pub.pk}"
+        base = slugify(pub.title or "")[:280] or f"publicacao-{pub.pk}"
         slug = base
         i = 2
         while slug in used or Publication.objects.exclude(pk=pub.pk).filter(slug=slug).exists():
@@ -24,25 +24,43 @@ def noop(apps, schema_editor):
 
 class Migration(migrations.Migration):
 
+    # atomic=False permite que cada operacao seja commitada antes da proxima,
+    # evitando que uma falha no UNIQUE INDEX desfaca a populacao do slug.
+    atomic = False
+
     dependencies = [
         ("core", "0015_slide_subtitle_textfield"),
     ]
 
     operations = [
-        # 1) Adiciona slug sem unique para nao quebrar com linhas existentes
-        migrations.AddField(
-            model_name="publication",
-            name="slug",
-            field=models.SlugField(blank=True, max_length=300, verbose_name="Slug (URL)"),
+        # 1) Limpa qualquer constraint UNIQUE residual de tentativas anteriores
+        migrations.RunSQL(
+            sql=[
+                "ALTER TABLE core_publication DROP CONSTRAINT IF EXISTS core_publication_slug_key;",
+                "DROP INDEX IF EXISTS core_publication_slug_key;",
+                "DROP INDEX IF EXISTS core_publication_slug_22a8e2db_like;",
+            ],
+            reverse_sql=migrations.RunSQL.noop,
+            state_operations=[],
         ),
-        # 2) Popula slugs a partir do title
+        # 2) Garante que a coluna slug exista (sem unique) — usa IF NOT EXISTS
+        #    para sobreviver a estados parciais de migrations anteriores.
+        migrations.RunSQL(
+            sql=[
+                "ALTER TABLE core_publication ADD COLUMN IF NOT EXISTS slug varchar(300) NOT NULL DEFAULT '';",
+            ],
+            reverse_sql="ALTER TABLE core_publication DROP COLUMN IF EXISTS slug;",
+            state_operations=[
+                migrations.AddField(
+                    model_name="publication",
+                    name="slug",
+                    field=models.SlugField(blank=True, max_length=300, verbose_name="Slug (URL)"),
+                ),
+            ],
+        ),
+        # 3) Popula slugs vazios via slugify(title)
         migrations.RunPython(populate_slugs, noop),
-        # 3) Aplica unique
-        migrations.AlterField(
-            model_name="publication",
-            name="slug",
-            field=models.SlugField(blank=True, max_length=300, unique=True, verbose_name="Slug (URL)"),
-        ),
+        # 4) Demais campos novos (sem complicacoes)
         migrations.AddField(
             model_name="publication",
             name="authors_detailed",

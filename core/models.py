@@ -237,7 +237,7 @@ class Partnership(models.Model):
 
 class Publication(models.Model):
     title = models.CharField(max_length=300, verbose_name="Título")
-    slug = models.SlugField(max_length=300, unique=True, blank=True, verbose_name="Slug (URL)")
+    slug = models.SlugField(max_length=300, blank=True, verbose_name="Slug (URL)")
     authors = models.CharField(max_length=500, blank=True, verbose_name="Autores (resumo)")
     authors_detailed = HTMLField(blank=True, verbose_name="Autores (detalhado)", help_text="Liste autores com afiliação e ORCID, um por bloco. HTML permitido.")
     abstract = HTMLField(blank=True, verbose_name="Resumo / Sinopse")
