@@ -179,13 +179,26 @@ class PublicationAdmin(admin.ModelAdmin):
     list_display = ('title', 'authors', 'publication_date', 'active', 'order')
     list_editable = ('active', 'order')
     list_filter = ('active', 'publication_date')
-    search_fields = ('title', 'authors', 'abstract')
+    search_fields = ('title', 'authors', 'abstract', 'keywords', 'doi')
+    prepopulated_fields = {'slug': ('title',)}
     fieldsets = (
         ('Identificação', {
-            'fields': ('title', 'authors', 'publication_date', 'cover_image')
+            'fields': ('title', 'slug', 'authors', 'publication_date', 'cover_image')
+        }),
+        ('Autores detalhados', {
+            'fields': ('authors_detailed',),
+            'description': "Use este campo para listar autores com afiliação e ORCID. Aceita HTML / rich text.",
+            'classes': ('collapse',),
         }),
         ('Conteúdo', {
-            'fields': ('abstract', 'pdf_file', 'external_url')
+            'fields': ('abstract', 'pdf_file', 'external_url', 'doi')
+        }),
+        ('Metadados', {
+            'fields': ('keywords', 'categories'),
+        }),
+        ('Citações', {
+            'fields': ('citation_abnt', 'citation_apa'),
+            'classes': ('collapse',),
         }),
         ('Configurações', {
             'fields': ('active', 'order')

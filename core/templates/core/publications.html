@@ -12,20 +12,24 @@
       {% if items %}
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {% for item in items %}
-            <article class="bg-gray-50 rounded-xl overflow-hidden border border-gray-100 hover:shadow-md transition-shadow">
-              {% if item.cover_image %}
-                <img src="{{ item.cover_image.url }}" alt="{{ item.title }}" class="w-full h-48 object-cover">
-              {% endif %}
-              <div class="p-6">
-                <h2 class="font-serif text-xl text-gray-900 mb-2">{{ item.title }}</h2>
-                {% if item.authors %}<p class="text-sm text-gray-500 mb-2">{{ item.authors }}</p>{% endif %}
-                {% if item.publication_date %}<p class="text-xs uppercase tracking-widest text-gray-400 mb-3">{{ item.publication_date|date:"F Y" }}</p>{% endif %}
-                {% if item.abstract %}<div class="text-sm text-gray-700 mb-4 rich-text">{{ item.abstract|safe|truncatewords_html:30 }}</div>{% endif %}
-                <div class="flex gap-3">
-                  {% if item.pdf_file %}<a href="{{ item.pdf_file.url }}" target="_blank" class="text-sm font-bold text-lapomed-gold hover:underline">PDF</a>{% endif %}
-                  {% if item.external_url %}<a href="{{ item.external_url }}" target="_blank" rel="noopener" class="text-sm font-bold text-lapomed-gold hover:underline">Ver online</a>{% endif %}
+            <article class="group bg-gray-50 rounded-xl overflow-hidden border border-gray-100 hover:shadow-md hover:border-gray-300 transition-all flex flex-col">
+              <a href="{% if item.slug %}{% url 'publication_detail' item.slug %}{% else %}#{% endif %}" class="block flex-1 flex flex-col">
+                {% if item.cover_image %}
+                  <img src="{{ item.cover_image.url }}" alt="{{ item.title }}" class="w-full h-48 object-cover">
+                {% endif %}
+                <div class="p-6 flex-1 flex flex-col">
+                  <h2 class="font-serif text-xl text-gray-900 mb-2 group-hover:text-lapomed-gold transition-colors">{{ item.title }}</h2>
+                  {% if item.authors %}<p class="text-sm text-gray-500 mb-2">{{ item.authors }}</p>{% endif %}
+                  {% if item.publication_date %}<p class="text-xs uppercase tracking-widest text-gray-400 mb-3">{{ item.publication_date|date:"F Y" }}</p>{% endif %}
+                  {% if item.abstract %}
+                    <div class="text-sm text-gray-700 mb-4 rich-text">
+                      <p class="font-bold text-gray-900 mb-1">Sinopse</p>
+                      {{ item.abstract|safe|truncatewords_html:25 }}
+                    </div>
+                  {% endif %}
+                  <span class="text-xs font-bold uppercase tracking-widest text-lapomed-gold mt-auto">Ver detalhes →</span>
                 </div>
-              </div>
+              </a>
             </article>
           {% endfor %}
         </div>

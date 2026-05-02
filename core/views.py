@@ -57,6 +57,11 @@ def publications(request):
     return render(request, 'core/publications.html', {'items': items})
 
 
+def publication_detail(request, slug):
+    publication = get_object_or_404(Publication, slug=slug, active=True)
+    return render(request, 'core/publication_detail.html', {'publication': publication})
+
+
 def learning_hub(request):
     items = LearningResource.objects.filter(active=True).order_by('order', '-created_at')
     return render(request, 'core/learning_hub.html', {'items': items})

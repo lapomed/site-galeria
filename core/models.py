@@ -237,12 +237,19 @@ class Partnership(models.Model):
 
 class Publication(models.Model):
     title = models.CharField(max_length=300, verbose_name="Título")
-    authors = models.CharField(max_length=500, blank=True, verbose_name="Autores")
-    abstract = HTMLField(blank=True, verbose_name="Resumo")
+    slug = models.SlugField(max_length=300, unique=True, blank=True, verbose_name="Slug (URL)")
+    authors = models.CharField(max_length=500, blank=True, verbose_name="Autores (resumo)")
+    authors_detailed = HTMLField(blank=True, verbose_name="Autores (detalhado)", help_text="Liste autores com afiliação e ORCID, um por bloco. HTML permitido.")
+    abstract = HTMLField(blank=True, verbose_name="Resumo / Sinopse")
     publication_date = models.DateField(blank=True, null=True, verbose_name="Data de Publicação")
-    external_url = models.URLField(blank=True, verbose_name="Link Externo (DOI, repositório, etc)")
+    doi = models.CharField(max_length=200, blank=True, verbose_name="DOI", help_text="Ex: 10.11606/9788566241266")
+    external_url = models.URLField(blank=True, verbose_name="Link Externo (repositório, etc)")
     pdf_file = models.FileField(upload_to='publications/', blank=True, null=True, verbose_name="Arquivo PDF")
     cover_image = models.ImageField(upload_to='publications/covers/', blank=True, null=True, verbose_name="Imagem de Capa")
+    keywords = models.CharField(max_length=500, blank=True, verbose_name="Palavras-chave", help_text="Separadas por vírgula")
+    categories = models.CharField(max_length=300, blank=True, verbose_name="Categorias", help_text="Separadas por vírgula. Ex: Ciências Humanas, Arqueologia")
+    citation_abnt = models.TextField(blank=True, verbose_name="Citação ABNT")
+    citation_apa = models.TextField(blank=True, verbose_name="Citação APA")
     active = models.BooleanField(default=True, verbose_name="Ativo")
     order = models.IntegerField(default=0, verbose_name="Ordem")
     created_at = models.DateTimeField(auto_now_add=True)
@@ -254,6 +261,17 @@ class Publication(models.Model):
 
     def __str__(self):
         return self.title
+
+    def doi_url(self):
+        if not self.doi:
+            return ""
+        return self.doi if self.doi.startswith('http') else f"https://doi.org/{self.doi}"
+
+    def keyword_list(self):
+        return [k.strip() for k in self.keywords.split(',') if k.strip()]
+
+    def category_list(self):
+        return [c.strip() for c in self.categories.split(',') if c.strip()]
 
 
 # ===== HUB DE APRENDIZADO =====

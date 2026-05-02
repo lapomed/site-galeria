@@ -1,0 +1,119 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}{{ publication.title }} | Publicações LAPOMED{% endblock %}
+{% block content %}
+<div class="bg-white pt-24">
+  <section class="py-16 px-4 min-h-[60vh]">
+    <div class="max-w-6xl mx-auto">
+      <nav class="text-xs uppercase tracking-widest text-gray-500 mb-6">
+        <a href="{% url 'publications' %}" class="hover:text-lapomed-gold">← Voltar para Publicações</a>
+      </nav>
+
+      <header class="border-b border-gray-200 pb-8 mb-10">
+        <h1 class="font-serif text-4xl md:text-5xl text-gray-900 leading-tight">{{ publication.title }}</h1>
+      </header>
+
+      <div class="grid lg:grid-cols-[2fr_1fr] gap-12">
+        <!-- Coluna principal -->
+        <div class="space-y-10">
+          {% if publication.authors_detailed %}
+            <section>
+              <div class="rich-text text-gray-800 text-base leading-relaxed">{{ publication.authors_detailed|safe }}</div>
+            </section>
+          {% elif publication.authors %}
+            <section>
+              <p class="text-base text-gray-800"><strong>Autores:</strong> {{ publication.authors }}</p>
+            </section>
+          {% endif %}
+
+          {% if publication.doi %}
+            <section>
+              <p class="text-sm">
+                <strong class="text-gray-900">DOI:</strong>
+                <a href="{{ publication.doi_url }}" target="_blank" rel="noopener noreferrer" class="text-lapomed-gold hover:underline break-all">{{ publication.doi_url }}</a>
+              </p>
+            </section>
+          {% endif %}
+
+          {% if publication.keyword_list %}
+            <section>
+              <h2 class="font-bold text-gray-900 mb-3">Palavras-chave:</h2>
+              <p class="text-gray-800">{{ publication.keywords }}</p>
+            </section>
+          {% endif %}
+
+          {% if publication.abstract %}
+            <section>
+              <h2 class="font-bold text-gray-900 mb-3 text-lg">Sinopse</h2>
+              <div class="rich-text text-gray-800 leading-relaxed">{{ publication.abstract|safe }}</div>
+            </section>
+          {% endif %}
+        </div>
+
+        <!-- Coluna lateral -->
+        <aside class="space-y-6">
+          {% if publication.cover_image %}
+            <div class="border border-gray-200 rounded-lg overflow-hidden bg-gray-50">
+              <img src="{{ publication.cover_image.url }}" alt="{{ publication.title }}" class="w-full h-auto">
+            </div>
+          {% endif %}
+
+          {% if publication.pdf_file %}
+            <a href="{{ publication.pdf_file.url }}" target="_blank"
+               class="flex items-center justify-center gap-2 w-full bg-gray-100 hover:bg-gray-200 text-gray-900 font-medium py-3 px-4 rounded border border-gray-200 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              <span>PDF</span>
+            </a>
+          {% endif %}
+
+          {% if publication.external_url %}
+            <a href="{{ publication.external_url }}" target="_blank" rel="noopener noreferrer"
+               class="flex items-center justify-center gap-2 w-full bg-white hover:bg-gray-50 text-gray-900 font-medium py-3 px-4 rounded border border-gray-200 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+              <span>Acessar online</span>
+            </a>
+          {% endif %}
+
+          {% if publication.publication_date %}
+            <div class="border-t border-gray-200 pt-5">
+              <p class="text-xs uppercase tracking-widest text-gray-500 mb-1">Publicado</p>
+              <p class="text-gray-800">{{ publication.publication_date|date:"j \d\e F \d\e Y" }}</p>
+            </div>
+          {% endif %}
+
+          {% if publication.category_list %}
+            <div class="border-t border-gray-200 pt-5">
+              <p class="text-xs uppercase tracking-widest text-gray-500 mb-2">Categorias</p>
+              <ul class="space-y-1">
+                {% for cat in publication.category_list %}
+                  <li class="text-gray-800">{{ cat }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+
+          {% if publication.citation_abnt or publication.citation_apa %}
+            <div class="border-t border-gray-200 pt-5">
+              <p class="text-xs uppercase tracking-widest text-gray-700 font-bold mb-3">Como citar</p>
+              <div class="space-y-2">
+                {% if publication.citation_abnt %}
+                  <details class="border border-gray-200 rounded">
+                    <summary class="cursor-pointer px-3 py-2 text-sm font-bold text-lapomed-gold hover:bg-gray-50 select-none">ABNT</summary>
+                    <p class="px-3 py-2 text-sm text-gray-700 border-t border-gray-200">{{ publication.citation_abnt }}</p>
+                  </details>
+                {% endif %}
+                {% if publication.citation_apa %}
+                  <details class="border border-gray-200 rounded">
+                    <summary class="cursor-pointer px-3 py-2 text-sm font-bold text-lapomed-gold hover:bg-gray-50 select-none">APA</summary>
+                    <p class="px-3 py-2 text-sm text-gray-700 border-t border-gray-200">{{ publication.citation_apa }}</p>
+                  </details>
+                {% endif %}
+              </div>
+            </div>
+          {% endif %}
+        </aside>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}
