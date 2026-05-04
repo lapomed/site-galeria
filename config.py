@@ -17,12 +17,12 @@ DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 't')
 
 ALLOWED_HOSTS = os.getenv(
     'ALLOWED_HOSTS',
-    'localhost,127.0.0.1,0.0.0.0,.railway.app'
+    'localhost,127.0.0.1,0.0.0.0,.railway.app,lapomed.com.br,www.lapomed.com.br,.lapomed.com.br'
 ).split(',')
 
 CSRF_TRUSTED_ORIGINS = os.getenv(
     'CSRF_TRUSTED_ORIGINS',
-    'https://*.railway.app,https://*.up.railway.app'
+    'https://*.railway.app,https://*.up.railway.app,https://lapomed.com.br,https://www.lapomed.com.br,https://*.lapomed.com.br'
 ).split(',')
 
 # Database
