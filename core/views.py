@@ -21,7 +21,7 @@ def home(request):
 
 def project_list(request):
     query = request.GET.get('q')
-    projects = Project.objects.all().order_by('-created_at')
+    projects = Project.objects.all().order_by('order', '-created_at')
     collections = Collection.objects.all().order_by('-created_at')
     
     if query:
