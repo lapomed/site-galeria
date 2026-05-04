@@ -189,9 +189,11 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Upload — TinyMCE pode enviar imagens grandes coladas/arrastadas (base64 -> file)
-DATA_UPLOAD_MAX_MEMORY_SIZE = 25 * 1024 * 1024  # 25MB
-FILE_UPLOAD_MAX_MEMORY_SIZE = 25 * 1024 * 1024
+# Upload — modelos 3D (.glb/.gltf) e imagens grandes
+# Permite ate 200MB; arquivos > 2.5MB sao escritos em disco em vez de memoria
+DATA_UPLOAD_MAX_MEMORY_SIZE = 200 * 1024 * 1024   # 200MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 2 * 1024 * 1024     # 2MB em RAM, resto streaming p/ disco
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 5000
 
 # Tailwind Configuration
 TAILWIND_APP_NAME = 'lapomed'

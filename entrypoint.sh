@@ -23,5 +23,11 @@ if [ "$DEBUG" = "True" ] || [ "$DEBUG" = "true" ] || [ "$DEBUG" = "1" ]; then
     exec uv run python manage.py runserver 0.0.0.0:$PORT
 else
     echo "MODO PRODUÇÃO: Usando Gunicorn"
-    exec uv run gunicorn lapomed_gallery.wsgi:application --bind 0.0.0.0:$PORT --workers 3
+    exec uv run gunicorn lapomed_gallery.wsgi:application \
+        --bind 0.0.0.0:$PORT \
+        --workers 3 \
+        --timeout 300 \
+        --graceful-timeout 60 \
+        --limit-request-line 0 \
+        --limit-request-field_size 0
 fi
