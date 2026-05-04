@@ -85,7 +85,7 @@
     const closeBtn = document.getElementById('vtCloseExp');
     if (!startBtn || !exp) return;
 
-    const embedUrl = {{ tour.embed_url|default:''|escapejs|stringformat:'"%s"' }};
+    const embedUrl = {{ tour.get_embed_src|default:''|escapejs|stringformat:'"%s"' }};
     const embedCode = {{ tour.embed_code|default:''|escapejs|stringformat:'"%s"' }};
     const modelFile = {{ tour.model_file.url|default:''|escapejs|stringformat:'"%s"' }};
 

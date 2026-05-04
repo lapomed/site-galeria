@@ -316,12 +316,43 @@ class VirtualTour(models.Model):
     description = HTMLField(blank=True, verbose_name="Descrição")
     thumbnail = models.ImageField(upload_to='virtual_tours/', blank=True, null=True, verbose_name="Thumbnail")
     hero_image = models.ImageField(upload_to='virtual_tours/heroes/', blank=True, null=True, verbose_name="Imagem Hero (alta resolução)", help_text="Opcional. Usa a thumbnail como fallback.")
-    embed_url = models.URLField(blank=True, verbose_name="URL Embed", help_text="Sketchfab, Matterport, Kuula etc.")
+    embed_url = models.URLField(
+        blank=True,
+        verbose_name="URL Embed",
+        help_text=(
+            "Cole a URL do tour (Sketchfab, Matterport, Kuula etc.). "
+            "Para Sketchfab, tanto a URL da página do modelo "
+            "(https://sketchfab.com/3d-models/...) quanto a URL de embed "
+            "(.../embed) funcionam — convertemos automaticamente."
+        ),
+    )
     embed_code = models.TextField(blank=True, verbose_name="Código Embed (iframe)", help_text="Cole o iframe completo, se preferir")
     model_file = models.FileField(upload_to='virtual_tours/models/', blank=True, null=True, verbose_name="Arquivo 3D")
     active = models.BooleanField(default=True, verbose_name="Ativo")
     order = models.IntegerField(default=0, verbose_name="Ordem")
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def get_embed_src(self):
+        """Normaliza o embed_url para uma URL que carrega corretamente em iframe.
+
+        Sketchfab e Matterport bloqueiam o carregamento da pagina publica em
+        iframes (X-Frame-Options). Aqui transformamos a URL publica na URL
+        de embed equivalente.
+        """
+        url = (self.embed_url or "").strip()
+        if not url:
+            return ""
+        # Sketchfab: /3d-models/<slug>-<id> -> /models/<id>/embed
+        if "sketchfab.com/3d-models/" in url and "/embed" not in url:
+            tail = url.split("sketchfab.com/3d-models/", 1)[1].rstrip("/")
+            tail = tail.split("?", 1)[0].split("#", 1)[0]
+            segs = tail.split("-")
+            if segs:
+                model_id = segs[-1]
+                return f"https://sketchfab.com/models/{model_id}/embed?autostart=1&ui_theme=dark"
+        # Matterport: my.matterport.com/show/?m=<id> ja funciona; nada a fazer
+        # Kuula: kuula.co/share/... ja funciona
+        return url
 
     class Meta:
         ordering = ['order', '-created_at']
