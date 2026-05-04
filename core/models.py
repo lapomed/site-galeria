@@ -23,9 +23,11 @@ class Project(models.Model):
     description = HTMLField(verbose_name="Descrição")
     location = models.CharField(max_length=200, verbose_name="Localização")
     cover_image = models.ImageField(upload_to='projects/', verbose_name="Imagem de Capa")
+    order = models.PositiveIntegerField(default=0, db_index=True, verbose_name="Ordem")
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        ordering = ['order', '-created_at']
         verbose_name = "🏛️ Projetos - Projeto"
         verbose_name_plural = "🏛️ Projetos - Projetos"
 

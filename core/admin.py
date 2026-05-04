@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from adminsortable2.admin import SortableAdminMixin
 from .models import (
     Slide, Project, Artifact, ArtifactImage, Collection, CollectionImage,
     AboutSection, TeamMember, Timeline, ResearchArea, Partnership,
@@ -64,7 +65,7 @@ class SlideAdmin(admin.ModelAdmin):
 
 # ===== PROJETOS =====
 @admin.register(Project)
-class ProjectAdmin(admin.ModelAdmin):
+class ProjectAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_display = ('title', 'location', 'created_at')
     search_fields = ('title', 'location')
     inlines = [ArtifactInline, CollectionInline]

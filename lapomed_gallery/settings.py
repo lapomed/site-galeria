@@ -31,6 +31,7 @@ from config import SECRET_KEY, DEBUG, ALLOWED_HOSTS, CSRF_TRUSTED_ORIGINS, DATAB
 
 INSTALLED_APPS = [
     "jazzmin",
+    "adminsortable2",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
