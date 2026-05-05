@@ -89,9 +89,9 @@
     const closeBtn = document.getElementById('vtCloseExp');
     if (!startBtn || !exp) return;
 
-    const embedUrl = {{ tour.get_embed_src|default:''|escapejs|stringformat:'"%s"' }};
-    const embedCode = {{ tour.embed_code|default:''|escapejs|stringformat:'"%s"' }};
-    const modelFile = {% if tour.model_file %}{{ tour.model_file.url|escapejs|stringformat:'"%s"' }}{% else %}""{% endif %};
+    const embedUrl = "{{ tour.get_embed_src|escapejs }}";
+    const embedCode = "{{ tour.embed_code|escapejs }}";
+    const modelFile = "{% if tour.model_file %}{{ tour.model_file.url|escapejs }}{% endif %}";
 
     const loader = document.getElementById('vtExperienceLoader');
 
