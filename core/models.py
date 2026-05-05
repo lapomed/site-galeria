@@ -1,3 +1,5 @@
+import uuid
+
 from django.db import models
 from tinymce.models import HTMLField
 
@@ -24,6 +26,14 @@ class Project(models.Model):
     location = models.CharField(max_length=200, verbose_name="Localização")
     cover_image = models.ImageField(upload_to='projects/', verbose_name="Imagem de Capa")
     order = models.PositiveIntegerField(default=0, db_index=True, verbose_name="Ordem")
+    active = models.BooleanField(
+        default=True, db_index=True, verbose_name="Ativo",
+        help_text="Quando desativado, o projeto fica oculto da página pública. Continua acessível via link de compartilhamento.",
+    )
+    share_token = models.UUIDField(
+        default=uuid.uuid4, unique=True, editable=False,
+        verbose_name="Token de compartilhamento",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -33,6 +43,9 @@ class Project(models.Model):
 
     def __str__(self):
         return self.title
+
+    def share_path(self):
+        return f"/projetos/preview/{self.share_token}/"
 
 class Artifact(models.Model):
     CATEGORY_CHOICES = [

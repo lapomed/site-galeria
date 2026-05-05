@@ -1,4 +1,9 @@
 {% extends 'core/base.html' %} {% load static %} {% load rich_text_filters %} {% block content %}
+{% if is_preview %}
+<div class="fixed top-[60px] inset-x-0 z-40 bg-amber-500/95 text-amber-950 px-4 py-2 text-center text-xs font-bold uppercase tracking-widest border-b border-amber-700 backdrop-blur-md">
+  🔒 Preview privado · Este projeto está oculto da página pública e só pode ser acessado por este link
+</div>
+{% endif %}
 <div class="bg-[#0b0b0b] min-h-screen">
   <!-- Project Hero -->
   <div class="relative h-[60vh] w-full flex items-center justify-center">

@@ -22,21 +22,28 @@ def home(request):
 
 def project_list(request):
     query = request.GET.get('q')
-    projects = Project.objects.all().order_by('order', '-created_at')
+    projects = Project.objects.filter(active=True).order_by('order', '-created_at')
     collections = Collection.objects.all().order_by('-created_at')
-    
+
     if query:
         projects = projects.filter(
-            Q(title__icontains=query) | 
+            Q(title__icontains=query) |
             Q(description__icontains=query) |
             Q(location__icontains=query)
         )
-    
+
     return render(request, 'core/project_list.html', {'projects': projects, 'collections': collections, 'query': query})
 
+
 def project_detail(request, slug):
-    project = get_object_or_404(Project, slug=slug)
-    return render(request, 'core/project_detail.html', {'project': project})
+    project = get_object_or_404(Project, slug=slug, active=True)
+    return render(request, 'core/project_detail.html', {'project': project, 'is_preview': False})
+
+
+def project_preview(request, token):
+    """Acesso direto via token de compartilhamento — funciona mesmo com active=False."""
+    project = get_object_or_404(Project, share_token=token)
+    return render(request, 'core/project_detail.html', {'project': project, 'is_preview': True})
 
 def about(request):
     """View para página Quem Somos"""

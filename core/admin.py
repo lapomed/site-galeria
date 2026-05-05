@@ -1,4 +1,6 @@
-from django.contrib import admin
+import uuid
+
+from django.contrib import admin, messages
 from django.utils.html import format_html
 from adminsortable2.admin import SortableAdminMixin
 from .models import (
@@ -66,9 +68,59 @@ class SlideAdmin(admin.ModelAdmin):
 # ===== PROJETOS =====
 @admin.register(Project)
 class ProjectAdmin(SortableAdminMixin, admin.ModelAdmin):
-    list_display = ('title', 'location', 'created_at')
+    list_display = ('title', 'location', 'active', 'share_link_button', 'created_at')
+    list_editable = ('active',)
+    list_filter = ('active',)
     search_fields = ('title', 'location')
     inlines = [ArtifactInline, CollectionInline]
+    readonly_fields = ('share_link_full',)
+    actions = ['regenerate_share_token']
+    fieldsets = (
+        ('Identificação', {
+            'fields': ('title', 'slug', 'location', 'cover_image', 'description')
+        }),
+        ('Compartilhamento privado', {
+            'fields': ('active', 'share_link_full'),
+            'description': "Desative para ocultar da página pública. O link abaixo permite acesso direto mesmo quando o projeto está inativo — repasse para quem deve ter acesso.",
+        }),
+    )
+
+    @admin.display(description='Link de compartilhamento', ordering=None)
+    def share_link_button(self, obj):
+        if not obj.pk:
+            return '-'
+        url = obj.share_path()
+        return format_html(
+            '<a href="{0}" target="_blank" class="button" style="font-size:11px;padding:3px 8px;">🔗 Abrir preview</a>',
+            url,
+        )
+
+    @admin.display(description='URL de compartilhamento')
+    def share_link_full(self, obj):
+        if not obj.pk:
+            return '-'
+        url = obj.share_path()
+        return format_html(
+            '<input type="text" value="{0}" readonly '
+            'style="width:100%;padding:6px 10px;font-family:monospace;background:#fff;color:#000;border:1px solid #ccc;border-radius:4px;" '
+            'onclick="this.select();" />'
+            '<p style="margin-top:6px;font-size:12px;color:#666;">Clique no campo para selecionar e copie (Ctrl+C). '
+            'Use a ação "Regenerar token" no menu de ações para invalidar este link.</p>',
+            url,
+        )
+
+    @admin.action(description='Regenerar token de compartilhamento (invalida o link atual)')
+    def regenerate_share_token(self, request, queryset):
+        count = 0
+        for project in queryset:
+            project.share_token = uuid.uuid4()
+            project.save(update_fields=['share_token'])
+            count += 1
+        self.message_user(
+            request,
+            f"Token regenerado em {count} projeto{'s' if count != 1 else ''}. Os links anteriores foram invalidados.",
+            messages.SUCCESS,
+        )
 
 
 @admin.register(Artifact)
