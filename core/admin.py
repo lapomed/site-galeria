@@ -4,7 +4,7 @@ from adminsortable2.admin import SortableAdminMixin
 from .models import (
     Slide, Project, Artifact, ArtifactImage, Collection, CollectionImage,
     AboutSection, TeamMember, Timeline, ResearchArea, Partnership,
-    Publication, LearningResource, VirtualTour, SocialLink,
+    Publication, LearningResource, VirtualTour, TourCategory, SocialLink,
 )
 
 # ===== CONFIGURAÇÃO DO SITE ADMIN =====
@@ -228,16 +228,24 @@ class LearningResourceAdmin(admin.ModelAdmin):
 
 
 # ===== VISITAS VIRTUAIS 3D =====
+@admin.register(TourCategory)
+class TourCategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'slug', 'order')
+    list_editable = ('order',)
+    prepopulated_fields = {'slug': ('name',)}
+
+
 @admin.register(VirtualTour)
 class VirtualTourAdmin(admin.ModelAdmin):
     list_display = ('title', 'location', 'language', 'active', 'order', 'created_at')
     list_editable = ('active', 'order')
-    list_filter = ('active', 'language')
+    list_filter = ('active', 'language', 'categories')
     search_fields = ('title', 'description', 'location')
     prepopulated_fields = {'slug': ('title',)}
+    filter_horizontal = ('categories',)
     fieldsets = (
         ('Identificação', {
-            'fields': ('title', 'slug', 'tagline', 'location', 'language')
+            'fields': ('title', 'slug', 'tagline', 'location', 'language', 'categories')
         }),
         ('Mídia', {
             'fields': ('thumbnail', 'hero_image')

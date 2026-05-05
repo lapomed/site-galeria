@@ -307,12 +307,28 @@ class LearningResource(models.Model):
 
 # ===== VISITAS VIRTUAIS 3D =====
 
+class TourCategory(models.Model):
+    """Categoria temática de Visitas Virtuais (ex: Antigo Oriente Médio, Brasil Colonial)."""
+    name = models.CharField(max_length=100, unique=True, verbose_name="Nome")
+    slug = models.SlugField(max_length=120, unique=True, verbose_name="Slug")
+    order = models.IntegerField(default=0, verbose_name="Ordem")
+
+    class Meta:
+        ordering = ['order', 'name']
+        verbose_name = "🥽 Visitas 3D - Categoria"
+        verbose_name_plural = "🥽 Visitas 3D - Categorias"
+
+    def __str__(self):
+        return self.name
+
+
 class VirtualTour(models.Model):
     title = models.CharField(max_length=300, verbose_name="Título")
     slug = models.SlugField(max_length=300, blank=True, verbose_name="Slug (URL)")
     tagline = models.CharField(max_length=300, blank=True, verbose_name="Tagline", help_text="Frase curta exibida abaixo do título no hero (uma linha)")
     location = models.CharField(max_length=200, blank=True, verbose_name="Localização", help_text="Ex: Beit She'an, Israel")
     language = models.CharField(max_length=50, blank=True, default="Português", verbose_name="Idioma")
+    categories = models.ManyToManyField(TourCategory, related_name='tours', blank=True, verbose_name="Categorias")
     description = HTMLField(blank=True, verbose_name="Descrição")
     thumbnail = models.ImageField(upload_to='virtual_tours/', blank=True, null=True, verbose_name="Thumbnail")
     hero_image = models.ImageField(upload_to='virtual_tours/heroes/', blank=True, null=True, verbose_name="Imagem Hero (alta resolução)", help_text="Opcional. Usa a thumbnail como fallback.")

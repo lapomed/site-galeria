@@ -9,10 +9,11 @@ from django.http import JsonResponse
 from django.core.files.storage import default_storage
 from django.shortcuts import redirect
 from django.http import Http404
+from django.db.models import Count
 from .models import (
     Slide, Project, Collection,
     AboutSection, TeamMember, Timeline, ResearchArea, Partnership,
-    Publication, LearningResource, VirtualTour,
+    Publication, LearningResource, VirtualTour, TourCategory,
 )
 
 def home(request):
@@ -87,18 +88,56 @@ def digital_collections(request, category):
 
 def virtual_tours(request):
     query = (request.GET.get('q') or '').strip()
-    items = VirtualTour.objects.filter(active=True)
+    sort = (request.GET.get('sort') or 'newest').strip()
+    category_slug = (request.GET.get('category') or '').strip()
+    language_filter = (request.GET.get('language') or '').strip()
+
+    base_qs = VirtualTour.objects.filter(active=True)
+    items = base_qs
+
     if query:
         items = items.filter(
             Q(title__icontains=query) |
             Q(description__icontains=query) |
             Q(location__icontains=query)
         )
-    items = items.order_by('order', '-created_at')
+    if category_slug:
+        items = items.filter(categories__slug=category_slug)
+    if language_filter:
+        items = items.filter(language=language_filter)
+
+    if sort == 'oldest':
+        items = items.order_by('order', 'created_at')
+    else:
+        items = items.order_by('order', '-created_at')
+
+    items = items.distinct().prefetch_related('categories')
+
+    # Opcoes para os dropdowns
+    categories = (
+        TourCategory.objects.filter(tours__active=True)
+        .annotate(tour_count=Count('tours', filter=Q(tours__active=True)))
+        .order_by('order', 'name')
+    )
+    languages = list(
+        base_qs.exclude(language='').values_list('language', flat=True).distinct().order_by('language')
+    )
+
+    selected_category = None
+    if category_slug:
+        selected_category = next((c for c in categories if c.slug == category_slug), None)
+
     return render(request, 'core/virtual_tours.html', {
         'items': items,
         'query': query,
-        'total': VirtualTour.objects.filter(active=True).count(),
+        'total': base_qs.count(),
+        'sort': sort,
+        'category_slug': category_slug,
+        'selected_category': selected_category,
+        'language_filter': language_filter,
+        'categories': categories,
+        'languages': languages,
+        'has_filters': bool(query or category_slug or language_filter or sort != 'newest'),
     })
 
 
