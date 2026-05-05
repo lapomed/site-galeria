@@ -106,6 +106,20 @@
       loader.classList.add('hidden');
     }
 
+    function requestFs(el) {
+      const fn = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+      if (fn) {
+        try { return fn.call(el); } catch (e) { return Promise.resolve(); }
+      }
+      return Promise.resolve();
+    }
+    function exitFs() {
+      if (document.fullscreenElement || document.webkitFullscreenElement) {
+        const fn = document.exitFullscreen || document.webkitExitFullscreen;
+        if (fn) try { fn.call(document); } catch (e) {}
+      }
+    }
+
     function launch() {
       let html = '';
       let kind = '';
@@ -124,6 +138,8 @@
       expMedia.innerHTML = html;
       exp.classList.remove('hidden');
       showLoader();
+      // Pede fullscreen ao container da experiencia (gesto do usuario no click do START)
+      requestFs(exp);
       if (kind === 'iframe') {
         const iframe = expMedia.querySelector('iframe');
         if (iframe) iframe.addEventListener('load', hideLoader, { once: true });
@@ -135,10 +151,20 @@
     }
 
     function close() {
+      exitFs();
       exp.classList.add('hidden');
       expMedia.innerHTML = '';
       hideLoader();
     }
+
+    // Se o usuario sair do fullscreen via tecla (ESC nativa), tambem fecha o overlay
+    document.addEventListener('fullscreenchange', function() {
+      if (!document.fullscreenElement && !exp.classList.contains('hidden')) {
+        exp.classList.add('hidden');
+        expMedia.innerHTML = '';
+        hideLoader();
+      }
+    });
 
     startBtn.addEventListener('click', launch);
     closeBtn.addEventListener('click', close);
