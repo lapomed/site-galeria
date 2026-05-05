@@ -91,7 +91,7 @@
 
     const embedUrl = {{ tour.get_embed_src|default:''|escapejs|stringformat:'"%s"' }};
     const embedCode = {{ tour.embed_code|default:''|escapejs|stringformat:'"%s"' }};
-    const modelFile = {{ tour.model_file.url|default:''|escapejs|stringformat:'"%s"' }};
+    const modelFile = {% if tour.model_file %}{{ tour.model_file.url|escapejs|stringformat:'"%s"' }}{% else %}""{% endif %};
 
     const loader = document.getElementById('vtExperienceLoader');
 
