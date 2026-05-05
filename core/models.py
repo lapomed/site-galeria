@@ -344,6 +344,40 @@ class VirtualTour(models.Model):
     )
     embed_code = models.TextField(blank=True, verbose_name="Código Embed (iframe)", help_text="Cole o iframe completo, se preferir")
     model_file = models.FileField(upload_to='virtual_tours/models/', blank=True, null=True, verbose_name="Arquivo 3D")
+
+    # Configuracoes de renderizacao do <model-viewer> — afetam apenas tours com model_file
+    ENV_CHOICES = [
+        ('legacy', 'Legacy (suave, recomendado)'),
+        ('neutral', 'Neutral (brilhante)'),
+        ('', 'Nenhum (sem IBL)'),
+    ]
+    TONE_CHOICES = [
+        ('commerce', 'Commerce (bom contraste)'),
+        ('aces', 'ACES (cinematic)'),
+        ('agx', 'AgX (natural)'),
+        ('neutral', 'Neutral (sem ajuste)'),
+    ]
+    model_exposure = models.FloatField(
+        default=0.7,
+        verbose_name="Exposição",
+        help_text="0.4 (escuro) – 1.0 (normal) – 1.5 (brilhante). Default 0.7.",
+    )
+    model_environment = models.CharField(
+        max_length=20, choices=ENV_CHOICES, blank=True, default='legacy',
+        verbose_name="Ambiente IBL",
+        help_text="Iluminação ambiente. Use 'Legacy' para photogrammetry; 'Nenhum' se o modelo já vem com luz baked.",
+    )
+    model_tone_mapping = models.CharField(
+        max_length=20, choices=TONE_CHOICES, default='commerce',
+        verbose_name="Tone Mapping",
+        help_text="Compressão de highlights/sombras. 'Commerce' costuma ser o mais agradável.",
+    )
+    model_shadow_intensity = models.FloatField(
+        default=1.0,
+        verbose_name="Intensidade da Sombra",
+        help_text="0 desliga, 1 normal, 2 sombra forte.",
+    )
+
     active = models.BooleanField(default=True, verbose_name="Ativo")
     order = models.IntegerField(default=0, verbose_name="Ordem")
     created_at = models.DateTimeField(auto_now_add=True)

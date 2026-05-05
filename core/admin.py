@@ -253,6 +253,11 @@ class VirtualTourAdmin(admin.ModelAdmin):
         ('Conteúdo', {
             'fields': ('description', 'embed_url', 'embed_code', 'model_file')
         }),
+        ('Renderização 3D (.glb / .gltf)', {
+            'fields': ('model_exposure', 'model_environment', 'model_tone_mapping', 'model_shadow_intensity'),
+            'classes': ('collapse',),
+            'description': "Ajuste a iluminação do <model-viewer> para arquivos 3D próprios. Não afeta tours em embed (Sketchfab/Matterport).",
+        }),
         ('Configurações', {
             'fields': ('active', 'order')
         }),

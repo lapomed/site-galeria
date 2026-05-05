@@ -92,6 +92,12 @@
     const embedUrl = "{{ tour.get_embed_src|escapejs }}";
     const embedCode = "{{ tour.embed_code|escapejs }}";
     const modelFile = "{% if tour.model_file %}{{ tour.model_file.url|escapejs }}{% endif %}";
+    const renderSettings = {
+      exposure: "{{ tour.model_exposure|default_if_none:'0.7' }}",
+      environment: "{{ tour.model_environment|default_if_none:'legacy' }}",
+      toneMapping: "{{ tour.model_tone_mapping|default_if_none:'commerce' }}",
+      shadowIntensity: "{{ tour.model_shadow_intensity|default_if_none:'1' }}"
+    };
 
     const loader = document.getElementById('vtExperienceLoader');
 
@@ -130,9 +136,13 @@
         html = embedCode;
         kind = 'iframe';
       } else if (modelFile) {
+        const envAttr = renderSettings.environment ? ` environment-image="${renderSettings.environment}"` : '';
         html = '<model-viewer id="vtModelViewer" src="' + modelFile + '"' +
-               ' camera-controls touch-action="pan-y" shadow-intensity="1"' +
-               ' environment-image="legacy" exposure="0.7" tone-mapping="commerce"' +
+               ' camera-controls touch-action="pan-y"' +
+               ' shadow-intensity="' + renderSettings.shadowIntensity + '"' +
+               envAttr +
+               ' exposure="' + renderSettings.exposure + '"' +
+               ' tone-mapping="' + renderSettings.toneMapping + '"' +
                ' auto-rotate auto-rotate-delay="3000" rotation-per-second="20deg"' +
                ' interaction-prompt="auto" interaction-prompt-style="basic" interaction-prompt-threshold="2500"' +
                ' ar ar-modes="webxr scene-viewer quick-look"' +
