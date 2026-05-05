@@ -66,6 +66,19 @@ e — para galerias — data-gallery (URLs separadas por |) e data-gallery-capti
 
     let galleryState = { urls: [], captions: [], index: 0 };
 
+    function loaderHTML(label) {
+      return `
+        <div id="amLoader" class="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none"
+             style="background: linear-gradient(180deg, #ffffff 0%, #d8d4cc 100%);">
+          <div class="w-12 h-12 mb-4 rounded-full border-4 border-gray-300 border-t-lapomed-gold animate-spin"></div>
+          <p class="text-sm text-gray-700 font-medium tracking-wide">${label}</p>
+        </div>`;
+    }
+    function hideLoader() {
+      const l = document.getElementById('amLoader');
+      if (l) l.remove();
+    }
+
     window.openArtifactModal = function(element) {
       const type = element.getAttribute("data-type");
       const content = element.getAttribute("data-content") || "";
@@ -114,9 +127,21 @@ e — para galerias — data-gallery (URLs separadas por |) e data-gallery-capti
 
       // Inject media
       if (type === '3d_model' && content) {
-        mediaArea.innerHTML = '<model-viewer src="' + content + '" camera-controls touch-action="pan-y" shadow-intensity="0.5" environment-image="neutral" exposure="1" ar ar-modes="webxr scene-viewer quick-look" style="width: 100%; height: 100%; --poster-color: transparent;" loading="eager"></model-viewer>';
+        mediaArea.innerHTML = loaderHTML('Carregando modelo 3D…') +
+          '<model-viewer id="amViewer" src="' + content + '" camera-controls touch-action="pan-y" shadow-intensity="0.5" environment-image="neutral" exposure="1" ar ar-modes="webxr scene-viewer quick-look" style="width: 100%; height: 100%; --poster-color: transparent;" loading="eager"></model-viewer>';
+        const mv = document.getElementById('amViewer');
+        if (mv) mv.addEventListener('load', hideLoader, { once: true });
       } else if (type === 'embed' && content) {
-        mediaArea.innerHTML = content;
+        // Envolve o iframe num wrapper que oculta o loader quando carrega
+        mediaArea.innerHTML = loaderHTML('Carregando experiência 3D…') +
+          '<div id="amEmbedWrap" style="width:100%;height:100%;">' + content + '</div>';
+        const iframe = mediaArea.querySelector('iframe');
+        if (iframe) {
+          iframe.addEventListener('load', hideLoader, { once: true });
+        } else {
+          // Sem iframe (provavelmente HTML inline), esconde loader logo
+          hideLoader();
+        }
       } else if (type === 'image') {
         const urls = galleryRaw.split("|").filter(Boolean);
         const captions = captionsRaw.split("|");

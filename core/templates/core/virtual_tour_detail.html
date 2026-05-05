@@ -63,6 +63,10 @@
     <div id="vtExperienceMedia" class="absolute inset-0">
       {# iframe / model-viewer injetado em JS #}
     </div>
+    <div id="vtExperienceLoader" class="absolute inset-0 hidden flex-col items-center justify-center bg-black z-40 pointer-events-none">
+      <div class="w-14 h-14 mb-4 rounded-full border-4 border-gray-700 border-t-lapomed-gold animate-spin"></div>
+      <p class="text-sm text-white/80 font-medium tracking-widest uppercase">Carregando experiência…</p>
+    </div>
   </div>
 </div>
 
@@ -89,24 +93,51 @@
     const embedCode = {{ tour.embed_code|default:''|escapejs|stringformat:'"%s"' }};
     const modelFile = {{ tour.model_file.url|default:''|escapejs|stringformat:'"%s"' }};
 
+    const loader = document.getElementById('vtExperienceLoader');
+
+    function showLoader() {
+      if (!loader) return;
+      loader.classList.remove('hidden');
+      loader.classList.add('flex');
+    }
+    function hideLoader() {
+      if (!loader) return;
+      loader.classList.remove('flex');
+      loader.classList.add('hidden');
+    }
+
     function launch() {
       let html = '';
+      let kind = '';
       if (embedUrl) {
         html = '<iframe src="' + embedUrl + '" allow="autoplay; fullscreen; xr-spatial-tracking" allowfullscreen style="width:100%;height:100%;border:0;"></iframe>';
+        kind = 'iframe';
       } else if (embedCode) {
         html = embedCode;
+        kind = 'iframe';
       } else if (modelFile) {
-        html = '<model-viewer src="' + modelFile + '" camera-controls touch-action="pan-y" shadow-intensity="0.5" ar ar-modes="webxr scene-viewer quick-look" style="width:100%;height:100%;background:#000;" loading="eager"></model-viewer>';
+        html = '<model-viewer id="vtModelViewer" src="' + modelFile + '" camera-controls touch-action="pan-y" shadow-intensity="0.5" ar ar-modes="webxr scene-viewer quick-look" style="width:100%;height:100%;background:#000;" loading="eager"></model-viewer>';
+        kind = 'model';
       } else {
         return;
       }
       expMedia.innerHTML = html;
       exp.classList.remove('hidden');
+      showLoader();
+      if (kind === 'iframe') {
+        const iframe = expMedia.querySelector('iframe');
+        if (iframe) iframe.addEventListener('load', hideLoader, { once: true });
+        else hideLoader();
+      } else if (kind === 'model') {
+        const mv = document.getElementById('vtModelViewer');
+        if (mv) mv.addEventListener('load', hideLoader, { once: true });
+      }
     }
 
     function close() {
       exp.classList.add('hidden');
       expMedia.innerHTML = '';
+      hideLoader();
     }
 
     startBtn.addEventListener('click', launch);
