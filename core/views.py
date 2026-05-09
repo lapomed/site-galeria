@@ -10,10 +10,12 @@ from django.core.files.storage import default_storage
 from django.shortcuts import redirect
 from django.http import Http404
 from django.db.models import Count
+import json
 from .models import (
     Slide, Project, Collection,
     AboutSection, TeamMember, Timeline, ResearchArea, Partnership,
     Publication, LearningResource, VirtualTour, TourCategory,
+    CoalitvsMember, CoalitvsGroup,
 )
 
 def home(request):
@@ -151,6 +153,68 @@ def virtual_tours(request):
 def virtual_tour_detail(request, slug):
     tour = get_object_or_404(VirtualTour, slug=slug, active=True)
     return render(request, 'core/virtual_tour_detail.html', {'tour': tour})
+
+
+def coalitvs(request):
+    members = (
+        CoalitvsMember.objects.filter(active=True)
+        .prefetch_related('groups')
+        .order_by('-featured', 'order', 'name')
+    )
+    groups = CoalitvsGroup.objects.all().order_by('order', 'name')
+
+    members_payload = []
+    for m in members:
+        members_payload.append({
+            'id': m.id,
+            'slug': m.slug,
+            'name': m.name,
+            'role': m.role,
+            'institution': m.institution,
+            'department': m.department,
+            'city': m.city,
+            'country': m.country,
+            'country_code': m.country_code,
+            'lat': m.latitude,
+            'lng': m.longitude,
+            'photo': m.photo.url if m.photo else '',
+            'expertise': m.expertise,
+            'group_slugs': [g.slug for g in m.groups.all()],
+            'group_color': (m.groups.first().color if m.groups.exists() else '#f0c300'),
+            'group_label': (m.groups.first().short_label or m.groups.first().name if m.groups.exists() else ''),
+            'detail_url': f'/coalitvs/{m.slug}/',
+        })
+
+    groups_payload = [
+        {'slug': g.slug, 'name': g.name, 'short_label': g.short_label, 'color': g.color}
+        for g in groups
+    ]
+
+    countries = sorted(set([m.country for m in members if m.country]))
+
+    return render(request, 'core/coalitvs.html', {
+        'members': members,
+        'groups': groups,
+        'countries': countries,
+        'members_json': json.dumps(members_payload, ensure_ascii=False),
+        'groups_json': json.dumps(groups_payload, ensure_ascii=False),
+        'total_members': members.count(),
+        'total_countries': len(countries),
+        'total_groups': groups.count(),
+    })
+
+
+def coalitvs_member_detail(request, slug):
+    member = get_object_or_404(CoalitvsMember, slug=slug, active=True)
+    related = (
+        CoalitvsMember.objects.filter(active=True, groups__in=member.groups.all())
+        .exclude(pk=member.pk)
+        .distinct()[:6]
+    )
+    return render(request, 'core/coalitvs_member_detail.html', {
+        'member': member,
+        'related': related,
+    })
 
 
 @csrf_exempt

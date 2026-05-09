@@ -15,6 +15,7 @@
     />
 
     {% tailwind_css %}
+    {% block extra_head %}{% endblock %}
 
     <!-- Google Model Viewer para renderização 3D -->
     <script
@@ -78,6 +79,7 @@
             </div>
 
             <a href="{% if has_virtual_tours %}{% url 'virtual_tours' %}{% else %}#{% endif %}" class="nav-link nav-link-compact">Visitas 3D</a>
+            <a href="{% url 'coalitvs' %}" class="nav-link nav-link-compact">COALITVS</a>
 
             <!-- Notícias / Redes dropdown -->
             <button id="navRedesBtn" data-dropdown-toggle="navRedesMenu" class="nav-link nav-link-compact inline-flex items-center gap-1">
@@ -197,6 +199,7 @@
           </li>
 
           <li><a href="{% if has_virtual_tours %}{% url 'virtual_tours' %}{% else %}#{% endif %}" class="block p-2 text-gray-900 rounded-lg hover:bg-gray-100">Visitas Virtuais 3D</a></li>
+          <li><a href="{% url 'coalitvs' %}" class="block p-2 text-gray-900 rounded-lg hover:bg-gray-100">COALITVS</a></li>
 
           <li>
             <button type="button" data-collapse-toggle="mobileRedes" class="flex items-center w-full p-2 text-gray-900 rounded-lg hover:bg-gray-100">

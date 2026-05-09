@@ -426,6 +426,64 @@ class VirtualTour(models.Model):
         return self.title
 
 
+# ===== COALITVS — Rede de Pesquisadores =====
+
+class CoalitvsGroup(models.Model):
+    """Grupo de trabalho da rede COALITVS (Internacional / Nacional / etc.)."""
+    name = models.CharField(max_length=100, unique=True, verbose_name="Nome")
+    slug = models.SlugField(max_length=120, unique=True, verbose_name="Slug")
+    short_label = models.CharField(max_length=20, blank=True, verbose_name="Label curto", help_text="Ex: INT, NAC, WG1")
+    description = models.CharField(max_length=300, blank=True, verbose_name="Descrição")
+    color = models.CharField(max_length=20, default='#f0c300', verbose_name="Cor", help_text="HEX para o marker no mapa")
+    order = models.IntegerField(default=0, verbose_name="Ordem")
+
+    class Meta:
+        ordering = ['order', 'name']
+        verbose_name = "🌐 Coalitvs - Grupo"
+        verbose_name_plural = "🌐 Coalitvs - Grupos"
+
+    def __str__(self):
+        return self.name
+
+
+class CoalitvsMember(models.Model):
+    """Membro da rede internacional COALITVS."""
+    name = models.CharField(max_length=200, verbose_name="Nome")
+    slug = models.SlugField(max_length=220, unique=True, blank=True, verbose_name="Slug (URL)")
+    role = models.CharField(max_length=200, blank=True, verbose_name="Cargo / Função", help_text="Ex: Professor, Pesquisador Responsável")
+    institution = models.CharField(max_length=300, verbose_name="Instituição")
+    department = models.CharField(max_length=200, blank=True, verbose_name="Departamento / Unidade")
+    city = models.CharField(max_length=120, blank=True, verbose_name="Cidade")
+    country = models.CharField(max_length=120, verbose_name="País")
+    country_code = models.CharField(max_length=3, blank=True, verbose_name="Código ISO (3 letras)", help_text="USA, GBR, BRA…")
+    latitude = models.FloatField(blank=True, null=True, verbose_name="Latitude")
+    longitude = models.FloatField(blank=True, null=True, verbose_name="Longitude")
+    photo = models.ImageField(upload_to='coalitvs/', blank=True, null=True, verbose_name="Foto")
+    bio = HTMLField(blank=True, verbose_name="Biografia")
+    expertise = models.CharField(max_length=400, blank=True, verbose_name="Áreas de Expertise", help_text="Separadas por vírgula")
+    email = models.EmailField(blank=True, verbose_name="E-mail")
+    website = models.URLField(blank=True, verbose_name="Website")
+    lattes = models.URLField(blank=True, verbose_name="Currículo Lattes")
+    orcid = models.CharField(max_length=30, blank=True, verbose_name="ORCID", help_text="Ex: 0000-0001-2345-6789")
+    groups = models.ManyToManyField(CoalitvsGroup, related_name='members', blank=True, verbose_name="Grupos")
+    related_projects = models.ManyToManyField('Project', related_name='coalitvs_members', blank=True, verbose_name="Projetos relacionados")
+    featured = models.BooleanField(default=False, verbose_name="Destaque", help_text="Aparece em primeiro nos cards")
+    active = models.BooleanField(default=True, verbose_name="Ativo")
+    order = models.IntegerField(default=0, verbose_name="Ordem")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-featured', 'order', 'name']
+        verbose_name = "🌐 Coalitvs - Pesquisador"
+        verbose_name_plural = "🌐 Coalitvs - Pesquisadores"
+
+    def __str__(self):
+        return self.name
+
+    def expertise_list(self):
+        return [t.strip() for t in (self.expertise or '').split(',') if t.strip()]
+
+
 # ===== REDES SOCIAIS =====
 
 class SocialLink(models.Model):

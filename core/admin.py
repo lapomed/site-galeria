@@ -7,6 +7,7 @@ from .models import (
     Slide, Project, Artifact, ArtifactImage, Collection, CollectionImage,
     AboutSection, TeamMember, Timeline, ResearchArea, Partnership,
     Publication, LearningResource, VirtualTour, TourCategory, SocialLink,
+    CoalitvsGroup, CoalitvsMember,
 )
 
 # ===== CONFIGURAÇÃO DO SITE ADMIN =====
@@ -322,3 +323,43 @@ class SocialLinkAdmin(admin.ModelAdmin):
     list_display = ('network', 'url', 'active', 'order')
     list_editable = ('url', 'active', 'order')
     list_filter = ('active',)
+
+
+# ===== COALITVS =====
+@admin.register(CoalitvsGroup)
+class CoalitvsGroupAdmin(admin.ModelAdmin):
+    list_display = ('name', 'short_label', 'color', 'order')
+    list_editable = ('order',)
+    prepopulated_fields = {'slug': ('name',)}
+
+
+@admin.register(CoalitvsMember)
+class CoalitvsMemberAdmin(admin.ModelAdmin):
+    list_display = ('name', 'institution', 'country', 'featured', 'active', 'order')
+    list_editable = ('featured', 'active', 'order')
+    list_filter = ('active', 'featured', 'groups', 'country')
+    search_fields = ('name', 'institution', 'country', 'city', 'expertise', 'role')
+    prepopulated_fields = {'slug': ('name',)}
+    filter_horizontal = ('groups', 'related_projects')
+    fieldsets = (
+        ('Identificação', {
+            'fields': ('name', 'slug', 'role', 'photo', 'featured')
+        }),
+        ('Afiliação', {
+            'fields': ('institution', 'department', 'city', 'country', 'country_code', 'latitude', 'longitude'),
+            'description': "Latitude/longitude usadas no mapa. Você pode obter no Google Maps clicando com botão direito → 'O que há aqui?'.",
+        }),
+        ('Grupos', {
+            'fields': ('groups', 'related_projects')
+        }),
+        ('Biografia & Expertise', {
+            'fields': ('bio', 'expertise')
+        }),
+        ('Links', {
+            'fields': ('email', 'website', 'lattes', 'orcid'),
+            'classes': ('collapse',),
+        }),
+        ('Configurações', {
+            'fields': ('active', 'order')
+        }),
+    )

@@ -1,0 +1,111 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}{{ member.name }} | COALITVS LAPOMED{% endblock %}
+
+{% block content %}
+<div class="bg-[#0b0b0b] min-h-screen pt-32 pb-32">
+  <div class="max-w-5xl mx-auto px-4 lg:px-6">
+    <nav class="text-xs uppercase tracking-widest text-gray-500 mb-8">
+      <a href="{% url 'coalitvs' %}" class="hover:text-lapomed-gold">← Rede COALITVS</a>
+    </nav>
+
+    <div class="grid md:grid-cols-[280px_1fr] gap-10 items-start">
+      <!-- Photo / sidebar -->
+      <aside class="space-y-5">
+        <div class="aspect-square bg-gray-800 rounded-2xl overflow-hidden border border-gray-700">
+          {% if member.photo %}
+            <img src="{{ member.photo.url }}" alt="{{ member.name }}" class="w-full h-full object-cover">
+          {% else %}
+            <div class="w-full h-full flex items-center justify-center text-gray-600">
+              <svg class="w-32 h-32" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="space-y-2 text-sm">
+          {% for g in member.groups.all %}
+            <span class="inline-flex items-center gap-2 text-[10px] uppercase font-bold tracking-widest px-3 py-1 rounded-full" style="background: {{ g.color }}; color: #111;">
+              {{ g.short_label|default:g.name }}
+            </span>
+          {% endfor %}
+        </div>
+
+        {% if member.email or member.website or member.lattes or member.orcid %}
+          <div class="border-t border-gray-800 pt-5 space-y-2">
+            <p class="text-[10px] uppercase tracking-widest text-gray-500 mb-2">Contato & Links</p>
+            {% if member.email %}<p><a href="mailto:{{ member.email }}" class="text-gray-300 hover:text-lapomed-gold text-sm break-all">{{ member.email }}</a></p>{% endif %}
+            {% if member.website %}<p><a href="{{ member.website }}" target="_blank" rel="noopener" class="text-gray-300 hover:text-lapomed-gold text-sm break-all">Website ↗</a></p>{% endif %}
+            {% if member.lattes %}<p><a href="{{ member.lattes }}" target="_blank" rel="noopener" class="text-gray-300 hover:text-lapomed-gold text-sm">Currículo Lattes ↗</a></p>{% endif %}
+            {% if member.orcid %}<p><a href="https://orcid.org/{{ member.orcid }}" target="_blank" rel="noopener" class="text-gray-300 hover:text-lapomed-gold text-sm">ORCID: {{ member.orcid }} ↗</a></p>{% endif %}
+          </div>
+        {% endif %}
+      </aside>
+
+      <!-- Main info -->
+      <main>
+        {% if member.role %}<p class="text-[11px] uppercase tracking-[0.3em] text-lapomed-gold font-bold mb-2">{{ member.role }}</p>{% endif %}
+        <h1 class="font-serif text-4xl md:text-5xl text-white mb-3 tracking-tight leading-tight">{{ member.name }}</h1>
+        <p class="text-xl text-gray-300 mb-1">{{ member.institution }}</p>
+        {% if member.department %}<p class="text-sm text-gray-400 mb-1">{{ member.department }}</p>{% endif %}
+        <p class="text-sm text-gray-400 italic mb-8">
+          {% if member.city %}{{ member.city }}, {% endif %}{{ member.country }}{% if member.country_code %} ({{ member.country_code }}){% endif %}
+        </p>
+
+        {% if member.expertise %}
+          <div class="mb-8">
+            <p class="text-[10px] uppercase tracking-widest text-gray-500 mb-3">Áreas de Expertise</p>
+            <div class="flex flex-wrap gap-2">
+              {% for tag in member.expertise_list %}
+                <span class="px-3 py-1 bg-gray-800 border border-gray-700 rounded-full text-xs text-gray-200">{{ tag }}</span>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+
+        {% if member.bio %}
+          <section class="mb-10">
+            <h2 class="text-xs uppercase tracking-widest text-gray-500 font-bold mb-4 border-b border-gray-800 pb-3">Biografia</h2>
+            <div class="rich-text text-gray-200 leading-relaxed">{{ member.bio|safe }}</div>
+          </section>
+        {% endif %}
+
+        {% if member.related_projects.all %}
+          <section class="mb-10">
+            <h2 class="text-xs uppercase tracking-widest text-gray-500 font-bold mb-4 border-b border-gray-800 pb-3">Projetos LAPOMED relacionados</h2>
+            <div class="grid md:grid-cols-2 gap-4">
+              {% for p in member.related_projects.all %}
+                <a href="{% url 'project_detail' p.slug %}" class="group block bg-[#181820] border border-gray-800 rounded-xl overflow-hidden hover:border-gray-600 transition-colors">
+                  {% if p.cover_image %}<img src="{{ p.cover_image.url }}" alt="{{ p.title }}" class="w-full h-32 object-cover">{% endif %}
+                  <div class="p-4">
+                    <h3 class="text-white font-bold text-sm leading-tight line-clamp-2 group-hover:text-lapomed-gold transition-colors">{{ p.title }}</h3>
+                    <p class="text-gray-500 text-xs mt-1">{{ p.location }}</p>
+                  </div>
+                </a>
+              {% endfor %}
+            </div>
+          </section>
+        {% endif %}
+
+        {% if related %}
+          <section>
+            <h2 class="text-xs uppercase tracking-widest text-gray-500 font-bold mb-4 border-b border-gray-800 pb-3">Outros pesquisadores do mesmo grupo</h2>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {% for r in related %}
+                <a href="{% url 'coalitvs_member_detail' r.slug %}" class="group block bg-[#181820] border border-gray-800 rounded-lg overflow-hidden hover:border-gray-600 transition-colors">
+                  <div class="aspect-square bg-gray-800">
+                    {% if r.photo %}<img src="{{ r.photo.url }}" alt="{{ r.name }}" class="w-full h-full object-cover">{% else %}<div class="w-full h-full flex items-center justify-center text-gray-700"><svg class="w-12 h-12" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>{% endif %}
+                  </div>
+                  <div class="p-2">
+                    <p class="text-white text-xs font-bold line-clamp-2 group-hover:text-lapomed-gold transition-colors">{{ r.name }}</p>
+                    <p class="text-gray-500 text-[10px] line-clamp-1">{{ r.institution }}</p>
+                  </div>
+                </a>
+              {% endfor %}
+            </div>
+          </section>
+        {% endif %}
+      </main>
+    </div>
+  </div>
+</div>
+{% endblock %}
