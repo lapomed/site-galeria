@@ -59,10 +59,18 @@ def nav_context(request):
             'has_items': key in existing_categories,
         })
 
+    # Itens de menu reordenáveis pelo admin (NavItem)
+    try:
+        from .models import NavItem
+        nav_items = list(NavItem.objects.filter(active=True).order_by('order', 'id'))
+    except Exception:
+        nav_items = []
+
     return {
         'social_links': social_links_resolved,
         'has_publications': has_publications,
         'has_hub_resources': has_hub_resources,
         'has_virtual_tours': has_virtual_tours,
         'digital_categories': digital_categories,
+        'nav_items': nav_items,
     }

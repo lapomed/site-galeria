@@ -1,0 +1,46 @@
+{% comment %}Renderiza um item de NavItem na navbar desktop.
+Aceita: item (NavItem instance) — usa item.kind para escolher o renderizador.{% endcomment %}
+{% if item.kind == 'home' %}
+  <a href="{% url 'home' %}" class="nav-link nav-link-compact"{% if item.open_in_new_tab %} target="_blank"{% endif %}>{{ item.label }}</a>
+{% elif item.kind == 'projects' %}
+  <a href="{% url 'project_list' %}" class="nav-link nav-link-compact"{% if item.open_in_new_tab %} target="_blank"{% endif %}>{{ item.label }}</a>
+{% elif item.kind == 'about' %}
+  <a href="{% url 'about' %}" class="nav-link nav-link-compact"{% if item.open_in_new_tab %} target="_blank"{% endif %}>{{ item.label }}</a>
+{% elif item.kind == 'publications' %}
+  <a href="{% if has_publications %}{% url 'publications' %}{% else %}#{% endif %}" class="nav-link nav-link-compact"{% if item.open_in_new_tab %} target="_blank"{% endif %}>{{ item.label }}</a>
+{% elif item.kind == 'learning_hub' %}
+  <a href="{% if has_hub_resources %}{% url 'learning_hub' %}{% else %}#{% endif %}" class="nav-link nav-link-compact"{% if item.open_in_new_tab %} target="_blank"{% endif %}>{{ item.label }}</a>
+{% elif item.kind == 'virtual_tours' %}
+  <a href="{% if has_virtual_tours %}{% url 'virtual_tours' %}{% else %}#{% endif %}" class="nav-link nav-link-compact"{% if item.open_in_new_tab %} target="_blank"{% endif %}>{{ item.label }}</a>
+{% elif item.kind == 'coalitvs' %}
+  <a href="{% url 'coalitvs' %}" class="nav-link nav-link-compact"{% if item.open_in_new_tab %} target="_blank"{% endif %}>{{ item.label }}</a>
+{% elif item.kind == 'contact' %}
+  <a href="#" class="nav-link nav-link-compact"{% if item.open_in_new_tab %} target="_blank"{% endif %}>{{ item.label }}</a>
+{% elif item.kind == 'custom' %}
+  <a href="{{ item.custom_url|default:'#' }}" class="nav-link nav-link-compact"{% if item.open_in_new_tab %} target="_blank" rel="noopener noreferrer"{% endif %}>{{ item.label }}</a>
+{% elif item.kind == 'collections' %}
+  <button id="navColecoesBtn" data-dropdown-toggle="navColecoesMenu" class="nav-link nav-link-compact inline-flex items-center gap-1">
+    {{ item.label }}
+    <svg class="w-2.5 h-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/></svg>
+  </button>
+  <div id="navColecoesMenu" class="z-50 hidden bg-white border border-gray-100 divide-y divide-gray-100 rounded-lg shadow-lg w-60">
+    <ul class="py-2 text-sm text-gray-700" aria-labelledby="navColecoesBtn">
+      <li><a href="{% url 'digital_collections' 'artefatos' %}" class="block px-4 py-2 hover:bg-gray-50">Artefatos</a></li>
+      <li><a href="{% url 'digital_collections' 'escavacoes' %}" class="block px-4 py-2 hover:bg-gray-50">Escavações</a></li>
+      <li><a href="{% url 'digital_collections' 'edificacoes' %}" class="block px-4 py-2 hover:bg-gray-50">Edificações / Monumentos</a></li>
+    </ul>
+  </div>
+{% elif item.kind == 'social' %}
+  <button id="navRedesBtn" data-dropdown-toggle="navRedesMenu" class="nav-link nav-link-compact inline-flex items-center gap-1">
+    {{ item.label }}
+    <svg class="w-2.5 h-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/></svg>
+  </button>
+  <div id="navRedesMenu" class="z-50 hidden bg-white border border-gray-100 divide-y divide-gray-100 rounded-lg shadow-lg w-56">
+    <ul class="py-2 text-sm text-gray-700" aria-labelledby="navRedesBtn">
+      <li><a href="{% if social_links.instagram and social_links.instagram != '#' %}{{ social_links.instagram }}{% else %}https://www.instagram.com/lapomedusp{% endif %}" target="_blank" rel="noopener noreferrer" class="block px-4 py-2 hover:bg-gray-50">Instagram</a></li>
+      <li><a href="{{ social_links.facebook }}" target="_blank" rel="noopener noreferrer" class="block px-4 py-2 hover:bg-gray-50">Facebook</a></li>
+      <li><a href="{{ social_links.tiktok }}" target="_blank" rel="noopener noreferrer" class="block px-4 py-2 hover:bg-gray-50">TikTok</a></li>
+      <li><a href="{{ social_links.youtube }}" target="_blank" rel="noopener noreferrer" class="block px-4 py-2 hover:bg-gray-50">Canal de Cortes</a></li>
+    </ul>
+  </div>
+{% endif %}

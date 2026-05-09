@@ -426,6 +426,43 @@ class VirtualTour(models.Model):
         return self.title
 
 
+# ===== NAVEGAÇÃO — Menu reordenável =====
+
+class NavItem(models.Model):
+    """Item de menu do header. Reordenável via drag-and-drop no admin."""
+    KIND_CHOICES = [
+        ('home', 'Home'),
+        ('projects', 'Projetos'),
+        ('about', 'Quem Somos'),
+        ('publications', 'Publicações'),
+        ('learning_hub', 'Hub de Aprendizado'),
+        ('collections', 'Coleções Digitais (dropdown)'),
+        ('virtual_tours', 'Visitas Virtuais 3D'),
+        ('coalitvs', 'COALITVS'),
+        ('social', 'Notícias / Redes (dropdown)'),
+        ('contact', 'Contato'),
+        ('custom', 'Custom (URL livre)'),
+    ]
+    label = models.CharField(max_length=50, verbose_name="Rótulo exibido")
+    kind = models.CharField(max_length=20, choices=KIND_CHOICES, verbose_name="Tipo")
+    custom_url = models.CharField(
+        max_length=400, blank=True,
+        verbose_name="URL custom",
+        help_text="Use apenas com tipo 'Custom'. Ex: /contato/ ou https://exemplo.com",
+    )
+    open_in_new_tab = models.BooleanField(default=False, verbose_name="Abrir em nova aba")
+    active = models.BooleanField(default=True, verbose_name="Ativo")
+    order = models.PositiveIntegerField(default=0, db_index=True, verbose_name="Ordem")
+
+    class Meta:
+        ordering = ['order']
+        verbose_name = "🧭 Navegação - Item de Menu"
+        verbose_name_plural = "🧭 Navegação - Menu do Header"
+
+    def __str__(self):
+        return f"{self.label} ({self.get_kind_display()})"
+
+
 # ===== COALITVS — Rede de Pesquisadores =====
 
 class CoalitvsGroup(models.Model):
@@ -473,7 +510,7 @@ class CoalitvsMember(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ['-featured', 'order', 'name']
+        ordering = ['order', 'name']
         verbose_name = "🌐 Coalitvs - Pesquisador"
         verbose_name_plural = "🌐 Coalitvs - Pesquisadores"
 

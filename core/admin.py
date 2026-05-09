@@ -7,7 +7,7 @@ from .models import (
     Slide, Project, Artifact, ArtifactImage, Collection, CollectionImage,
     AboutSection, TeamMember, Timeline, ResearchArea, Partnership,
     Publication, LearningResource, VirtualTour, TourCategory, SocialLink,
-    CoalitvsGroup, CoalitvsMember,
+    CoalitvsGroup, CoalitvsMember, NavItem,
 )
 
 # ===== CONFIGURAÇÃO DO SITE ADMIN =====
@@ -334,9 +334,9 @@ class CoalitvsGroupAdmin(admin.ModelAdmin):
 
 
 @admin.register(CoalitvsMember)
-class CoalitvsMemberAdmin(admin.ModelAdmin):
-    list_display = ('name', 'institution', 'country', 'featured', 'active', 'order')
-    list_editable = ('featured', 'active', 'order')
+class CoalitvsMemberAdmin(SortableAdminMixin, admin.ModelAdmin):
+    list_display = ('name', 'institution', 'country', 'featured', 'active')
+    list_editable = ('featured', 'active')
     list_filter = ('active', 'featured', 'groups', 'country')
     search_fields = ('name', 'institution', 'country', 'city', 'expertise', 'role')
     prepopulated_fields = {'slug': ('name',)}
@@ -360,6 +360,23 @@ class CoalitvsMemberAdmin(admin.ModelAdmin):
             'classes': ('collapse',),
         }),
         ('Configurações', {
-            'fields': ('active', 'order')
+            'fields': ('active',)
+        }),
+    )
+
+
+# ===== NAVEGAÇÃO — Menu reordenável =====
+@admin.register(NavItem)
+class NavItemAdmin(SortableAdminMixin, admin.ModelAdmin):
+    list_display = ('label', 'kind', 'custom_url', 'open_in_new_tab', 'active')
+    list_editable = ('active',)
+    list_filter = ('active', 'kind')
+    fieldsets = (
+        ('Configuração', {
+            'fields': ('label', 'kind', 'active', 'open_in_new_tab')
+        }),
+        ('URL custom (apenas se Tipo = Custom)', {
+            'fields': ('custom_url',),
+            'classes': ('collapse',),
         }),
     )
