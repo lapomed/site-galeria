@@ -15,5 +15,6 @@ urlpatterns = [
     path('visitas-3d/<slug:slug>/', views.virtual_tour_detail, name='virtual_tour_detail'),
     path('coalitvs/', views.coalitvs, name='coalitvs'),
     path('coalitvs/<slug:slug>/', views.coalitvs_member_detail, name='coalitvs_member_detail'),
+    path('lcp/', views.lcp, name='lcp'),
     path('rich-text/upload/', views.tinymce_image_upload, name='tinymce_image_upload'),
 ]

@@ -1,0 +1,57 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}LCP — Levantine Ceramics Project | LAPOMED{% endblock %}
+
+{% block content %}
+<section class="relative bg-gradient-to-br from-[#0b0b0b] via-[#1a1a2e] to-[#16213e] text-white overflow-hidden">
+  <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 20% 30%, #f0c300 0%, transparent 40%), radial-gradient(circle at 80% 70%, #f0c300 0%, transparent 40%);"></div>
+
+  <div class="relative max-w-6xl mx-auto px-4 pt-32 md:pt-36 pb-16 md:pb-20">
+    <div class="flex flex-col md:flex-row items-center gap-10 md:gap-16">
+
+      <div class="flex items-center gap-6 md:gap-10 shrink-0">
+        {% if page.logo_lcp %}
+          <img src="{{ page.logo_lcp.url }}" alt="Logo LCP" class="h-24 md:h-32 w-auto bg-white rounded-lg p-3 shadow-lg" />
+        {% else %}
+          <div class="h-24 md:h-32 w-32 md:w-40 bg-white/10 border-2 border-dashed border-white/30 rounded-lg flex items-center justify-center">
+            <span class="font-serif text-2xl md:text-3xl text-white/60">LCP</span>
+          </div>
+        {% endif %}
+        <span class="text-3xl md:text-4xl text-lapomed-gold font-light">×</span>
+        <div class="h-24 md:h-32 flex items-center">
+          <span class="font-serif text-2xl md:text-3xl text-lapomed-gold tracking-wider">LAPOMED</span>
+        </div>
+      </div>
+
+      <div class="flex-1 text-center md:text-left">
+        <h1 class="font-serif text-3xl md:text-5xl font-bold mb-3">{{ page.hero_title }}</h1>
+        {% if page.hero_subtitle %}
+          <p class="text-lapomed-gold text-lg md:text-xl">{{ page.hero_subtitle }}</p>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="bg-white py-16 md:py-20">
+  <div class="max-w-3xl mx-auto px-4">
+    <div class="prose prose-lg max-w-none text-gray-800 leading-relaxed">
+      {{ page.content|safe }}
+    </div>
+
+    <div class="mt-12 text-center">
+      <a href="{{ page.external_url }}" target="_blank" rel="noopener noreferrer"
+         class="inline-flex items-center gap-3 px-8 py-4 bg-lapomed-gold text-gray-900 font-semibold text-lg rounded-lg shadow-lg hover:bg-yellow-400 hover:shadow-xl transition-all">
+        {{ page.button_label }}
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+      </a>
+      <p class="mt-4 text-sm text-gray-500">
+        Você será redirecionado para
+        <span class="font-mono">{{ page.external_url }}</span>
+      </p>
+    </div>
+  </div>
+</section>
+{% endblock %}

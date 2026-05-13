@@ -14,6 +14,8 @@ Aceita: item (NavItem instance) — usa item.kind para escolher o renderizador.{
   <a href="{% if has_virtual_tours %}{% url 'virtual_tours' %}{% else %}#{% endif %}" class="nav-link nav-link-compact"{% if item.open_in_new_tab %} target="_blank"{% endif %}>{{ item.label }}</a>
 {% elif item.kind == 'coalitvs' %}
   <a href="{% url 'coalitvs' %}" class="nav-link nav-link-compact"{% if item.open_in_new_tab %} target="_blank"{% endif %}>{{ item.label }}</a>
+{% elif item.kind == 'lcp' %}
+  {% if has_lcp %}<a href="{% url 'lcp' %}" class="nav-link nav-link-compact"{% if item.open_in_new_tab %} target="_blank"{% endif %}>{{ item.label }}</a>{% endif %}
 {% elif item.kind == 'contact' %}
   <a href="#" class="nav-link nav-link-compact"{% if item.open_in_new_tab %} target="_blank"{% endif %}>{{ item.label }}</a>
 {% elif item.kind == 'custom' %}
@@ -37,10 +39,9 @@ Aceita: item (NavItem instance) — usa item.kind para escolher o renderizador.{
   </button>
   <div id="navRedesMenu" class="z-50 hidden bg-white border border-gray-100 divide-y divide-gray-100 rounded-lg shadow-lg w-56">
     <ul class="py-2 text-sm text-gray-700" aria-labelledby="navRedesBtn">
-      <li><a href="{% if social_links.instagram and social_links.instagram != '#' %}{{ social_links.instagram }}{% else %}https://www.instagram.com/lapomedusp{% endif %}" target="_blank" rel="noopener noreferrer" class="block px-4 py-2 hover:bg-gray-50">Instagram</a></li>
-      <li><a href="{{ social_links.facebook }}" target="_blank" rel="noopener noreferrer" class="block px-4 py-2 hover:bg-gray-50">Facebook</a></li>
-      <li><a href="{{ social_links.tiktok }}" target="_blank" rel="noopener noreferrer" class="block px-4 py-2 hover:bg-gray-50">TikTok</a></li>
-      <li><a href="{{ social_links.youtube }}" target="_blank" rel="noopener noreferrer" class="block px-4 py-2 hover:bg-gray-50">Canal de Cortes</a></li>
+      {% for child in item.children.all %}
+        <li><a href="{{ child.custom_url|default:'#' }}"{% if child.open_in_new_tab %} target="_blank" rel="noopener noreferrer"{% endif %} class="block px-4 py-2 hover:bg-gray-50">{{ child.label }}</a></li>
+      {% endfor %}
     </ul>
   </div>
 {% endif %}

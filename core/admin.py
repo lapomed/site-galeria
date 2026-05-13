@@ -2,12 +2,12 @@ import uuid
 
 from django.contrib import admin, messages
 from django.utils.html import format_html
-from adminsortable2.admin import SortableAdminMixin
+from adminsortable2.admin import SortableAdminMixin, SortableTabularInline
 from .models import (
     Slide, Project, Artifact, ArtifactImage, Collection, CollectionImage,
     AboutSection, TeamMember, Timeline, ResearchArea, Partnership,
     Publication, LearningResource, VirtualTour, TourCategory, SocialLink,
-    CoalitvsGroup, CoalitvsMember, NavItem,
+    CoalitvsGroup, CoalitvsMember, NavItem, LcpPage,
 )
 
 # ===== CONFIGURAÇÃO DO SITE ADMIN =====
@@ -366,17 +366,71 @@ class CoalitvsMemberAdmin(SortableAdminMixin, admin.ModelAdmin):
 
 
 # ===== NAVEGAÇÃO — Menu reordenável =====
+class NavSubItemInline(SortableTabularInline):
+    """Sub-itens (filhos) de um item de dropdown — ex: links dentro de 'Redes'."""
+    model = NavItem
+    fk_name = 'parent'
+    extra = 0
+    fields = ('label', 'custom_url', 'open_in_new_tab', 'active', 'order')
+    verbose_name = "Sub-item"
+    verbose_name_plural = "Sub-itens (aparecem dentro deste dropdown)"
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).filter(kind='sublink')
+
+    def save_model(self, request, obj, form, change):
+        # Garante kind='sublink' ao salvar via inline
+        obj.kind = 'sublink'
+        super().save_model(request, obj, form, change)
+
+
 @admin.register(NavItem)
 class NavItemAdmin(SortableAdminMixin, admin.ModelAdmin):
-    list_display = ('label', 'kind', 'custom_url', 'open_in_new_tab', 'active')
+    list_display = ('label', 'kind', 'parent', 'custom_url', 'open_in_new_tab', 'active')
     list_editable = ('active',)
-    list_filter = ('active', 'kind')
+    list_filter = ('active', 'kind', 'parent')
     fieldsets = (
         ('Configuração', {
             'fields': ('label', 'kind', 'active', 'open_in_new_tab')
         }),
-        ('URL custom (apenas se Tipo = Custom)', {
-            'fields': ('custom_url',),
+        ('Sub-item de dropdown (use apenas com Tipo = Sub-item)', {
+            'fields': ('parent', 'custom_url'),
             'classes': ('collapse',),
+            'description': "Para criar um sub-item dentro de Redes: selecione Tipo = Sub-item, escolha o pai e preencha a URL.",
         }),
     )
+
+    def get_inline_instances(self, request, obj=None):
+        # Mostra inline de children só quando estamos editando um dropdown (kind='social')
+        if obj and obj.kind == 'social':
+            return [NavSubItemInline(self.model, self.admin_site)]
+        return []
+
+    def get_queryset(self, request):
+        # Lista admin mostra todos (top-level e sub-itens); admin pode reordenar ambos
+        return super().get_queryset(request).select_related('parent')
+
+
+# ===== LCP — Página da parceria =====
+@admin.register(LcpPage)
+class LcpPageAdmin(admin.ModelAdmin):
+    list_display = ('hero_title', 'active', 'external_url', 'updated_at')
+    list_editable = ('active',)
+    fieldsets = (
+        ('Conteúdo', {
+            'fields': ('hero_title', 'hero_subtitle', 'logo_lcp', 'content'),
+        }),
+        ('Botão / Link externo', {
+            'fields': ('external_url', 'button_label'),
+        }),
+        ('Visibilidade', {
+            'fields': ('active',),
+            'description': "Quando inativo, a página retorna 404 e o item LCP some do menu.",
+        }),
+    )
+
+    def has_add_permission(self, request):
+        # Singleton: só permite criar se não existe
+        if LcpPage.objects.exists():
+            return False
+        return super().has_add_permission(request)
