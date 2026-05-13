@@ -31,7 +31,9 @@ htmlcov/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
-media/
+media/*
+# Excecao: fotos do seed COALITVS sao parte do conteudo versionado
+!media/coalitvs/
 
 # Virtual Environment
 venv/
@@ -58,6 +60,10 @@ lapomed/static/css/dist/
 *.png
 !static/**/*.png
 !lapomed/**/*.png
+!media/coalitvs/**/*.png
+
+# Runtime artifacts dos scripts
+scripts/download_report.txt
 
 # Claude scheduled tasks lock
 .claude/scheduled_tasks.lock
