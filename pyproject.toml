@@ -17,3 +17,8 @@ dependencies = [
     "python-dotenv>=1.2.1",
     "whitenoise>=6.8.2",
 ]
+
+[dependency-groups]
+dev = [
+    "playwright>=1.59.0",
+]
