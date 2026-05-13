@@ -15,7 +15,7 @@ from .models import (
     Slide, Project, Collection,
     AboutSection, TeamMember, Timeline, ResearchArea, Partnership,
     Publication, LearningResource, VirtualTour, TourCategory,
-    CoalitvsMember, CoalitvsGroup,
+    CoalitvsMember, CoalitvsGroup, LcpPage,
 )
 
 def home(request):
@@ -215,6 +215,13 @@ def coalitvs_member_detail(request, slug):
         'member': member,
         'related': related,
     })
+
+
+def lcp(request):
+    page = LcpPage.objects.filter(active=True).first()
+    if not page:
+        raise Http404("Página LCP não está ativa.")
+    return render(request, 'core/lcp.html', {'page': page})
 
 
 @csrf_exempt

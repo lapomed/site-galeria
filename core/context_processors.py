@@ -43,6 +43,11 @@ def nav_context(request):
         has_virtual_tours = VirtualTour.objects.filter(active=True).exists()
     except Exception:
         has_virtual_tours = False
+    try:
+        from .models import LcpPage
+        has_lcp = LcpPage.objects.filter(active=True).exists()
+    except Exception:
+        has_lcp = False
 
     try:
         existing_categories = set(
@@ -60,9 +65,16 @@ def nav_context(request):
         })
 
     # Itens de menu reordenáveis pelo admin (NavItem)
+    # Top-level apenas (parent IS NULL). Sub-itens vêm via item.children no template.
     try:
+        from django.db.models import Prefetch
         from .models import NavItem
-        nav_items = list(NavItem.objects.filter(active=True).order_by('order', 'id'))
+        active_children = NavItem.objects.filter(active=True).order_by('order', 'id')
+        nav_items = list(
+            NavItem.objects.filter(active=True, parent__isnull=True)
+            .order_by('order', 'id')
+            .prefetch_related(Prefetch('children', queryset=active_children))
+        )
     except Exception:
         nav_items = []
 
@@ -71,6 +83,7 @@ def nav_context(request):
         'has_publications': has_publications,
         'has_hub_resources': has_hub_resources,
         'has_virtual_tours': has_virtual_tours,
+        'has_lcp': has_lcp,
         'digital_categories': digital_categories,
         'nav_items': nav_items,
     }

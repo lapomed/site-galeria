@@ -429,7 +429,11 @@ class VirtualTour(models.Model):
 # ===== NAVEGAÇÃO — Menu reordenável =====
 
 class NavItem(models.Model):
-    """Item de menu do header. Reordenável via drag-and-drop no admin."""
+    """Item de menu do header. Reordenável via drag-and-drop no admin.
+
+    Itens com `kind='social'` (dropdown Redes) podem ter filhos: sub-itens
+    com `kind='sublink'` referenciando `parent`. Filhos não podem ter filhos.
+    """
     KIND_CHOICES = [
         ('home', 'Home'),
         ('projects', 'Projetos'),
@@ -439,7 +443,9 @@ class NavItem(models.Model):
         ('collections', 'Coleções Digitais (dropdown)'),
         ('virtual_tours', 'Visitas Virtuais 3D'),
         ('coalitvs', 'COALITVS'),
+        ('lcp', 'LCP — Levantine Ceramics Project'),
         ('social', 'Notícias / Redes (dropdown)'),
+        ('sublink', 'Sub-item de dropdown'),
         ('contact', 'Contato'),
         ('custom', 'Custom (URL livre)'),
     ]
@@ -448,7 +454,14 @@ class NavItem(models.Model):
     custom_url = models.CharField(
         max_length=400, blank=True,
         verbose_name="URL custom",
-        help_text="Use apenas com tipo 'Custom'. Ex: /contato/ ou https://exemplo.com",
+        help_text="Use apenas com tipo 'Custom' ou 'Sub-item'. Ex: /contato/ ou https://exemplo.com",
+    )
+    parent = models.ForeignKey(
+        'self', null=True, blank=True, on_delete=models.CASCADE,
+        related_name='children',
+        limit_choices_to={'kind': 'social'},
+        verbose_name="Pai (apenas para Sub-itens)",
+        help_text="Defina apenas para itens do tipo 'Sub-item de dropdown'.",
     )
     open_in_new_tab = models.BooleanField(default=False, verbose_name="Abrir em nova aba")
     active = models.BooleanField(default=True, verbose_name="Ativo")
@@ -461,6 +474,19 @@ class NavItem(models.Model):
 
     def __str__(self):
         return f"{self.label} ({self.get_kind_display()})"
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        if self.kind == 'sublink':
+            if not self.parent_id:
+                raise ValidationError({'parent': "Sub-itens precisam de um pai (item de dropdown)."})
+            if not self.custom_url:
+                raise ValidationError({'custom_url': "Sub-itens precisam de uma URL."})
+        else:
+            if self.parent_id:
+                raise ValidationError({'parent': "Apenas Sub-itens podem ter pai."})
+        if self.parent_id and self.parent.kind == 'sublink':
+            raise ValidationError({'parent': "Pai não pode ser um Sub-item (sem aninhamento)."})
 
 
 # ===== COALITVS — Rede de Pesquisadores =====
@@ -545,3 +571,55 @@ class SocialLink(models.Model):
 
     def __str__(self):
         return self.label or self.get_network_display()
+
+
+# ===== LCP — Levantine Ceramics Project =====
+
+class LcpPage(models.Model):
+    """Página institucional da parceria com o LCP.
+
+    Singleton-ish: o admin permite só uma instância ativa. Quando inativa
+    ou inexistente, o NavItem 'lcp' some do menu (sem 404).
+    """
+    hero_title = models.CharField(
+        max_length=200,
+        default="LCP — Levantine Ceramics Project",
+        verbose_name="Título do Hero",
+    )
+    hero_subtitle = models.CharField(
+        max_length=300, blank=True,
+        default="Parceria internacional",
+        verbose_name="Subtítulo do Hero",
+    )
+    logo_lcp = models.ImageField(
+        upload_to='lcp/', blank=True, null=True,
+        verbose_name="Logo do LCP",
+        help_text="Opcional. Se vazio, um placeholder será exibido.",
+    )
+    content = HTMLField(
+        blank=True,
+        verbose_name="Conteúdo da página",
+        help_text="2-3 parágrafos sobre a parceria com o LCP.",
+    )
+    external_url = models.URLField(
+        default="https://www.levantineceramics.org",
+        verbose_name="URL da plataforma LCP",
+    )
+    button_label = models.CharField(
+        max_length=80,
+        default="Acessar a plataforma LCP",
+        verbose_name="Texto do botão",
+    )
+    active = models.BooleanField(
+        default=False,
+        verbose_name="Ativo",
+        help_text="Quando desativado, a página retorna 404 e o item LCP some do menu.",
+    )
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "🏺 LCP - Página"
+        verbose_name_plural = "🏺 LCP - Página"
+
+    def __str__(self):
+        return self.hero_title
