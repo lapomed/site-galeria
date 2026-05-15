@@ -1,5 +1,6 @@
 import uuid
 
+from django import forms
 from django.contrib import admin, messages
 from django.utils.html import format_html
 from adminsortable2.admin import SortableAdminMixin, SortableTabularInline
@@ -333,14 +334,41 @@ class CoalitvsGroupAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
 
 
+class CoalitvsMemberAdminForm(forms.ModelForm):
+    """Substitui o widget M2M de grupos por um dropdown único.
+    Internamente o model continua sendo ManyToMany — salvamos como lista de 1 elemento."""
+    group = forms.ModelChoiceField(
+        queryset=CoalitvsGroup.objects.order_by('order', 'name'),
+        required=False,
+        label="Grupo",
+        empty_label="— Sem grupo —",
+        help_text="Selecione o grupo do pesquisador (Internacional, Nacional etc).",
+    )
+
+    class Meta:
+        model = CoalitvsMember
+        exclude = ('groups',)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance.pk:
+            self.fields['group'].initial = self.instance.groups.first()
+
+    def _save_m2m(self):
+        super()._save_m2m()
+        selected = self.cleaned_data.get('group')
+        self.instance.groups.set([selected] if selected else [])
+
+
 @admin.register(CoalitvsMember)
 class CoalitvsMemberAdmin(SortableAdminMixin, admin.ModelAdmin):
-    list_display = ('name', 'institution', 'country', 'featured', 'active')
+    form = CoalitvsMemberAdminForm
+    list_display = ('name', 'institution', 'country', 'group_display', 'featured', 'active')
     list_editable = ('featured', 'active')
     list_filter = ('active', 'featured', 'groups', 'country')
     search_fields = ('name', 'institution', 'country', 'city', 'expertise', 'role')
     prepopulated_fields = {'slug': ('name',)}
-    filter_horizontal = ('groups', 'related_projects')
+    filter_horizontal = ('related_projects',)
     fieldsets = (
         ('Identificação', {
             'fields': ('name', 'slug', 'role', 'photo', 'featured')
@@ -349,8 +377,8 @@ class CoalitvsMemberAdmin(SortableAdminMixin, admin.ModelAdmin):
             'fields': ('institution', 'department', 'city', 'country', 'country_code', 'latitude', 'longitude'),
             'description': "Latitude/longitude usadas no mapa. Você pode obter no Google Maps clicando com botão direito → 'O que há aqui?'.",
         }),
-        ('Grupos', {
-            'fields': ('groups', 'related_projects')
+        ('Grupo & Projetos', {
+            'fields': ('group', 'related_projects')
         }),
         ('Biografia & Expertise', {
             'fields': ('bio', 'expertise')
@@ -363,6 +391,11 @@ class CoalitvsMemberAdmin(SortableAdminMixin, admin.ModelAdmin):
             'fields': ('active',)
         }),
     )
+
+    @admin.display(description='Grupo')
+    def group_display(self, obj):
+        g = obj.groups.first()
+        return g.name if g else '—'
 
 
 # ===== NAVEGAÇÃO — Menu reordenável =====
