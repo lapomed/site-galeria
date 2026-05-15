@@ -363,7 +363,7 @@ class CoalitvsMemberAdminForm(forms.ModelForm):
 @admin.register(CoalitvsMember)
 class CoalitvsMemberAdmin(SortableAdminMixin, admin.ModelAdmin):
     form = CoalitvsMemberAdminForm
-    list_display = ('name', 'institution', 'country', 'group_display', 'featured', 'active')
+    list_display = ('thumb', 'name', 'institution', 'country', 'group_display', 'featured', 'active')
     list_editable = ('featured', 'active')
     list_filter = ('active', 'featured', 'groups', 'country')
     search_fields = ('name', 'institution', 'country', 'city', 'expertise', 'role')
@@ -396,6 +396,17 @@ class CoalitvsMemberAdmin(SortableAdminMixin, admin.ModelAdmin):
     def group_display(self, obj):
         g = obj.groups.first()
         return g.name if g else '—'
+
+    @admin.display(description='Foto')
+    def thumb(self, obj):
+        if obj.photo:
+            return format_html(
+                '<img src="{}" style="width:42px;height:42px;border-radius:50%;object-fit:cover;object-position:top;border:1px solid #444;" />',
+                obj.photo.url,
+            )
+        return format_html(
+            '<div style="width:42px;height:42px;border-radius:50%;background:#2a2a35;display:inline-flex;align-items:center;justify-content:center;color:#666;font-size:18px;">·</div>'
+        )
 
 
 # ===== NAVEGAÇÃO — Menu reordenável =====
