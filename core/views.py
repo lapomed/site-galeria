@@ -191,6 +191,7 @@ def coalitvs(request):
     ]
 
     countries = sorted(set([m.country for m in members if m.country]))
+    total_countries = members.exclude(country_code='').values('country_code').distinct().count()
 
     return render(request, 'core/coalitvs.html', {
         'members': members,
@@ -199,8 +200,9 @@ def coalitvs(request):
         'members_data': members_payload,
         'groups_data': groups_payload,
         'total_members': members.count(),
-        'total_countries': len(countries),
-        'total_groups': groups.count(),
+        'total_countries': total_countries,
+        'total_internacional': members.filter(groups__slug='internacional').distinct().count(),
+        'total_nacional': members.filter(groups__slug='nacional').distinct().count(),
     })
 
 
