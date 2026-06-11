@@ -90,6 +90,9 @@
   .rich-text {
     font-family: "Lato", sans-serif !important;
     color: inherit;
+    /* URLs e palavras longas coladas do Word/PDF quebram linha em vez de
+       estourar a largura da pagina em telas estreitas. */
+    overflow-wrap: anywhere;
   }
   .rich-text * {
     font-family: inherit !important;
@@ -124,4 +127,45 @@
   .rich-text blockquote { @apply border-l-4 border-lapomed-gold pl-4 italic my-4 text-gray-600; }
   .rich-text img { @apply max-w-full h-auto my-4 rounded; }
   .rich-text hr { @apply my-8 border-gray-200; }
+  .rich-text iframe,
+  .rich-text video,
+  .rich-text embed,
+  .rich-text object { @apply max-w-full; }
+
+  /* Tabelas coladas no TinyMCE costumam vir com larguras fixas em px
+     (colgroup/col/width inline) e estouram a largura da pagina.
+     table-layout fixed + width 100% prende a tabela ao container e
+     distribui as colunas; imagens internas ja encolhem via max-w-full. */
+  .rich-text table {
+    width: 100% !important;
+    max-width: 100%;
+    table-layout: fixed;
+    height: auto !important;
+  }
+  .rich-text table img {
+    width: auto;
+    max-width: 100%;
+  }
+  @media (max-width: 767px) {
+    /* Empilha as celulas verticalmente; imagens dentro delas ja sao
+       max-w-full, entao cada celula vira um "bloco" legivel. */
+    .rich-text table,
+    .rich-text thead,
+    .rich-text tbody,
+    .rich-text tfoot,
+    .rich-text tr,
+    .rich-text th,
+    .rich-text td {
+      display: block;
+      width: 100% !important;
+    }
+    .rich-text colgroup,
+    .rich-text col {
+      display: none;
+    }
+    .rich-text td,
+    .rich-text th {
+      padding: 0.25rem 0 !important;
+    }
+  }
 }
