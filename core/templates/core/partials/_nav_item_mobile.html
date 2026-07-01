@@ -5,6 +5,8 @@
   <li><a href="{% url 'project_list' %}"{% if item.open_in_new_tab %} target="_blank"{% endif %} class="block p-2 text-gray-900 rounded-lg hover:bg-gray-100">{{ item.label }}</a></li>
 {% elif item.kind == 'about' %}
   <li><a href="{% url 'about' %}"{% if item.open_in_new_tab %} target="_blank"{% endif %} class="block p-2 text-gray-900 rounded-lg hover:bg-gray-100">{{ item.label }}</a></li>
+{% elif item.kind == 'team' %}
+  <li><a href="{% url 'team' %}"{% if item.open_in_new_tab %} target="_blank"{% endif %} class="block p-2 text-gray-900 rounded-lg hover:bg-gray-100">{{ item.label }}</a></li>
 {% elif item.kind == 'publications' %}
   <li><a href="{% if has_publications %}{% url 'publications' %}{% else %}#{% endif %}"{% if item.open_in_new_tab %} target="_blank"{% endif %} class="block p-2 text-gray-900 rounded-lg hover:bg-gray-100">{{ item.label }}</a></li>
 {% elif item.kind == 'learning_hub' %}

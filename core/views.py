@@ -51,12 +51,17 @@ def about(request):
     """View para página Quem Somos"""
     context = {
         'about_sections': AboutSection.objects.filter(active=True).order_by('order'),
-        'team_members': TeamMember.objects.filter(active=True).order_by('order'),
         'timeline': Timeline.objects.filter(active=True).order_by('-year'),
         'research_areas': ResearchArea.objects.filter(active=True).order_by('order'),
         'partnerships': Partnership.objects.filter(active=True).order_by('order'),
     }
     return render(request, 'core/about.html', context)
+
+
+def team(request):
+    """Página dedicada da equipe do LAPOMED."""
+    members = TeamMember.objects.filter(active=True).order_by('order', 'name')
+    return render(request, 'core/team.html', {'members': members})
 
 
 ALLOWED_IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg", ".bmp"}

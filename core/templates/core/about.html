@@ -130,7 +130,7 @@ Lapomed{% endblock %} {% block content %}
       <div class="flex justify-end items-center h-full space-x-10">
         <a href="#mission" class="submenu-item active">Missão</a>
         <a href="#about-detail" class="submenu-item">Sobre</a>
-        {% if team_members %}<a href="#people" class="submenu-item">Equipe</a>{% endif %}
+        <a href="{% url 'team' %}" class="submenu-item">Equipe</a>
         {% if timeline %}<a href="#history" class="submenu-item">História</a>{% endif %}
       </div>
     </div>
@@ -207,56 +207,7 @@ Lapomed{% endblock %} {% block content %}
     </div>
   </section>
 
-  <!-- 3. TEAM -->
-  {% if team_members %}
-  <section id="people" class="py-32 px-6 bg-[#fafafa]">
-    <div class="max-w-7xl mx-auto">
-      <h2 class="font-serif-cy text-7xl text-black mb-6">People</h2>
-      <div class="grid md:grid-cols-3 gap-12 mt-20">
-        {% for member in team_members %}
-        <div class="flex flex-col group">
-          <div class="flex items-center space-x-6 mb-8">
-            <div
-              class="w-32 h-32 rounded-full overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-700 shadow-md border-2 border-white"
-            >
-              <img
-                src="{{ member.photo.url }}"
-                class="w-full h-full object-cover"
-                alt="{{ member.name }}"
-              />
-            </div>
-            <div>
-              <h4
-                class="text-xs font-black uppercase tracking-widest text-black mb-1"
-              >
-                {{ member.name }}
-              </h4>
-              <p
-                class="text-[10px] text-gray-400 font-bold uppercase tracking-wider"
-              >
-                {{ member.role }}
-              </p>
-            </div>
-          </div>
-          <p
-            class="text-sm text-gray-500 leading-relaxed font-light mb-8 line-clamp-4"
-          >
-            {{ member.bio|default:"" }}
-          </p>
-          <a
-            href="{{ member.lattes|default:'#' }}"
-            target="_blank"
-            class="px-5 py-2 bg-[#ffcc00] text-white text-[10px] font-black uppercase tracking-widest hover:bg-black transition-colors w-max"
-            >More</a
-          >
-        </div>
-        {% endfor %}
-      </div>
-    </div>
-  </section>
-  {% endif %}
-
-  <!-- 4. HISTORY -->
+  <!-- 3. HISTORY -->
   {% if timeline %}
   <section id="history" class="py-40 bg-[#111] text-white">
     <div class="max-w-7xl mx-auto px-6">

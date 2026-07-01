@@ -1,0 +1,76 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Equipe | LAPOMED{% endblock %}
+{% block content %}
+<div class="bg-white pt-24">
+  <section class="py-20 md:py-28 px-4 min-h-[60vh]">
+    <div class="max-w-7xl mx-auto">
+      <header class="text-center mb-14 md:mb-20">
+        <p class="text-xs font-bold uppercase tracking-widest text-lapomed-gold mb-3">LAPOMED-USP</p>
+        <h1 class="font-serif text-3xl sm:text-4xl md:text-5xl text-gray-900 mb-4 tracking-tight">Nossa Equipe</h1>
+        <p class="text-base md:text-lg text-gray-600 max-w-2xl mx-auto">
+          Pesquisadores, docentes e colaboradores que constroem o Laboratório de Arqueologia e Antropologia das Populações do Oriente Médio.
+        </p>
+      </header>
+
+      {% if members %}
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for member in members %}
+        <article class="group bg-gray-50 rounded-xl overflow-hidden border border-gray-100 hover:shadow-md hover:border-gray-300 transition-all flex flex-col">
+          {% if member.photo %}
+          <div class="w-full aspect-[4/5] overflow-hidden bg-gray-100">
+            <img
+              src="{{ member.photo.url }}"
+              alt="{{ member.name }}"
+              loading="lazy"
+              class="w-full h-full object-cover object-top grayscale group-hover:grayscale-0 transition-all duration-700"
+            >
+          </div>
+          {% else %}
+          <div class="w-full aspect-[4/5] flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 text-gray-300 text-6xl font-serif">
+            {{ member.name|first }}
+          </div>
+          {% endif %}
+
+          <div class="p-6 flex flex-col flex-grow">
+            {% if member.role %}
+            <p class="text-[11px] font-bold uppercase tracking-widest text-lapomed-gold mb-2">{{ member.role }}</p>
+            {% endif %}
+            <h2 class="font-serif text-xl text-gray-900 mb-3 leading-tight">{{ member.name }}</h2>
+            {% if member.bio %}
+            <p class="text-sm text-gray-600 leading-relaxed mb-5 whitespace-pre-line">{{ member.bio }}</p>
+            {% endif %}
+
+            {% if member.email or member.lattes %}
+            <div class="mt-auto pt-4 border-t border-gray-100 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-bold uppercase tracking-widest">
+              {% if member.email %}
+              <a href="mailto:{{ member.email }}" class="inline-flex items-center gap-1.5 text-gray-500 hover:text-lapomed-gold transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 8l9 6 9-6M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                E-mail
+              </a>
+              {% endif %}
+              {% if member.lattes %}
+              <a href="{{ member.lattes }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-gray-500 hover:text-lapomed-gold transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                Lattes
+              </a>
+              {% endif %}
+            </div>
+            {% endif %}
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="text-center mt-10">
+        <div class="inline-flex flex-col items-center px-10 md:px-12 py-14 md:py-16 bg-gray-50 rounded-2xl border border-gray-100">
+          <div class="text-6xl mb-4">👥</div>
+          <p class="text-gray-700 font-medium text-xl mb-2">Em breve</p>
+          <p class="text-gray-500 max-w-md">Os integrantes da equipe serão apresentados aqui em breve.</p>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </section>
+</div>
+{% endblock %}

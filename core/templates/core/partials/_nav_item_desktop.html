@@ -6,6 +6,8 @@ Aceita: item (NavItem instance) — usa item.kind para escolher o renderizador.{
   <a href="{% url 'project_list' %}" class="nav-link nav-link-compact"{% if item.open_in_new_tab %} target="_blank"{% endif %}>{{ item.label }}</a>
 {% elif item.kind == 'about' %}
   <a href="{% url 'about' %}" class="nav-link nav-link-compact"{% if item.open_in_new_tab %} target="_blank"{% endif %}>{{ item.label }}</a>
+{% elif item.kind == 'team' %}
+  <a href="{% url 'team' %}" class="nav-link nav-link-compact"{% if item.open_in_new_tab %} target="_blank"{% endif %}>{{ item.label }}</a>
 {% elif item.kind == 'publications' %}
   <a href="{% if has_publications %}{% url 'publications' %}{% else %}#{% endif %}" class="nav-link nav-link-compact"{% if item.open_in_new_tab %} target="_blank"{% endif %}>{{ item.label }}</a>
 {% elif item.kind == 'learning_hub' %}
