@@ -438,6 +438,7 @@ class NavItem(models.Model):
         ('home', 'Home'),
         ('projects', 'Projetos'),
         ('about', 'Quem Somos'),
+        ('team', 'Equipe'),
         ('publications', 'Publicações'),
         ('learning_hub', 'Hub de Aprendizado'),
         ('collections', 'Coleções Digitais (dropdown)'),
