@@ -116,7 +116,7 @@ class Collection(models.Model):
         ('edificacoes', 'Edificações / Monumentos'),
     ]
     title = models.CharField(max_length=200)
-    description = models.TextField()
+    description = HTMLField(verbose_name="Descrição")
     category = models.CharField(
         max_length=20,
         choices=CATEGORY_CHOICES,
@@ -124,6 +124,11 @@ class Collection(models.Model):
         verbose_name="Categoria",
     )
     cover_image = models.ImageField(upload_to='collections/')
+    explore_url = models.URLField(
+        blank=True,
+        verbose_name="Link do botão Explorar",
+        help_text="URL de destino do botão 'Explorar' no card/modal. Se vazio, usa a página da categoria. Ex: https://lapomed.com.br/colecoes/edificacoes/",
+    )
     projects = models.ManyToManyField(Project, related_name='collections', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

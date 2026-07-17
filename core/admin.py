@@ -29,15 +29,37 @@ class CollectionInline(admin.TabularInline):
     verbose_name = "Adicionar a Coleção"
     verbose_name_plural = "Adicionar a Coleções"
 
+def _thumb_preview(obj):
+    """Miniatura de uma imagem de galeria para deixar claro o que se remove."""
+    if obj and getattr(obj, 'image', None):
+        return format_html(
+            '<img src="{}" style="height:60px;width:auto;border-radius:4px;'
+            'object-fit:cover;border:1px solid #444;" />',
+            obj.image.url,
+        )
+    return '—'
+
+
 class CollectionImageInline(admin.TabularInline):
     model = CollectionImage
-    extra = 3
+    extra = 1
+    fields = ('preview', 'image', 'order')
+    readonly_fields = ('preview',)
+
+    @admin.display(description='Prévia')
+    def preview(self, obj):
+        return _thumb_preview(obj)
 
 
 class ArtifactImageInline(admin.TabularInline):
     model = ArtifactImage
-    extra = 3
-    fields = ('image', 'caption', 'order')
+    extra = 1
+    fields = ('preview', 'image', 'caption', 'order')
+    readonly_fields = ('preview',)
+
+    @admin.display(description='Prévia')
+    def preview(self, obj):
+        return _thumb_preview(obj)
 
 
 # ===== HOME / CAROUSEL =====
@@ -147,6 +169,19 @@ class CollectionAdmin(admin.ModelAdmin):
     list_filter = ('category',)
     inlines = [CollectionImageInline]
     exclude = ('projects',)
+    fieldsets = (
+        ('Identificação', {
+            'fields': ('title', 'category', 'cover_image')
+        }),
+        ('Descrição', {
+            'fields': ('description',),
+            'description': "Editor com formatação. Use o botão de link (🔗) para inserir links no texto.",
+        }),
+        ('Botão "Explorar"', {
+            'fields': ('explore_url',),
+            'description': "Destino do botão Explorar no card/modal. Deixe vazio para usar a página da categoria.",
+        }),
+    )
 
 
 # ===== QUEM SOMOS =====
@@ -437,10 +472,15 @@ class NavItemAdmin(SortableAdminMixin, admin.ModelAdmin):
         ('Configuração', {
             'fields': ('label', 'kind', 'active', 'open_in_new_tab')
         }),
-        ('Sub-item de dropdown (use apenas com Tipo = Sub-item)', {
+        ('URL / Sub-item de dropdown', {
             'fields': ('parent', 'custom_url'),
             'classes': ('collapse',),
-            'description': "Para criar um sub-item dentro de Redes: selecione Tipo = Sub-item, escolha o pai e preencha a URL.",
+            'description': (
+                "• Para o item <b>Contato</b>: preencha a URL com um e-mail no formato "
+                "<code>mailto:contato@lapomed.usp.br</code> (ou uma URL http). "
+                "<br>• Para <b>Custom</b>: qualquer URL/caminho (ex: /contato/). "
+                "<br>• Para <b>Sub-item</b> de Redes: selecione o pai e preencha a URL."
+            ),
         }),
     )
 
