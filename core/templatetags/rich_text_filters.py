@@ -5,11 +5,26 @@ forcado em cada quebra de linha do original — o que destroi o reflow do
 texto no site. O filtro abaixo normaliza esse HTML preservando as marcas
 estruturais (h1-h6, strong, em, ul, ol, a, etc).
 """
+import html as _html
 import re
 from django import template
 from django.utils.safestring import mark_safe
 
 register = template.Library()
+
+
+@register.filter
+def unescape_entities(value):
+    """Decodifica entidades HTML (&Ccedil; &ouml; &amp; …) para o caractere real.
+
+    Útil quando o conteúdo salvo veio entity-encoded e é exibido via
+    ``textContent``/autoescape (cards, atributos data-*), onde as entidades
+    apareceriam literalmente em vez de acentos. NÃO marca como safe — o
+    resultado ainda passa pelo autoescape do template.
+    """
+    if not value:
+        return ""
+    return _html.unescape(str(value))
 
 
 @register.filter

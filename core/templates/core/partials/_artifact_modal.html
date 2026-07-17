@@ -100,7 +100,9 @@ e — para galerias — data-gallery (URLs separadas por |) e data-gallery-capti
         modalTag.classList.add("hidden");
       }
 
-      modalDescription.textContent = description || "Sem descrição disponível.";
+      // innerHTML (não textContent) para renderizar links e acentos do rich text.
+      // Conteúdo é inserido apenas por staff no admin (confiável).
+      modalDescription.innerHTML = description || "Sem descrição disponível.";
 
       if (annotations) {
         modalAnnotations.textContent = annotations;
