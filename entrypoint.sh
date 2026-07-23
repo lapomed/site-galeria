@@ -7,6 +7,12 @@ echo "=== 🚀 Iniciando Entrypoint LAPOMED ==="
 
 # 1. Migrações do banco de dados
 echo "-> 🔄 Rodando migrações..."
+# Rede de segurança: se houver leaf nodes conflitantes no grafo de migrations
+# (ex: dois PRs adicionaram migrations em paralelo), gera automaticamente a
+# migration de merge ANTES do migrate — evita o crash-loop no boot. O --merge
+# NÃO cria migrations de mudança de modelo; apenas unifica leaves, então é seguro
+# rodar sempre (no-op quando não há conflito).
+uv run python manage.py makemigrations --merge --no-input || true
 uv run python manage.py migrate --noinput
 
 # 2. Coletar arquivos estáticos
