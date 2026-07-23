@@ -17,5 +17,6 @@ urlpatterns = [
     path('coalitvs/', views.coalitvs, name='coalitvs'),
     path('coalitvs/<slug:slug>/', views.coalitvs_member_detail, name='coalitvs_member_detail'),
     path('lcp/', views.lcp, name='lcp'),
+    path('contato/', views.contact, name='contact'),
     path('rich-text/upload/', views.tinymce_image_upload, name='tinymce_image_upload'),
 ]
