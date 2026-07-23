@@ -19,7 +19,7 @@ Aceita: item (NavItem instance) — usa item.kind para escolher o renderizador.{
 {% elif item.kind == 'lcp' %}
   {% if has_lcp %}<a href="{% url 'lcp' %}" class="nav-link nav-link-compact"{% if item.open_in_new_tab %} target="_blank"{% endif %}>{{ item.label }}</a>{% endif %}
 {% elif item.kind == 'contact' %}
-  <a href="{{ item.custom_url|default:'#' }}" class="nav-link nav-link-compact"{% if item.open_in_new_tab %} target="_blank" rel="noopener noreferrer"{% endif %}>{{ item.label }}</a>
+  <a href="{% if item.custom_url %}{{ item.custom_url }}{% else %}{% url 'contact' %}{% endif %}" class="nav-link nav-link-compact"{% if item.open_in_new_tab %} target="_blank" rel="noopener noreferrer"{% endif %}>{{ item.label }}</a>
 {% elif item.kind == 'custom' %}
   <a href="{{ item.custom_url|default:'#' }}" class="nav-link nav-link-compact"{% if item.open_in_new_tab %} target="_blank" rel="noopener noreferrer"{% endif %}>{{ item.label }}</a>
 {% elif item.kind == 'collections' %}

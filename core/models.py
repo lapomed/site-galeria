@@ -629,3 +629,85 @@ class LcpPage(models.Model):
 
     def __str__(self):
         return self.hero_title
+
+
+class ContactInfo(models.Model):
+    """Informações de contato do LAPOMED exibidas na página /contato/.
+
+    Singleton-ish: o admin permite só uma instância. A view usa o primeiro
+    registro ativo; se não houver nenhum, a página ainda renderiza com
+    placeholders vazios (sem quebrar).
+    """
+    institution_name = models.CharField(
+        max_length=200,
+        default="Laboratório de Arqueologia — LAPOMED-USP",
+        verbose_name="Nome da instituição",
+        help_text="Nome em destaque no topo da página (ex.: Laboratório de Arqueologia — LAPOMED-USP).",
+    )
+    department = models.TextField(
+        blank=True,
+        verbose_name="Departamento / Afiliação",
+        help_text="Uma linha por informação (ex.: Museu de Arqueologia e Etnologia — MAE / Universidade de São Paulo). Cada quebra de linha vira uma linha na página.",
+    )
+    address = models.TextField(
+        blank=True,
+        verbose_name="Endereço",
+        help_text="Logradouro, número, complemento, bairro, cidade/UF.",
+    )
+    postal_code = models.CharField(
+        max_length=20,
+        blank=True,
+        verbose_name="CEP",
+        help_text="Ex.: 05508-070",
+    )
+    phone = models.CharField(
+        max_length=40,
+        blank=True,
+        verbose_name="Telefone",
+        help_text="Formato de exibição (ex.: (11) 3091-0000).",
+    )
+    whatsapp = models.CharField(
+        max_length=40,
+        blank=True,
+        verbose_name="WhatsApp",
+        help_text="Número de exibição (ex.: (11) 90000-0000). O link é gerado só com os dígitos.",
+    )
+    email = models.EmailField(
+        blank=True,
+        default="lapomed@lapomed.usp.br",
+        verbose_name="E-mail",
+        help_text="E-mail de contato exibido com link mailto.",
+    )
+    maps_embed_url = models.URLField(
+        max_length=600,
+        blank=True,
+        verbose_name="URL do mapa (embed)",
+        help_text="URL do atributo src do iframe do Google Maps (Compartilhar → Incorporar um mapa → copie o valor de src=\"...\").",
+    )
+    maps_directions_url = models.URLField(
+        max_length=600,
+        blank=True,
+        verbose_name="URL 'Como chegar'",
+        help_text="Link do Google Maps para o botão 'Como chegar' (ex.: https://maps.app.goo.gl/...).",
+    )
+    active = models.BooleanField(
+        default=True,
+        verbose_name="Ativo",
+        help_text="Quando desativado, a página de contato usa placeholders vazios.",
+    )
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "📞 Contato - Informações"
+        verbose_name_plural = "📞 Contato - Informações"
+
+    def __str__(self):
+        return self.institution_name
+
+    @property
+    def phone_digits(self):
+        return ''.join(ch for ch in (self.phone or '') if ch.isdigit())
+
+    @property
+    def whatsapp_digits(self):
+        return ''.join(ch for ch in (self.whatsapp or '') if ch.isdigit())

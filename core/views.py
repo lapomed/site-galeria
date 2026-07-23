@@ -15,7 +15,7 @@ from .models import (
     Slide, Project, Collection,
     AboutSection, TeamMember, Timeline, ResearchArea, Partnership,
     Publication, LearningResource, VirtualTour, TourCategory,
-    CoalitvsMember, CoalitvsGroup, LcpPage,
+    CoalitvsMember, CoalitvsGroup, LcpPage, ContactInfo,
 )
 
 def home(request):
@@ -222,6 +222,15 @@ def coalitvs_member_detail(request, slug):
         'member': member,
         'related': related,
     })
+
+
+def contact(request):
+    """Página de contato do LAPOMED. Conteúdo editável no admin (ContactInfo).
+
+    Renderiza mesmo sem registro cadastrado (fallbacks vazios no template).
+    """
+    info = ContactInfo.objects.filter(active=True).first()
+    return render(request, 'core/contact.html', {'info': info})
 
 
 def lcp(request):
