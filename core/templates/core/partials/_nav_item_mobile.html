@@ -18,7 +18,7 @@
 {% elif item.kind == 'lcp' %}
   {% if has_lcp %}<li><a href="{% url 'lcp' %}"{% if item.open_in_new_tab %} target="_blank"{% endif %} class="block p-2 text-gray-900 rounded-lg hover:bg-gray-100">{{ item.label }}</a></li>{% endif %}
 {% elif item.kind == 'contact' %}
-  <li><a href="{{ item.custom_url|default:'#' }}"{% if item.open_in_new_tab %} target="_blank" rel="noopener noreferrer"{% endif %} class="block p-2 text-gray-900 rounded-lg hover:bg-gray-100">{{ item.label }}</a></li>
+  <li><a href="{% if item.custom_url %}{{ item.custom_url }}{% else %}{% url 'contact' %}{% endif %}"{% if item.open_in_new_tab %} target="_blank" rel="noopener noreferrer"{% endif %} class="block p-2 text-gray-900 rounded-lg hover:bg-gray-100">{{ item.label }}</a></li>
 {% elif item.kind == 'custom' %}
   <li><a href="{{ item.custom_url|default:'#' }}"{% if item.open_in_new_tab %} target="_blank" rel="noopener noreferrer"{% endif %} class="block p-2 text-gray-900 rounded-lg hover:bg-gray-100">{{ item.label }}</a></li>
 {% elif item.kind == 'collections' %}

@@ -11,7 +11,7 @@ e — para galerias — data-gallery (URLs separadas por |) e data-gallery-capti
 <div id="artifactModal" tabindex="-1" aria-hidden="true"
      class="hidden fixed inset-0 overflow-y-auto overflow-x-hidden justify-center items-center p-4"
      style="z-index: 99999; background-color: rgba(0, 0, 0, 0.85);">
-  <div class="relative w-full max-w-4xl my-auto rounded-2xl shadow-2xl overflow-hidden"
+  <div class="relative w-full max-w-4xl my-auto rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]"
        style="background: linear-gradient(180deg, #ffffff 0%, #d8d4cc 100%);">
     <!-- Close button -->
     <button type="button" onclick="closeArtifactModal()" aria-label="Fechar"
@@ -20,12 +20,12 @@ e — para galerias — data-gallery (URLs separadas por |) e data-gallery-capti
     </button>
 
     <!-- Media area (image, 3D, embed, or gallery) -->
-    <div id="modalMedia" class="relative w-full flex items-center justify-center bg-transparent" style="min-height: 360px; max-height: 60vh; aspect-ratio: 4 / 3;">
+    <div id="modalMedia" class="relative w-full flex-shrink-0 flex items-center justify-center bg-transparent" style="min-height: 360px; max-height: 60vh; aspect-ratio: 4 / 3;">
       {# conteudo injetado em JS #}
     </div>
 
     <!-- Info area -->
-    <div class="px-8 md:px-10 pt-2 pb-8">
+    <div class="px-8 md:px-10 pt-2 pb-8 overflow-y-auto min-h-0">
       <h3 id="modalTitle" class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">-</h3>
       <p id="modalTag" class="text-xs uppercase tracking-widest text-gray-500 mb-4 hidden"></p>
       <p id="modalDescription" class="text-gray-700 text-sm md:text-base leading-relaxed mb-6">-</p>
@@ -100,9 +100,24 @@ e — para galerias — data-gallery (URLs separadas por |) e data-gallery-capti
         modalTag.classList.add("hidden");
       }
 
-      // innerHTML (não textContent) para renderizar links e acentos do rich text.
-      // Conteúdo é inserido apenas por staff no admin (confiável).
-      modalDescription.innerHTML = description || "Sem descrição disponível.";
+      // A descrição pode vir como rich text (HTML do editor) ou como texto puro
+      // com quebras de linha digitadas no admin. Quando há tags HTML, renderiza
+      // como HTML (links/acentos). Quando é texto puro, preserva as quebras de
+      // linha com pre-wrap e usa textContent (não interpreta HTML, evita perder
+      // a formatação em parágrafos/bullets). Conteúdo vem apenas de staff.
+      if (description) {
+        const looksLikeHtml = /<\/?[a-z][\s\S]*>/i.test(description);
+        if (looksLikeHtml) {
+          modalDescription.style.whiteSpace = "";
+          modalDescription.innerHTML = description;
+        } else {
+          modalDescription.style.whiteSpace = "pre-wrap";
+          modalDescription.textContent = description;
+        }
+      } else {
+        modalDescription.style.whiteSpace = "";
+        modalDescription.textContent = "Sem descrição disponível.";
+      }
 
       if (annotations) {
         modalAnnotations.textContent = annotations;

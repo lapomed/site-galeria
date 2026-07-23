@@ -8,7 +8,7 @@ from .models import (
     Slide, Project, Artifact, ArtifactImage, Collection, CollectionImage,
     AboutSection, TeamMember, Timeline, ResearchArea, Partnership,
     Publication, LearningResource, VirtualTour, TourCategory, SocialLink,
-    CoalitvsGroup, CoalitvsMember, NavItem, LcpPage,
+    CoalitvsGroup, CoalitvsMember, NavItem, LcpPage, ContactInfo,
 )
 
 # ===== CONFIGURAÇÃO DO SITE ADMIN =====
@@ -516,5 +516,37 @@ class LcpPageAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         # Singleton: só permite criar se não existe
         if LcpPage.objects.exists():
+            return False
+        return super().has_add_permission(request)
+
+
+@admin.register(ContactInfo)
+class ContactInfoAdmin(admin.ModelAdmin):
+    list_display = ('institution_name', 'email', 'phone', 'active', 'updated_at')
+    list_editable = ('active',)
+    fieldsets = (
+        ('Instituição', {
+            'fields': ('institution_name', 'department'),
+        }),
+        ('Endereço', {
+            'fields': ('address', 'postal_code'),
+        }),
+        ('Contatos', {
+            'fields': ('phone', 'whatsapp', 'email'),
+            'description': "Telefone e WhatsApp são exibidos como texto; o link é gerado só com os dígitos.",
+        }),
+        ('Mapa', {
+            'fields': ('maps_embed_url', 'maps_directions_url'),
+            'description': "URL do embed do Google Maps (valor do src do iframe) e link 'Como chegar'.",
+        }),
+        ('Visibilidade', {
+            'fields': ('active',),
+            'description': "Quando inativo, a página de contato usa placeholders vazios.",
+        }),
+    )
+
+    def has_add_permission(self, request):
+        # Singleton: só permite criar se não existe
+        if ContactInfo.objects.exists():
             return False
         return super().has_add_permission(request)
