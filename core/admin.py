@@ -179,7 +179,7 @@ class CollectionAdmin(admin.ModelAdmin):
         }),
         ('Botão "Explorar"', {
             'fields': ('explore_url',),
-            'description': "Destino do botão Explorar no card/modal. Deixe vazio para usar a página da categoria.",
+            'description': "Cole a URL de destino do botão Explorar (modelo 3D, página do projeto, ou o link de um tour da página de Visitas 3D). Se ficar vazio, o botão Explorar não aparece no modal.",
         }),
     )
 
@@ -502,7 +502,7 @@ class LcpPageAdmin(admin.ModelAdmin):
     list_editable = ('active',)
     fieldsets = (
         ('Conteúdo', {
-            'fields': ('hero_title', 'hero_subtitle', 'logo_lcp', 'content'),
+            'fields': ('hero_title', 'hero_subtitle', 'hero_bg_image', 'logo_lcp', 'content'),
         }),
         ('Botão / Link externo', {
             'fields': ('external_url', 'button_label'),

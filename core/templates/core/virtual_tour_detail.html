@@ -160,8 +160,34 @@
       requestFs(exp);
       if (kind === 'iframe') {
         const iframe = expMedia.querySelector('iframe');
-        if (iframe) iframe.addEventListener('load', hideLoader, { once: true });
-        else hideLoader();
+        if (iframe) {
+          // Muitos códigos de embed (p3d.in, Sketchfab) vêm com largura/altura
+          // fixas (ex: 1024x768, 640x480) e/ou dentro de um wrapper. Forçamos o
+          // iframe (e seu wrapper) a preencher a tela inteira da experiência.
+          iframe.removeAttribute('width');
+          iframe.removeAttribute('height');
+          iframe.style.position = 'absolute';
+          iframe.style.top = '0';
+          iframe.style.left = '0';
+          iframe.style.width = '100%';
+          iframe.style.height = '100%';
+          iframe.style.border = '0';
+          iframe.setAttribute('allowfullscreen', '');
+          if (!iframe.getAttribute('allow')) {
+            iframe.setAttribute('allow', 'autoplay; fullscreen; xr-spatial-tracking');
+          }
+          const wrapper = iframe.parentElement;
+          if (wrapper && wrapper !== expMedia) {
+            wrapper.style.position = 'absolute';
+            wrapper.style.top = '0';
+            wrapper.style.left = '0';
+            wrapper.style.width = '100%';
+            wrapper.style.height = '100%';
+          }
+          iframe.addEventListener('load', hideLoader, { once: true });
+        } else {
+          hideLoader();
+        }
       } else if (kind === 'model') {
         const mv = document.getElementById('vtModelViewer');
         if (mv) mv.addEventListener('load', hideLoader, { once: true });
