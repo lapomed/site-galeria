@@ -530,16 +530,11 @@ class ContactInfoAdmin(admin.ModelAdmin):
         }),
         ('Endereço', {
             'fields': ('address', 'postal_code'),
-            'description': "Preencha o endereço e o CEP. O mapa e o botão 'Como chegar' são gerados AUTOMATICAMENTE a partir daqui — não precisa preencher os campos de mapa abaixo.",
+            'description': "Preencha o endereço e o CEP. O mapa de localização e o botão 'Como chegar' aparecem AUTOMATICAMENTE a partir daqui.",
         }),
         ('Contatos', {
             'fields': ('phone', 'whatsapp', 'email'),
             'description': "Telefone e WhatsApp são exibidos como texto; o link é gerado só com os dígitos.",
-        }),
-        ('Mapa (opcional — só para sobrescrever)', {
-            'fields': ('maps_embed_url', 'maps_directions_url'),
-            'description': "OPCIONAL. Deixe vazio: o mapa e o 'Como chegar' saem do endereço acima. Preencha só se quiser um mapa específico (ex.: pino exato do Google Maps → Compartilhar → Incorporar → copie o src).",
-            'classes': ('collapse',),
         }),
         ('Visibilidade', {
             'fields': ('active',),
