@@ -155,7 +155,8 @@ class ArtifactAdmin(admin.ModelAdmin):
     inlines = [ArtifactImageInline]
     fieldsets = (
         ('Identificação', {
-            'fields': ('project', 'title', 'category', 'description')
+            'fields': ('project', 'title', 'category', 'description'),
+            'description': "⚠️ Estes Artefatos aparecem SOMENTE na página interna do Projeto — NÃO aparecem no portal /colecoes/. Para publicar no portal público, cadastre em '🗂️ Coleções Digitais'.",
         }),
         ('Mídia', {
             'fields': ('image', 'sketchfab_embed', 'model_file', 'annotations')
@@ -171,7 +172,8 @@ class CollectionAdmin(admin.ModelAdmin):
     exclude = ('projects',)
     fieldsets = (
         ('Identificação', {
-            'fields': ('title', 'category', 'cover_image')
+            'fields': ('title', 'category', 'cover_image'),
+            'description': "✅ É AQUI que você cadastra o que aparece no portal público /colecoes/ (Artefatos, Escavações, Edificações). A categoria define em qual aba do portal o item aparece.",
         }),
         ('Descrição', {
             'fields': ('description',),
