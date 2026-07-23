@@ -716,3 +716,36 @@ class ContactInfo(models.Model):
     @property
     def whatsapp_digits(self):
         return ''.join(ch for ch in (self.whatsapp or '') if ch.isdigit())
+
+    @property
+    def _map_query(self):
+        """Endereço + CEP em uma linha, para montar URLs do Google Maps."""
+        addr = (self.address or '').replace('\r', ' ').replace('\n', ', ').strip()
+        parts = [p for p in (addr, (self.postal_code or '').strip()) if p]
+        return ', '.join(parts)
+
+    @property
+    def map_embed_src(self):
+        """URL para o iframe do mapa.
+
+        Usa o embed manual se preenchido; senão gera automaticamente a partir do
+        endereço (método q=...&output=embed, que funciona sem chave de API).
+        """
+        if self.maps_embed_url:
+            return self.maps_embed_url
+        query = self._map_query
+        if query:
+            from urllib.parse import quote
+            return f"https://maps.google.com/maps?q={quote(query)}&z=16&output=embed"
+        return ""
+
+    @property
+    def directions_href(self):
+        """Link 'Como chegar'. Usa o manual se preenchido; senão gera do endereço."""
+        if self.maps_directions_url:
+            return self.maps_directions_url
+        query = self._map_query
+        if query:
+            from urllib.parse import quote
+            return f"https://www.google.com/maps/dir/?api=1&destination={quote(query)}"
+        return ""

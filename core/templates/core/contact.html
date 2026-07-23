@@ -69,10 +69,10 @@
         {% endif %}
       </div>
 
-      {% if info.maps_directions_url %}
+      {% if info.directions_href %}
       <p class="text-center text-gray-600 mb-14">
         <span class="font-medium">Como chegar:</span>
-        <a href="{{ info.maps_directions_url }}" target="_blank" rel="noopener noreferrer" class="text-lapomed-gold font-semibold hover:underline">clique aqui</a>
+        <a href="{{ info.directions_href }}" target="_blank" rel="noopener noreferrer" class="text-lapomed-gold font-semibold hover:underline">clique aqui</a>
       </p>
       {% endif %}
 
@@ -81,11 +81,11 @@
         <h3 class="font-serif text-2xl text-gray-900 mb-2">Mapa de localização</h3>
         <div class="mx-auto w-16 h-[3px] bg-lapomed-gold rounded-full mb-8"></div>
 
-        {% if info.maps_embed_url %}
+        {% if info.map_embed_src %}
         <div class="w-full overflow-hidden rounded-xl border border-gray-100 shadow-sm">
           <div class="relative w-full" style="aspect-ratio: 16 / 9;">
             <iframe
-              src="{{ info.maps_embed_url }}"
+              src="{{ info.map_embed_src }}"
               class="absolute inset-0 w-full h-full"
               style="border:0;"
               allowfullscreen=""
