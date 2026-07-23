@@ -127,7 +127,7 @@ class Collection(models.Model):
     explore_url = models.URLField(
         blank=True,
         verbose_name="Link do botão Explorar",
-        help_text="URL de destino do botão 'Explorar' no card/modal. Se vazio, usa a página da categoria. Ex: https://lapomed.com.br/colecoes/edificacoes/",
+        help_text="URL de destino do botão 'Explorar' no modal (ex: modelo 3D, página do projeto, tour 3D das Visitas 3D). Se vazio, o botão Explorar não aparece.",
     )
     projects = models.ManyToManyField(Project, related_name='collections', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -601,6 +601,11 @@ class LcpPage(models.Model):
         upload_to='lcp/', blank=True, null=True,
         verbose_name="Logo do LCP",
         help_text="Opcional. Se vazio, um placeholder será exibido.",
+    )
+    hero_bg_image = models.ImageField(
+        upload_to='lcp/', blank=True, null=True,
+        verbose_name="Imagem de fundo do Hero",
+        help_text="Opcional. Imagem de fundo atrás do título. Se vazio, usa o gradiente escuro padrão.",
     )
     content = HTMLField(
         blank=True,

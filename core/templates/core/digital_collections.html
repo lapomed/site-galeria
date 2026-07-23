@@ -32,7 +32,7 @@
               data-gallery="{% if item.cover_image %}{{ item.cover_image.url }}{% endif %}{% for img in item.images.all %}{% if item.cover_image or not forloop.first %}|{% endif %}{{ img.image.url }}{% endfor %}"
               data-gallery-captions="{% if item.cover_image %}{{ item.title|escape }}{% endif %}{% for img in item.images.all %}{% if item.cover_image or not forloop.first %}|{% endif %}{% endfor %}"
               data-tag="{{ item.get_category_display }}"
-              data-explore-url="{% if item.explore_url %}{{ item.explore_url }}{% else %}{% url 'digital_collections' item.category %}{% endif %}"
+              data-explore-url="{{ item.explore_url|default:'' }}"
               data-explore-label="Descubra <strong>{{ item.title|escape }}</strong> e mais na coleção <span class='text-lapomed-gold font-bold'>{{ item.get_category_display|escape }}</span>."
             >
               {% if item.cover_image %}<img src="{{ item.cover_image.url }}" alt="{{ item.title }}" class="w-full h-48 object-cover">{% endif %}
