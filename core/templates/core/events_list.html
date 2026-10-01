@@ -1,0 +1,32 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Eventos | LAPOMED{% endblock %}
+{% block content %}
+<div class="bg-white pt-24">
+  <section class="py-16 md:py-20 px-4">
+    <div class="max-w-6xl mx-auto">
+      <header class="text-center mb-14">
+        <p class="text-xs font-bold uppercase tracking-widest text-lapomed-gold mb-3">LAPOMED</p>
+        <h1 class="font-serif text-4xl sm:text-5xl text-gray-900 tracking-tight">Eventos</h1>
+        <div class="mt-6 mx-auto w-24 h-[3px] bg-lapomed-gold rounded-full"></div>
+      </header>
+
+      <h2 class="font-serif text-2xl text-gray-900 mb-6">Próximos</h2>
+      {% if upcoming %}
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+          {% for e in upcoming %}{% include 'core/partials/_event_card.html' with e=e %}{% endfor %}
+        </div>
+      {% else %}
+        <p class="text-gray-500 mb-16">Nenhum evento agendado no momento.</p>
+      {% endif %}
+
+      {% if past %}
+        <h2 class="font-serif text-2xl text-gray-900 mb-6">Realizados</h2>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {% for e in past %}{% include 'core/partials/_event_card.html' with e=e %}{% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </section>
+</div>
+{% endblock %}

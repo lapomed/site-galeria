@@ -1,0 +1,62 @@
+{% extends 'intranet/base_intranet.html' %}
+{% block title %}Tarefas | Intranet{% endblock %}
+{% block page_title %}Tarefas{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+  <p class="text-sm text-gray-500">Arraste os cards entre as colunas para mudar o status.</p>
+  <a href="{% url 'intranet:task_create' %}" class="bg-lapomed-gold hover:brightness-95 text-gray-900 font-bold text-sm px-4 py-2 rounded-lg">+ Nova tarefa</a>
+</div>
+
+<div class="grid md:grid-cols-3 gap-4" id="board">
+  {% for col in columns %}
+  <div class="bg-gray-50 rounded-xl border border-gray-200 flex flex-col">
+    <div class="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+      <h2 class="font-serif text-gray-900">{{ col.label }}</h2>
+      <span class="text-xs text-gray-400">{{ col.tasks|length }}</span>
+    </div>
+    <div class="p-3 space-y-2 min-h-[120px] flex-1 kanban-col" data-status="{{ col.key }}">
+      {% for t in col.tasks %}
+      <div class="kanban-card bg-white rounded-lg border border-gray-200 p-3 shadow-sm cursor-move" draggable="true" data-id="{{ t.pk }}">
+        <a href="{% url 'intranet:task_edit' t.pk %}" class="block font-medium text-sm text-gray-800 hover:text-lapomed-gold">{{ t.title }}</a>
+        <div class="flex items-center justify-between mt-2">
+          <span class="text-[10px] uppercase tracking-wide px-2 py-0.5 rounded-full
+            {% if t.priority == 'alta' %}bg-red-100 text-red-700{% elif t.priority == 'media' %}bg-yellow-100 text-yellow-700{% else %}bg-gray-100 text-gray-600{% endif %}">{{ t.get_priority_display }}</span>
+          {% if t.due_date %}<span class="text-[11px] text-gray-400">{{ t.due_date|date:'d/m' }}</span>{% endif %}
+        </div>
+        {% if t.assignees.all %}
+        <div class="flex -space-x-1 mt-2">
+          {% for a in t.assignees.all %}<span title="{{ a.get_full_name|default:a.username }}" class="w-6 h-6 rounded-full bg-[#1e3a5f] text-white text-[10px] flex items-center justify-center border border-white">{{ a.get_full_name|default:a.username|slice:':1'|upper }}</span>{% endfor %}
+        </div>{% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function(){
+  var dragged=null;
+  function getCsrf(){var m=document.cookie.match(/csrftoken=([^;]+)/);return m?m[1]:'';}
+  document.querySelectorAll('.kanban-card').forEach(function(c){
+    c.addEventListener('dragstart',function(){dragged=c;setTimeout(function(){c.classList.add('opacity-40');},0);});
+    c.addEventListener('dragend',function(){c.classList.remove('opacity-40');dragged=null;});
+  });
+  document.querySelectorAll('.kanban-col').forEach(function(col){
+    col.addEventListener('dragover',function(e){e.preventDefault();
+      var after=null,cards=[].slice.call(col.querySelectorAll('.kanban-card:not(.opacity-40)'));
+      for(var i=0;i<cards.length;i++){var r=cards[i].getBoundingClientRect();if(e.clientY<r.top+r.height/2){after=cards[i];break;}}
+      if(dragged){ if(after){col.insertBefore(dragged,after);}else{col.appendChild(dragged);} }
+    });
+    col.addEventListener('drop',function(e){e.preventDefault();if(!dragged)return;
+      var status=col.getAttribute('data-status');
+      var ids=[].slice.call(col.querySelectorAll('.kanban-card')).map(function(x){return x.getAttribute('data-id');});
+      fetch("{% url 'intranet:task_move' %}",{method:'POST',headers:{'Content-Type':'application/json','X-CSRFToken':getCsrf()},
+        body:JSON.stringify({task_id:dragged.getAttribute('data-id'),status:status,ordered_ids:ids})});
+    });
+  });
+})();
+</script>
+{% endblock %}

@@ -148,6 +148,61 @@ class CollectionImage(models.Model):
         ordering = ['order']
 
 
+# ===== EVENTOS (cadastrados na intranet, exibidos no site) =====
+
+class Event(models.Model):
+    CATEGORY_CHOICES = [
+        ('palestra', 'Palestra'),
+        ('workshop', 'Workshop / Minicurso'),
+        ('defesa', 'Defesa / Qualificação'),
+        ('exposicao', 'Exposição'),
+        ('congresso', 'Congresso / Simpósio'),
+        ('outro', 'Outro'),
+    ]
+    title = models.CharField(max_length=200, verbose_name="Título")
+    slug = models.SlugField(max_length=220, unique=True, blank=True, verbose_name="Slug (URL)")
+    description = HTMLField(blank=True, verbose_name="Descrição")
+    start_at = models.DateTimeField(verbose_name="Início")
+    end_at = models.DateTimeField(null=True, blank=True, verbose_name="Término")
+    location = models.CharField(max_length=300, blank=True, verbose_name="Local")
+    cover_image = models.ImageField(upload_to='events/', blank=True, null=True, verbose_name="Imagem de capa")
+    registration_url = models.URLField(blank=True, verbose_name="Link de inscrição")
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='outro', verbose_name="Categoria")
+    published = models.BooleanField(default=False, verbose_name="Publicado no site", help_text="Quando marcado, o evento aparece na página pública /eventos/.")
+    created_by = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True, blank=True, related_name='events_created')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-start_at']
+        verbose_name = "📅 Eventos - Evento"
+        verbose_name_plural = "📅 Eventos - Eventos"
+
+    def __str__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            from django.utils.text import slugify
+            base = slugify(self.title)[:200] or "evento"
+            slug = base
+            i = 2
+            while Event.objects.exclude(pk=self.pk).filter(slug=slug).exists():
+                slug = f"{base}-{i}"
+                i += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
+
+    def is_upcoming(self):
+        from django.utils import timezone
+        ref = self.end_at or self.start_at
+        return ref >= timezone.now()
+
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('event_detail', args=[self.slug])
+
+
 # ===== MODELOS PARA PÁGINA "QUEM SOMOS" =====
 
 class AboutSection(models.Model):
@@ -174,6 +229,11 @@ class AboutSection(models.Model):
 
 class TeamMember(models.Model):
     """Membros da equipe do LAPOMED"""
+    user = models.OneToOneField(
+        'auth.User', on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='team_member', verbose_name="Usuário da intranet",
+        help_text="Vincula este membro a uma conta de login da intranet (opcional).",
+    )
     name = models.CharField(max_length=200, verbose_name="Nome")
     role = models.CharField(max_length=200, verbose_name="Cargo/Função")
     bio = models.TextField(verbose_name="Biografia")
@@ -448,6 +508,7 @@ class NavItem(models.Model):
         ('learning_hub', 'Hub de Aprendizado'),
         ('collections', 'Coleções Digitais (dropdown)'),
         ('virtual_tours', 'Visitas Virtuais 3D'),
+        ('events', 'Eventos'),
         ('coalitvs', 'COALITVS'),
         ('lcp', 'LCP — Levantine Ceramics Project'),
         ('social', 'Notícias / Redes (dropdown)'),

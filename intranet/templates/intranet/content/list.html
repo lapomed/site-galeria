@@ -1,0 +1,24 @@
+{% extends 'intranet/base_intranet.html' %}
+{% block title %}{{ cfg.label }} | Intranet{% endblock %}
+{% block page_title %}{{ cfg.icon }} {{ cfg.label }}{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+  <a href="{% url 'intranet:content_index' %}" class="text-sm text-gray-500 hover:text-gray-800">← Conteúdo do site</a>
+  <a href="{% url 'intranet:content_create' slug %}" class="bg-lapomed-gold hover:brightness-95 text-gray-900 font-bold text-sm px-4 py-2 rounded-lg">+ Adicionar</a>
+</div>
+<div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+  <ul class="divide-y divide-gray-100">
+    {% for obj in objects %}
+    <li class="flex items-center justify-between px-4 py-3 hover:bg-gray-50">
+      <a href="{% url 'intranet:content_edit' slug obj.pk %}" class="text-sm font-medium text-gray-800 hover:text-lapomed-gold truncate">{{ obj }}</a>
+      <div class="flex items-center gap-3 flex-shrink-0 ml-3">
+        <a href="{% url 'intranet:content_edit' slug obj.pk %}" class="text-sm text-gray-500 hover:text-lapomed-gold">Editar</a>
+        <form method="post" action="{% url 'intranet:content_delete' slug obj.pk %}" onsubmit="return confirm('Excluir este registro?');">
+          {% csrf_token %}<button class="text-sm text-red-500 hover:text-red-700">Excluir</button>
+        </form>
+      </div>
+    </li>
+    {% empty %}<li class="px-4 py-10 text-center text-gray-400 text-sm">Nenhum registro.</li>{% endfor %}
+  </ul>
+</div>
+{% endblock %}

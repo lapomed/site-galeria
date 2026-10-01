@@ -1,0 +1,30 @@
+{% extends 'intranet/base_intranet.html' %}
+{% block title %}Calendário | Intranet{% endblock %}
+{% block page_title %}Calendário{% endblock %}
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+{% endblock %}
+{% block content %}
+<div class="bg-white rounded-xl border border-gray-200 p-4 md:p-6">
+  <div class="flex items-center gap-4 mb-4 text-xs text-gray-500">
+    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm" style="background:#1e3a5f"></span> Eventos</span>
+    <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-sm bg-lapomed-gold"></span> Prazos de tarefas</span>
+  </div>
+  <div id="calendar"></div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var el = document.getElementById('calendar');
+    var cal = new FullCalendar.Calendar(el, {
+      initialView: 'dayGridMonth', locale: 'pt-br', height: 'auto',
+      headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,listWeek' },
+      buttonText: { today: 'hoje', month: 'mês', week: 'semana', list: 'lista' },
+      events: "{% url 'intranet:calendar_feed' %}",
+      eventClick: function(info){ if(info.event.url){ info.jsEvent.preventDefault(); window.location.href = info.event.url; } }
+    });
+    cal.render();
+  });
+</script>
+{% endblock %}

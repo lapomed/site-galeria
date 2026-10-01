@@ -15,12 +15,29 @@ from .models import (
     Slide, Project, Collection,
     AboutSection, TeamMember, Timeline, ResearchArea, Partnership,
     Publication, LearningResource, VirtualTour, TourCategory,
-    CoalitvsMember, CoalitvsGroup, LcpPage, ContactInfo,
+    CoalitvsMember, CoalitvsGroup, LcpPage, ContactInfo, Event,
 )
+from django.utils import timezone
 
 def home(request):
     slides = Slide.objects.filter(active=True).order_by('order', 'id')
-    return render(request, 'core/home.html', {'slides': slides})
+    upcoming_events = Event.objects.filter(
+        published=True, start_at__gte=timezone.now()
+    ).order_by('start_at')[:3]
+    return render(request, 'core/home.html', {'slides': slides, 'upcoming_events': upcoming_events})
+
+
+def events_list(request):
+    now = timezone.now()
+    qs = Event.objects.filter(published=True)
+    upcoming = qs.filter(start_at__gte=now).order_by('start_at')
+    past = qs.filter(start_at__lt=now).order_by('-start_at')
+    return render(request, 'core/events_list.html', {'upcoming': upcoming, 'past': past})
+
+
+def event_detail(request, slug):
+    event = get_object_or_404(Event, slug=slug, published=True)
+    return render(request, 'core/event_detail.html', {'event': event})
 
 def project_list(request):
     query = request.GET.get('q')

@@ -1,0 +1,33 @@
+{% extends 'intranet/base_intranet.html' %}
+{% block title %}Eventos | Intranet{% endblock %}
+{% block page_title %}Eventos{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+  <p class="text-sm text-gray-500">{{ events|length }} evento{{ events|length|pluralize:'s' }}</p>
+  <a href="{% url 'intranet:event_create' %}" class="bg-lapomed-gold hover:brightness-95 text-gray-900 font-bold text-sm px-4 py-2 rounded-lg">+ Novo evento</a>
+</div>
+
+<div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-gray-50 text-xs uppercase tracking-widest text-gray-500">
+      <tr><th class="text-left px-4 py-3">Título</th><th class="text-left px-4 py-3 hidden sm:table-cell">Data</th><th class="text-left px-4 py-3 hidden md:table-cell">Local</th><th class="px-4 py-3">No site</th><th class="px-4 py-3"></th></tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for e in events %}
+      <tr class="hover:bg-gray-50">
+        <td class="px-4 py-3"><a href="{% url 'intranet:event_edit' e.pk %}" class="font-medium text-gray-800 hover:text-lapomed-gold">{{ e.title }}</a></td>
+        <td class="px-4 py-3 text-gray-500 hidden sm:table-cell">{{ e.start_at|date:'d/m/Y H:i' }}</td>
+        <td class="px-4 py-3 text-gray-500 hidden md:table-cell">{{ e.location|default:'—' }}</td>
+        <td class="px-4 py-3 text-center">{% if e.published %}<span class="text-green-600">●</span>{% else %}<span class="text-gray-300">●</span>{% endif %}</td>
+        <td class="px-4 py-3 text-right whitespace-nowrap">
+          <a href="{% url 'intranet:event_edit' e.pk %}" class="text-gray-500 hover:text-lapomed-gold">Editar</a>
+          <form method="post" action="{% url 'intranet:event_delete' e.pk %}" class="inline" onsubmit="return confirm('Excluir este evento?');">
+            {% csrf_token %}<button class="text-red-500 hover:text-red-700 ml-3">Excluir</button>
+          </form>
+        </td>
+      </tr>
+      {% empty %}<tr><td colspan="5" class="px-4 py-10 text-center text-gray-400">Nenhum evento cadastrado.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
