@@ -39,11 +39,17 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "core",
+    "intranet",
     "tailwind",
     "lapomed",
     "django_browser_reload",
     "tinymce",
 ]
+
+# ===== Intranet (área interna, fora do admin) =====
+LOGIN_URL = "intranet:login"
+LOGIN_REDIRECT_URL = "intranet:dashboard"
+LOGOUT_REDIRECT_URL = "intranet:login"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

@@ -1,0 +1,26 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}{{ event.title }} | Eventos LAPOMED{% endblock %}
+{% block content %}
+<div class="bg-white pt-24">
+  {% if event.cover_image %}
+  <div class="w-full h-64 md:h-96 bg-cover bg-center" style="background-image:url('{{ event.cover_image.url }}');"></div>
+  {% endif %}
+  <article class="max-w-3xl mx-auto px-4 py-12 md:py-16">
+    <a href="{% url 'events_list' %}" class="text-sm text-gray-500 hover:text-lapomed-gold">← Todos os eventos</a>
+    <p class="text-[11px] font-bold uppercase tracking-widest text-lapomed-gold mt-6 mb-2">{{ event.get_category_display }}</p>
+    <h1 class="font-serif text-3xl md:text-4xl text-gray-900 mb-4">{{ event.title }}</h1>
+    <div class="flex flex-wrap gap-4 text-sm text-gray-600 mb-8 pb-8 border-b border-gray-100">
+      <span>🗓 {{ event.start_at|date:'d/m/Y H:i' }}{% if event.end_at %} – {{ event.end_at|date:'d/m/Y H:i' }}{% endif %}</span>
+      {% if event.location %}<span>📍 {{ event.location }}</span>{% endif %}
+    </div>
+    {% if event.description %}<div class="rich-text text-gray-700 leading-relaxed">{{ event.description|safe }}</div>{% endif %}
+    {% if event.registration_url %}
+    <div class="mt-10">
+      <a href="{{ event.registration_url }}" target="_blank" rel="noopener noreferrer"
+         class="inline-flex items-center gap-2 px-8 py-3 bg-lapomed-gold hover:brightness-95 text-gray-900 font-bold rounded-full shadow-md">Inscreva-se</a>
+    </div>
+    {% endif %}
+  </article>
+</div>
+{% endblock %}

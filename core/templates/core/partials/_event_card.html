@@ -1,0 +1,14 @@
+{% load static %}
+<a href="{% url 'event_detail' e.slug %}" class="group bg-gray-50 rounded-xl overflow-hidden border border-gray-100 hover:shadow-md hover:border-gray-300 transition-all flex flex-col">
+  {% if e.cover_image %}
+    <img src="{{ e.cover_image.url }}" alt="{{ e.title }}" class="w-full h-44 object-cover">
+  {% else %}
+    <div class="w-full h-44 bg-gradient-to-br from-[#1e3a5f] to-[#0b0b0b] flex items-center justify-center text-4xl">📅</div>
+  {% endif %}
+  <div class="p-5 flex flex-col flex-1">
+    <p class="text-[11px] font-bold uppercase tracking-widest text-lapomed-gold mb-1">{{ e.get_category_display }}</p>
+    <h3 class="font-serif text-lg text-gray-900 group-hover:text-lapomed-gold transition-colors mb-2">{{ e.title }}</h3>
+    <p class="text-sm text-gray-600">🗓 {{ e.start_at|date:'d/m/Y H:i' }}</p>
+    {% if e.location %}<p class="text-sm text-gray-500 mt-1">📍 {{ e.location }}</p>{% endif %}
+  </div>
+</a>

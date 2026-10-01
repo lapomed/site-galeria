@@ -1,0 +1,17 @@
+{% extends 'intranet/base_intranet.html' %}
+{% block title %}Conteúdo do site | Intranet{% endblock %}
+{% block page_title %}Conteúdo do site{% endblock %}
+{% block content %}
+<p class="text-sm text-gray-500 mb-6">Edite o que aparece no site público. As alterações entram no ar no próximo deploy / imediatamente, conforme o conteúdo.</p>
+<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+  {% for it in items %}
+  <a href="{% url 'intranet:content_list' it.slug %}" class="bg-white rounded-xl border border-gray-200 p-5 hover:border-lapomed-gold hover:shadow-sm transition block">
+    <div class="flex items-center justify-between">
+      <span class="text-2xl">{{ it.icon }}</span>
+      <span class="text-xs text-gray-400">{{ it.count }} itens</span>
+    </div>
+    <p class="font-serif text-lg text-gray-900 mt-3">{{ it.label }}</p>
+  </a>
+  {% empty %}<p class="text-sm text-gray-400">Você não tem permissão para editar conteúdo do site.</p>{% endfor %}
+</div>
+{% endblock %}

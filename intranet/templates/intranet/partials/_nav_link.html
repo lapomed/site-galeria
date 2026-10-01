@@ -1,0 +1,6 @@
+{% url url as href %}
+<a href="{{ href }}"
+   class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors {% if nav == key %}bg-lapomed-gold text-gray-900 font-semibold{% else %}text-gray-300 hover:bg-white/10{% endif %}">
+  <span class="w-5 text-center">{{ icon }}</span>
+  <span>{{ label }}</span>
+</a>

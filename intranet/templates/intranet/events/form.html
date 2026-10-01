@@ -1,0 +1,14 @@
+{% extends 'intranet/base_intranet.html' %}
+{% block title %}{% if instance %}Editar{% else %}Novo{% endif %} evento | Intranet{% endblock %}
+{% block page_title %}{% if instance %}Editar evento{% else %}Novo evento{% endif %}{% endblock %}
+{% block extra_head %}{{ form.media }}{% endblock %}
+{% block content %}
+<form method="post" enctype="multipart/form-data" class="bg-white rounded-xl border border-gray-200 p-6 max-w-3xl">
+  {% csrf_token %}
+  {% include 'intranet/partials/_form_fields.html' %}
+  <div class="flex items-center gap-3 mt-8 pt-5 border-t border-gray-100">
+    <button type="submit" class="bg-lapomed-gold hover:brightness-95 text-gray-900 font-bold text-sm px-5 py-2.5 rounded-lg">Salvar</button>
+    <a href="{% url 'intranet:events_list' %}" class="text-sm text-gray-500 hover:text-gray-800">Cancelar</a>
+  </div>
+</form>
+{% endblock %}

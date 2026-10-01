@@ -209,3 +209,18 @@ Cada fase é um PR próprio (com sua migration, se houver), partindo da main atu
 3. **Detalhe de evento**: página dedicada (padrão) ou modal reutilizando o do site?
 4. **Kanban com drag-and-drop** (proposto) vs. lista simples com troca de status por botão (mais simples) no v1?
 5. **E-mail** mesmo sendo Fase 2 — alguma urgência que justifique antecipar?
+
+---
+
+## 13. Status da implementação (v1 — PR único)
+
+Implementado nesta entrega:
+- App `intranet` em `/intranet/` com shell próprio (sidebar + topbar) no design do site.
+- Login/logout próprios + grupos **Professor**/**Colaborador** (data migration) + mixins de permissão.
+- Painel, **Eventos** (CRUD + vitrine pública `/eventos/` + detalhe + card na home + NavItem `events`), **Tarefas** (Kanban com arrastar + endpoint de mover), **Calendário** (FullCalendar + feed JSON), **Equipe/contas** (gestão de contas pelo Professor, vínculo `User`↔`TeamMember`), e **Conteúdo do site** (CRUD genérico: Projetos, Coleções, Visitas 3D, Slides, Publicações, Equipe).
+- Admin do dono também ganhou `Event` e `Task`.
+- Suíte de testes de fumaça (7 testes) + `lapomed_gallery/test_settings.py` (roda a suíte em SQLite desativando migrations, contornando o bug da 0016).
+
+**Defaults aplicados nas 5 questões em aberto:** (1) gestão de contas na intranet = sim (Professor); (2) Colaborador restrito conforme matriz; (3) evento com página de detalhe; (4) Kanban com arrastar; (5) e-mail = Fase 2.
+
+**Limitação conhecida (v1):** galerias de imagem aninhadas (ex.: imagens de Coleção, galeria de Artefato) ainda são gerenciadas pelo admin do Django — o CRUD genérico da intranet edita os campos do próprio registro, não os inlines. Fica para uma Fase 2 (formsets).

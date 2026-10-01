@@ -1,0 +1,43 @@
+{% extends 'intranet/base_intranet.html' %}
+{% block title %}Equipe | Intranet{% endblock %}
+{% block page_title %}Equipe{% endblock %}
+{% block content %}
+{% if can_manage %}
+<div class="flex items-center justify-between mb-5">
+  <h2 class="font-serif text-lg text-gray-900">Contas de acesso</h2>
+  <a href="{% url 'intranet:user_create' %}" class="bg-lapomed-gold hover:brightness-95 text-gray-900 font-bold text-sm px-4 py-2 rounded-lg">+ Nova conta</a>
+</div>
+<div class="bg-white rounded-xl border border-gray-200 overflow-hidden mb-8">
+  <table class="w-full text-sm">
+    <thead class="bg-gray-50 text-xs uppercase tracking-widest text-gray-500"><tr>
+      <th class="text-left px-4 py-3">Usuário</th><th class="text-left px-4 py-3 hidden sm:table-cell">Nome</th>
+      <th class="text-left px-4 py-3">Papel</th><th class="px-4 py-3">Ativo</th><th></th></tr></thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for u in users %}
+      <tr class="hover:bg-gray-50">
+        <td class="px-4 py-3 font-medium text-gray-800">{{ u.username }}</td>
+        <td class="px-4 py-3 text-gray-500 hidden sm:table-cell">{{ u.get_full_name|default:'—' }}</td>
+        <td class="px-4 py-3 text-gray-600">{% if u.is_superuser %}Admin{% elif u.groups.all %}{{ u.groups.first.name }}{% else %}—{% endif %}</td>
+        <td class="px-4 py-3 text-center">{% if u.is_active %}<span class="text-green-600">●</span>{% else %}<span class="text-gray-300">●</span>{% endif %}</td>
+        <td class="px-4 py-3 text-right"><a href="{% url 'intranet:user_edit' u.pk %}" class="text-gray-500 hover:text-lapomed-gold">Editar</a></td>
+      </tr>
+      {% empty %}<tr><td colspan="5" class="px-4 py-8 text-center text-gray-400">Nenhuma conta.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+<h2 class="font-serif text-lg text-gray-900 mb-5">Membros da equipe (perfis públicos)</h2>
+<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+  {% for m in members %}
+  <div class="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-3">
+    {% if m.photo %}<img src="{{ m.photo.url }}" class="w-12 h-12 rounded-full object-cover" alt="">{% else %}<span class="w-12 h-12 rounded-full bg-gray-200"></span>{% endif %}
+    <div class="min-w-0">
+      <p class="font-medium text-gray-800 truncate">{{ m.name }}</p>
+      <p class="text-xs text-gray-500 truncate">{{ m.role }}</p>
+      {% if m.user %}<p class="text-[11px] text-green-600">conta: {{ m.user.username }}</p>{% endif %}
+    </div>
+  </div>
+  {% empty %}<p class="text-sm text-gray-400">Nenhum membro cadastrado.</p>{% endfor %}
+</div>
+{% endblock %}

@@ -8,7 +8,7 @@ from .models import (
     Slide, Project, Artifact, ArtifactImage, Collection, CollectionImage,
     AboutSection, TeamMember, Timeline, ResearchArea, Partnership,
     Publication, LearningResource, VirtualTour, TourCategory, SocialLink,
-    CoalitvsGroup, CoalitvsMember, NavItem, LcpPage, ContactInfo,
+    CoalitvsGroup, CoalitvsMember, NavItem, LcpPage, ContactInfo, Event,
 )
 
 # ===== CONFIGURAÇÃO DO SITE ADMIN =====
@@ -520,6 +520,15 @@ class LcpPageAdmin(admin.ModelAdmin):
         if LcpPage.objects.exists():
             return False
         return super().has_add_permission(request)
+
+
+@admin.register(Event)
+class EventAdmin(admin.ModelAdmin):
+    list_display = ("title", "start_at", "location", "published", "category")
+    list_filter = ("published", "category")
+    search_fields = ("title", "description", "location")
+    prepopulated_fields = {"slug": ("title",)}
+    date_hierarchy = "start_at"
 
 
 @admin.register(ContactInfo)
