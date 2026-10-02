@@ -1,9 +1,8 @@
 from django import forms
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
 
 from core.models import Event
-from .models import Task
-from .permissions import GROUP_PROFESSOR, GROUP_COLABORADOR
+from .models import Task, IntranetAccess
 
 # classe base de estilo (Tailwind) aplicada aos inputs
 BASE_INPUT = (
@@ -65,14 +64,34 @@ class TaskForm(_StyledModelForm):
 
 
 class IntranetUserForm(_StyledModelForm):
-    """Criação/edição de colaboradores pelo Professor."""
-    ROLE_CHOICES = [(GROUP_COLABORADOR, "Colaborador"), (GROUP_PROFESSOR, "Professor")]
-    role = forms.ChoiceField(choices=ROLE_CHOICES, label="Papel")
+    """Criação/edição de contas da intranet, com acesso por menu."""
     password = forms.CharField(
         required=False, widget=forms.PasswordInput,
         help_text="Deixe em branco para manter a senha atual (ao editar).",
         label="Senha",
     )
+    is_manager = forms.BooleanField(
+        required=False, label="Gestor",
+        help_text="Gestor vê todos os menus, gerencia contas e edita todo o conteúdo.",
+    )
+    # menus
+    menu_eventos = forms.BooleanField(required=False, label="Menu: Eventos")
+    menu_tarefas = forms.BooleanField(required=False, label="Menu: Tarefas")
+    menu_calendario = forms.BooleanField(required=False, label="Menu: Calendário")
+    menu_equipe = forms.BooleanField(required=False, label="Menu: Equipe")
+    # conteúdo do site — por tipo
+    content_projetos = forms.BooleanField(required=False, label="Conteúdo: Projetos")
+    content_colecoes = forms.BooleanField(required=False, label="Conteúdo: Coleções")
+    content_visitas3d = forms.BooleanField(required=False, label="Conteúdo: Visitas 3D")
+    content_slides = forms.BooleanField(required=False, label="Conteúdo: Slides")
+    content_publicacoes = forms.BooleanField(required=False, label="Conteúdo: Publicações")
+    content_equipe = forms.BooleanField(required=False, label="Conteúdo: Equipe")
+
+    ACCESS_FIELDS = [
+        "menu_eventos", "menu_tarefas", "menu_calendario", "menu_equipe",
+        "content_projetos", "content_colecoes", "content_visitas3d",
+        "content_slides", "content_publicacoes", "content_equipe",
+    ]
 
     class Meta:
         model = User
@@ -80,9 +99,14 @@ class IntranetUserForm(_StyledModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.instance and self.instance.pk:
-            g = self.instance.groups.filter(name=GROUP_PROFESSOR).first()
-            self.fields["role"].initial = GROUP_PROFESSOR if g else GROUP_COLABORADOR
+        acc = getattr(self.instance, "intranet_access", None) if self.instance and self.instance.pk else None
+        if acc:
+            self.fields["is_manager"].initial = acc.is_manager
+            for f in self.ACCESS_FIELDS:
+                self.fields[f].initial = getattr(acc, f)
+        else:
+            for f in ("menu_eventos", "menu_tarefas", "menu_calendario"):
+                self.fields[f].initial = True
 
     def save(self, commit=True):
         user = super().save(commit=False)
@@ -93,12 +117,9 @@ class IntranetUserForm(_StyledModelForm):
             user.set_unusable_password()
         if commit:
             user.save()
-            self._sync_group(user)
+            acc, _ = IntranetAccess.objects.get_or_create(user=user)
+            acc.is_manager = self.cleaned_data.get("is_manager", False)
+            for f in self.ACCESS_FIELDS:
+                setattr(acc, f, self.cleaned_data.get(f, False))
+            acc.save()
         return user
-
-    def _sync_group(self, user):
-        prof, _ = Group.objects.get_or_create(name=GROUP_PROFESSOR)
-        colab, _ = Group.objects.get_or_create(name=GROUP_COLABORADOR)
-        user.groups.remove(prof, colab)
-        target = prof if self.cleaned_data["role"] == GROUP_PROFESSOR else colab
-        user.groups.add(target)

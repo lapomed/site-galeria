@@ -23,11 +23,11 @@
     </div>
     <nav class="flex-1 px-3 py-4 space-y-1 text-sm overflow-y-auto">
       {% include 'intranet/partials/_nav_link.html' with url='intranet:dashboard' key='dashboard' label='Painel' icon='▦' %}
-      {% include 'intranet/partials/_nav_link.html' with url='intranet:events_list' key='eventos' label='Eventos' icon='📅' %}
-      {% include 'intranet/partials/_nav_link.html' with url='intranet:tasks_board' key='tarefas' label='Tarefas' icon='✓' %}
-      {% include 'intranet/partials/_nav_link.html' with url='intranet:calendar' key='calendario' label='Calendário' icon='🗓' %}
-      {% include 'intranet/partials/_nav_link.html' with url='intranet:content_index' key='conteudo' label='Conteúdo do site' icon='✎' %}
-      {% include 'intranet/partials/_nav_link.html' with url='intranet:team_list' key='equipe' label='Equipe' icon='👥' %}
+      {% if perms.eventos %}{% include 'intranet/partials/_nav_link.html' with url='intranet:events_list' key='eventos' label='Eventos' icon='📅' %}{% endif %}
+      {% if perms.tarefas %}{% include 'intranet/partials/_nav_link.html' with url='intranet:tasks_board' key='tarefas' label='Tarefas' icon='✓' %}{% endif %}
+      {% if perms.calendario %}{% include 'intranet/partials/_nav_link.html' with url='intranet:calendar' key='calendario' label='Calendário' icon='🗓' %}{% endif %}
+      {% if perms.conteudo %}{% include 'intranet/partials/_nav_link.html' with url='intranet:content_index' key='conteudo' label='Conteúdo do site' icon='✎' %}{% endif %}
+      {% if perms.equipe %}{% include 'intranet/partials/_nav_link.html' with url='intranet:team_list' key='equipe' label='Equipe' icon='👥' %}{% endif %}
     </nav>
     <div class="px-3 py-4 border-t border-white/10 space-y-1 text-sm">
       <a href="/" target="_blank" class="block px-3 py-2 rounded-lg text-gray-300 hover:bg-white/10">↗ Ver o site</a>

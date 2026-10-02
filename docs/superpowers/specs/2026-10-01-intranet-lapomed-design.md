@@ -224,3 +224,14 @@ Implementado nesta entrega:
 **Defaults aplicados nas 5 questões em aberto:** (1) gestão de contas na intranet = sim (Professor); (2) Colaborador restrito conforme matriz; (3) evento com página de detalhe; (4) Kanban com arrastar; (5) e-mail = Fase 2.
 
 **Limitação conhecida (v1):** galerias de imagem aninhadas (ex.: imagens de Coleção, galeria de Artefato) ainda são gerenciadas pelo admin do Django — o CRUD genérico da intranet edita os campos do próprio registro, não os inlines. Fica para uma Fase 2 (formsets).
+
+---
+
+## 14. Permissões por usuário e por menu/conteúdo (iteração 2)
+
+Substituídos os 2 papéis fixos (Professor/Colaborador) por **controle por usuário** via model `IntranetAccess` (1-pra-1 com `User`):
+- `is_manager` — vê todos os menus, gerencia contas e edita todo o conteúdo.
+- Toggles de **menu**: Eventos, Tarefas, Calendário, Equipe (Painel sempre liberado).
+- Toggles de **conteúdo por tipo**: Projetos, Coleções, Visitas 3D, Slides, Publicações, Equipe — o menu "Conteúdo do site" aparece se houver acesso a algum tipo, e cada tipo é validado individualmente.
+- Sidebar mostra só os menus permitidos; views usam `menu_required(...)`, `manager_required`, `can_edit_content(...)`. Context processor `intranet.context_processors.intranet_perms` expõe `perms` aos templates.
+- Quem não tem `IntranetAccess` (e não é superuser) não entra. Gestão de contas em **Equipe → Contas** (gestor) grava os toggles. Superuser sempre tem tudo.

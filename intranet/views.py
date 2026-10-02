@@ -17,8 +17,8 @@ from core.models import (
 from .forms import EventForm, TaskForm, IntranetUserForm, _StyledModelForm
 from .models import Task
 from .permissions import (
-    intranet_required, professor_required, is_professor, is_intranet_user,
-    GROUP_PROFESSOR, GROUP_COLABORADOR,
+    intranet_required, manager_required, menu_required, is_manager,
+    is_intranet_user, can_edit_content,
 )
 
 # ---------------------------------------------------------------------------
@@ -26,17 +26,13 @@ from .permissions import (
 # role: "professor" (só professor) ou "intranet" (professor + colaborador)
 # ---------------------------------------------------------------------------
 CONTENT_REGISTRY = {
-    "projetos":    {"model": Project,     "label": "Projetos",     "role": "professor", "icon": "🏛️"},
-    "colecoes":    {"model": Collection,  "label": "Coleções Digitais", "role": "professor", "icon": "🗂️"},
-    "visitas-3d":  {"model": VirtualTour, "label": "Visitas 3D",   "role": "professor", "icon": "🥽"},
-    "slides":      {"model": Slide,       "label": "Slides da Home", "role": "professor", "icon": "🏠"},
-    "publicacoes": {"model": Publication, "label": "Publicações",  "role": "intranet",  "icon": "📚"},
-    "equipe":      {"model": TeamMember,  "label": "Equipe",       "role": "professor", "icon": "👥"},
+    "projetos":    {"model": Project,     "label": "Projetos",          "icon": "🏛️"},
+    "colecoes":    {"model": Collection,  "label": "Coleções Digitais",  "icon": "🗂️"},
+    "visitas-3d":  {"model": VirtualTour, "label": "Visitas 3D",         "icon": "🥽"},
+    "slides":      {"model": Slide,       "label": "Slides da Home",     "icon": "🏠"},
+    "publicacoes": {"model": Publication, "label": "Publicações",        "icon": "📚"},
+    "equipe":      {"model": TeamMember,  "label": "Equipe",             "icon": "👥"},
 }
-
-
-def _can_access_content(user, cfg):
-    return is_professor(user) if cfg["role"] == "professor" else is_intranet_user(user)
 
 
 def _content_form_class(model):
@@ -91,13 +87,13 @@ def dashboard(request):
 # ---------------------------------------------------------------------------
 # Eventos (intranet)
 # ---------------------------------------------------------------------------
-@intranet_required
+@menu_required("eventos")
 def events_list(request):
     events = Event.objects.all()
     return render(request, "intranet/events/list.html", {"events": events, "nav": "eventos"})
 
 
-@intranet_required
+@menu_required("eventos")
 def event_form(request, pk=None):
     instance = get_object_or_404(Event, pk=pk) if pk else None
     form = EventForm(request.POST or None, request.FILES or None, instance=instance)
@@ -112,7 +108,7 @@ def event_form(request, pk=None):
                   {"form": form, "instance": instance, "nav": "eventos"})
 
 
-@intranet_required
+@menu_required("eventos")
 @require_POST
 def event_delete(request, pk):
     get_object_or_404(Event, pk=pk).delete()
@@ -123,7 +119,7 @@ def event_delete(request, pk):
 # ---------------------------------------------------------------------------
 # Tarefas (Kanban)
 # ---------------------------------------------------------------------------
-@intranet_required
+@menu_required("tarefas")
 def tasks_board(request):
     columns = []
     for key, label in Task.STATUS_CHOICES:
@@ -134,7 +130,7 @@ def tasks_board(request):
     return render(request, "intranet/tasks/board.html", {"columns": columns, "nav": "tarefas"})
 
 
-@intranet_required
+@menu_required("tarefas")
 def task_form(request, pk=None):
     instance = get_object_or_404(Task, pk=pk) if pk else None
     form = TaskForm(request.POST or None, instance=instance)
@@ -150,7 +146,7 @@ def task_form(request, pk=None):
                   {"form": form, "instance": instance, "nav": "tarefas"})
 
 
-@intranet_required
+@menu_required("tarefas")
 @require_POST
 def task_delete(request, pk):
     get_object_or_404(Task, pk=pk).delete()
@@ -158,7 +154,7 @@ def task_delete(request, pk):
     return redirect("intranet:tasks_board")
 
 
-@intranet_required
+@menu_required("tarefas")
 @require_POST
 def task_move(request):
     """Recebe JSON {task_id, status, ordered_ids:[...]} e reordena a coluna destino."""
@@ -181,12 +177,12 @@ def task_move(request):
 # ---------------------------------------------------------------------------
 # Calendário
 # ---------------------------------------------------------------------------
-@intranet_required
+@menu_required("calendario")
 def calendar(request):
     return render(request, "intranet/calendar/index.html", {"nav": "calendario"})
 
 
-@intranet_required
+@menu_required("calendario")
 def calendar_feed(request):
     items = []
     for e in Event.objects.all():
@@ -212,17 +208,18 @@ def calendar_feed(request):
 # ---------------------------------------------------------------------------
 # Equipe / contas
 # ---------------------------------------------------------------------------
-@intranet_required
+@menu_required("equipe")
 def team_list(request):
     members = TeamMember.objects.all()
-    users = User.objects.filter(is_active=True).order_by("first_name", "username") if is_professor(request.user) else None
+    manage = is_manager(request.user)
+    users = User.objects.filter(is_active=True).order_by("first_name", "username") if manage else None
     return render(request, "intranet/team/list.html", {
         "members": members, "users": users,
-        "can_manage": is_professor(request.user), "nav": "equipe",
+        "can_manage": manage, "nav": "equipe",
     })
 
 
-@professor_required
+@manager_required
 def user_form(request, pk=None):
     instance = get_object_or_404(User, pk=pk) if pk else None
     form = IntranetUserForm(request.POST or None, instance=instance)
@@ -237,11 +234,11 @@ def user_form(request, pk=None):
 # ---------------------------------------------------------------------------
 # Conteúdo do site (CRUD genérico)
 # ---------------------------------------------------------------------------
-@intranet_required
+@menu_required("conteudo")
 def content_index(request):
     items = []
     for slug, cfg in CONTENT_REGISTRY.items():
-        if _can_access_content(request.user, cfg):
+        if can_edit_content(request.user, slug):
             items.append({"slug": slug, **cfg,
                           "count": cfg["model"].objects.count()})
     return render(request, "intranet/content/index.html", {"items": items, "nav": "conteudo"})
@@ -251,7 +248,7 @@ def _get_cfg_or_404(request, slug):
     cfg = CONTENT_REGISTRY.get(slug)
     if not cfg:
         raise Http404
-    if not _can_access_content(request.user, cfg):
+    if not can_edit_content(request.user, slug):
         from django.core.exceptions import PermissionDenied
         raise PermissionDenied
     return cfg
