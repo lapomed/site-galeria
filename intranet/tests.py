@@ -103,6 +103,19 @@ class IntranetAccessTests(TestCase):
         t.refresh_from_db()
         self.assertEqual(t.status, "doing")
 
+    # --- atalho de criação pelo calendário (?date=) ---
+    def test_event_create_prefills_date_from_calendar(self):
+        self.client.force_login(self.manager)
+        html = self.client.get(
+            reverse("intranet:event_create") + "?date=2030-05-01").content.decode()
+        self.assertIn("2030-05-01T09:00", html)
+
+    def test_task_create_prefills_date_from_calendar(self):
+        self.client.force_login(self.manager)
+        html = self.client.get(
+            reverse("intranet:task_create") + "?date=2030-05-01").content.decode()
+        self.assertIn('value="2030-05-01"', html)
+
     # --- gestão de contas cria o acesso ---
     def test_manager_creates_account_with_perms(self):
         self.client.force_login(self.manager)
