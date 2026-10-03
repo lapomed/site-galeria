@@ -1,4 +1,5 @@
 import json
+from datetime import datetime, time, date as date_cls
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -37,6 +38,16 @@ CONTENT_REGISTRY = {
 
 def _content_form_class(model):
     return modelform_factory(model, form=_StyledModelForm, exclude=["created_at", "updated_at"])
+
+
+def _parse_date(value):
+    """Lê ?date=YYYY-MM-DD (usado pelo atalho de criar a partir do calendário)."""
+    if not value:
+        return None
+    try:
+        return date_cls.fromisoformat(value[:10])
+    except (ValueError, TypeError):
+        return None
 
 
 # ---------------------------------------------------------------------------
@@ -96,7 +107,13 @@ def events_list(request):
 @menu_required("eventos")
 def event_form(request, pk=None):
     instance = get_object_or_404(Event, pk=pk) if pk else None
-    form = EventForm(request.POST or None, request.FILES or None, instance=instance)
+    initial = None
+    if instance is None:
+        d = _parse_date(request.GET.get("date"))
+        if d:
+            initial = {"start_at": datetime.combine(d, time(9, 0))}
+    form = EventForm(request.POST or None, request.FILES or None,
+                     instance=instance, initial=initial)
     if request.method == "POST" and form.is_valid():
         obj = form.save(commit=False)
         if not obj.created_by_id:
@@ -133,7 +150,12 @@ def tasks_board(request):
 @menu_required("tarefas")
 def task_form(request, pk=None):
     instance = get_object_or_404(Task, pk=pk) if pk else None
-    form = TaskForm(request.POST or None, instance=instance)
+    initial = None
+    if instance is None:
+        d = _parse_date(request.GET.get("date"))
+        if d:
+            initial = {"due_date": d}
+    form = TaskForm(request.POST or None, instance=instance, initial=initial)
     if request.method == "POST" and form.is_valid():
         obj = form.save(commit=False)
         if not obj.created_by_id:
