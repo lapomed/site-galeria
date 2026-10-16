@@ -22,6 +22,7 @@ sys.path.insert(0, str(BASE_DIR))
 
 # Importa configurações centralizadas
 from config import SECRET_KEY, DEBUG, ALLOWED_HOSTS, CSRF_TRUSTED_ORIGINS, DATABASES
+from config import B2_ENDPOINT, B2_REGION, B2_KEY_ID, B2_APP_KEY, B2_BUCKET
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -40,6 +41,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "core",
     "intranet",
+    "repositorio",
     "tailwind",
     "lapomed",
     "django_browser_reload",
@@ -201,6 +203,11 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 DATA_UPLOAD_MAX_MEMORY_SIZE = 200 * 1024 * 1024   # 200MB
 FILE_UPLOAD_MAX_MEMORY_SIZE = 2 * 1024 * 1024     # 2MB em RAM, resto streaming p/ disco
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 5000
+
+# Repositório de Arquivos — tamanho de cada parte do upload multipart para o B2.
+# B2/S3 exige >= 5 MB por parte (exceto a última). 100 MB dá bom equilíbrio
+# entre nº de partes e robustez em arquivos de 10–20 GB.
+B2_PART_SIZE = 100 * 1024 * 1024
 
 # Tailwind Configuration
 TAILWIND_APP_NAME = 'lapomed'

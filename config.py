@@ -70,3 +70,11 @@ else:
 
 # Porta do servidor
 PORT = int(os.getenv('PORT', '4008'))
+
+# ===== Backblaze B2 (Repositório de Arquivos — upload multipart direto do navegador) =====
+# Endpoint S3-compatível do B2, ex.: https://s3.us-west-004.backblazeb2.com
+B2_ENDPOINT = os.getenv('B2_ENDPOINT', '')
+B2_REGION = os.getenv('B2_REGION', '')
+B2_KEY_ID = os.getenv('B2_KEY_ID', '')
+B2_APP_KEY = os.getenv('B2_APP_KEY', '')
+B2_BUCKET = os.getenv('B2_BUCKET', '')

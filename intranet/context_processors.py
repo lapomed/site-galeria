@@ -1,6 +1,7 @@
 from .permissions import can_access_menu, is_manager, is_intranet_user
 
-MENU_KEYS = ["dashboard", "eventos", "tarefas", "calendario", "conteudo", "equipe"]
+MENU_KEYS = ["dashboard", "eventos", "tarefas", "calendario",
+             "repositorio", "conteudo", "equipe"]
 
 
 def intranet_perms(request):

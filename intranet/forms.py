@@ -78,6 +78,7 @@ class IntranetUserForm(_StyledModelForm):
     menu_eventos = forms.BooleanField(required=False, label="Menu: Eventos")
     menu_tarefas = forms.BooleanField(required=False, label="Menu: Tarefas")
     menu_calendario = forms.BooleanField(required=False, label="Menu: Calendário")
+    menu_repositorio = forms.BooleanField(required=False, label="Menu: Repositório de Arquivos")
     menu_equipe = forms.BooleanField(required=False, label="Menu: Equipe")
     # conteúdo do site — por tipo
     content_projetos = forms.BooleanField(required=False, label="Conteúdo: Projetos")
@@ -88,7 +89,7 @@ class IntranetUserForm(_StyledModelForm):
     content_equipe = forms.BooleanField(required=False, label="Conteúdo: Equipe")
 
     ACCESS_FIELDS = [
-        "menu_eventos", "menu_tarefas", "menu_calendario", "menu_equipe",
+        "menu_eventos", "menu_tarefas", "menu_calendario", "menu_repositorio", "menu_equipe",
         "content_projetos", "content_colecoes", "content_visitas3d",
         "content_slides", "content_publicacoes", "content_equipe",
     ]

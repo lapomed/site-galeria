@@ -13,7 +13,7 @@ class TaskAdmin(admin.ModelAdmin):
 @admin.register(IntranetAccess)
 class IntranetAccessAdmin(admin.ModelAdmin):
     list_display = ("user", "is_manager", "menu_eventos", "menu_tarefas",
-                    "menu_calendario", "menu_equipe")
+                    "menu_calendario", "menu_repositorio", "menu_equipe")
     list_filter = ("is_manager",)
     search_fields = ("user__username", "user__first_name", "user__last_name")
     autocomplete_fields = ("user",)

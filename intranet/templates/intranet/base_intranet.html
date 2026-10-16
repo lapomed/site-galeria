@@ -26,6 +26,7 @@
       {% if perms.eventos %}{% include 'intranet/partials/_nav_link.html' with url='intranet:events_list' key='eventos' label='Eventos' icon='📅' %}{% endif %}
       {% if perms.tarefas %}{% include 'intranet/partials/_nav_link.html' with url='intranet:tasks_board' key='tarefas' label='Tarefas' icon='✓' %}{% endif %}
       {% if perms.calendario %}{% include 'intranet/partials/_nav_link.html' with url='intranet:calendar' key='calendario' label='Calendário' icon='🗓' %}{% endif %}
+      {% if perms.repositorio %}{% include 'intranet/partials/_nav_link.html' with url='repositorio:index' key='repositorio' label='Repositório de Arquivos' icon='🗄' %}{% endif %}
       {% if perms.conteudo %}{% include 'intranet/partials/_nav_link.html' with url='intranet:content_index' key='conteudo' label='Conteúdo do site' icon='✎' %}{% endif %}
       {% if perms.equipe %}{% include 'intranet/partials/_nav_link.html' with url='intranet:team_list' key='equipe' label='Equipe' icon='👥' %}{% endif %}
     </nav>

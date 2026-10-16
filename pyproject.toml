@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "boto3>=1.35.0",
     "django>=6.0.1",
     "django-browser-reload>=1.21.0",
     "django-jazzmin>=3.0.1",

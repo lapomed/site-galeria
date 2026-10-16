@@ -8,7 +8,8 @@ class IntranetAccess(models.Model):
     Quem NÃO tem um registro destes (e não é superuser) não entra na intranet.
     """
     # menus simples (além do Painel, sempre liberado)
-    MENU_FIELDS = ["menu_eventos", "menu_tarefas", "menu_calendario", "menu_equipe"]
+    MENU_FIELDS = ["menu_eventos", "menu_tarefas", "menu_calendario",
+                   "menu_repositorio", "menu_equipe"]
     # mapa slug do tipo de conteúdo -> campo do modelo
     CONTENT_FIELD = {
         "projetos": "content_projetos",
@@ -31,6 +32,7 @@ class IntranetAccess(models.Model):
     menu_eventos = models.BooleanField(default=True, verbose_name="Menu: Eventos")
     menu_tarefas = models.BooleanField(default=True, verbose_name="Menu: Tarefas")
     menu_calendario = models.BooleanField(default=True, verbose_name="Menu: Calendário")
+    menu_repositorio = models.BooleanField(default=False, verbose_name="Menu: Repositório de Arquivos")
     menu_equipe = models.BooleanField(default=False, verbose_name="Menu: Equipe")
     # conteúdo do site — por tipo
     content_projetos = models.BooleanField(default=False, verbose_name="Conteúdo: Projetos")
