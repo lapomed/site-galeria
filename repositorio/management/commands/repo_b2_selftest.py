@@ -32,7 +32,7 @@ class Command(BaseCommand):
         self.stdout.write(f"Bucket:   {settings.B2_BUCKET}")
 
         client = services.b2_client()
-        bucket = settings.B2_BUCKET
+        bucket = services.ensure_bucket()
         key = f"repo/_selftest/{uuid.uuid4().hex}.bin"
         part1 = os.urandom(5 * 1024 * 1024)   # 5 MB (mínimo de parte no S3/B2)
         part2 = os.urandom(1024)              # última parte pode ser pequena

@@ -54,8 +54,21 @@ def build_object_key(filename):
     return f"repo/{uuid.uuid4().hex}/{safe[:180]}"
 
 
+def ensure_bucket():
+    """Cria o bucket se ainda não existir (idempotente). Serve tanto para o B2
+    quanto para MinIO/qualquer S3-compatível recém-provisionado."""
+    client = b2_client()
+    bucket = settings.B2_BUCKET
+    try:
+        client.head_bucket(Bucket=bucket)
+    except (BotoCoreError, ClientError):
+        client.create_bucket(Bucket=bucket)
+    return bucket
+
+
 def create_multipart(key, content_type=""):
     client = b2_client()
+    ensure_bucket()
     resp = client.create_multipart_upload(
         Bucket=settings.B2_BUCKET, Key=key,
         ContentType=content_type or "application/octet-stream",

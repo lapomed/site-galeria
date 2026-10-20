@@ -58,6 +58,7 @@ class Command(BaseCommand):
                 max_concurrency=4,
             )
             client = services.b2_client()
+            services.ensure_bucket()
             seen = {"pct": -1}
 
             def progress(bytes_amount, _seen=seen):
