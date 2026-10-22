@@ -18,20 +18,21 @@
   </div>
 
   <div class="bg-white rounded-xl border border-gray-200 p-5">
-    <div class="flex items-center justify-between mb-4">
+    <div class="mb-4">
       <h3 class="font-serif text-lg text-gray-900">Campos (colunas de metadados)</h3>
+      <p class="text-xs text-gray-500 mt-1">Cada campo é o <strong>nome de uma coluna</strong> de metadado (ex.: Período, Material, Datação). Ao aplicar este modelo num arquivo, esses campos viram as colunas que você preenche.</p>
     </div>
 
     <div id="fieldRows" class="space-y-2">
       {% for campo in template.fields %}
       <div class="field-row flex items-center gap-2">
-        <input type="text" name="fields" value="{{ campo }}" placeholder="Nome da coluna"
+        <input type="text" name="fields" value="{{ campo }}" placeholder="Ex.: Período, Material, Datação"
                class="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-lapomed-gold focus:outline-none">
         <button type="button" class="field-remove text-red-500 hover:text-red-700 text-sm px-2 py-2">✕</button>
       </div>
       {% empty %}
       <div class="field-row flex items-center gap-2">
-        <input type="text" name="fields" value="" placeholder="Nome da coluna"
+        <input type="text" name="fields" value="" placeholder="Ex.: Período, Material, Datação"
                class="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-lapomed-gold focus:outline-none">
         <button type="button" class="field-remove text-red-500 hover:text-red-700 text-sm px-2 py-2">✕</button>
       </div>
@@ -62,7 +63,7 @@
     var input = document.createElement('input');
     input.type = 'text';
     input.name = 'fields';
-    input.placeholder = 'Nome da coluna';
+    input.placeholder = 'Ex.: Período, Material, Datação';
     input.className = 'flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-lapomed-gold focus:outline-none';
     var btn = document.createElement('button');
     btn.type = 'button';
