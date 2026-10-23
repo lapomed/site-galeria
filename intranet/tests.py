@@ -86,6 +86,25 @@ class IntranetAccessTests(TestCase):
         self.assertContains(pub, "Palestra Teste")
         self.assertEqual(self.client.get(ev.get_absolute_url()).status_code, 200)
 
+    def test_event_with_program(self):
+        self.client.force_login(self.manager)
+        r = self.client.post(reverse("intranet:event_create"), {
+            "title": "Simpósio X", "subtitle": "Pesquisas em andamento",
+            "start_at": "2030-02-01T09:00", "category": "congresso", "published": "on",
+            "event_format": "Online (Teams)",
+            "prog_time": ["9:45", "10:00"],
+            "prog_speakers": ["Fulano (USP)", ""],
+            "prog_title": ["Abertura", "BREAK"],
+        })
+        self.assertEqual(r.status_code, 302)
+        ev = Event.objects.get(title="Simpósio X")
+        self.assertEqual(ev.program_items.count(), 2)
+        self.assertEqual(ev.subtitle, "Pesquisas em andamento")
+        pub = self.client.get(ev.get_absolute_url())
+        self.assertContains(pub, "Programa")
+        self.assertContains(pub, "Fulano (USP)")
+        self.assertContains(pub, "Online (Teams)")
+
     def test_unpublished_event_hidden(self):
         Event.objects.create(title="Rascunho", start_at=timezone.now(), published=False)
         self.assertNotContains(self.client.get(reverse("events_list")), "Rascunho")

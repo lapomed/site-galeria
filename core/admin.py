@@ -8,7 +8,7 @@ from .models import (
     Slide, Project, Artifact, ArtifactImage, Collection, CollectionImage,
     AboutSection, TeamMember, Timeline, ResearchArea, Partnership,
     Publication, LearningResource, VirtualTour, TourCategory, SocialLink,
-    CoalitvsGroup, CoalitvsMember, NavItem, LcpPage, ContactInfo, Event,
+    CoalitvsGroup, CoalitvsMember, NavItem, LcpPage, ContactInfo, Event, EventProgramItem,
 )
 
 # ===== CONFIGURAÇÃO DO SITE ADMIN =====
@@ -522,6 +522,13 @@ class LcpPageAdmin(admin.ModelAdmin):
         return super().has_add_permission(request)
 
 
+class EventProgramItemInline(admin.TabularInline):
+    model = EventProgramItem
+    extra = 1
+    fields = ("order", "time_label", "speakers", "title")
+    ordering = ("order", "id")
+
+
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
     list_display = ("title", "start_at", "location", "published", "category")
@@ -529,6 +536,7 @@ class EventAdmin(admin.ModelAdmin):
     search_fields = ("title", "description", "location")
     prepopulated_fields = {"slug": ("title",)}
     date_hierarchy = "start_at"
+    inlines = [EventProgramItemInline]
 
 
 @admin.register(ContactInfo)
