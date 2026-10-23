@@ -2,25 +2,102 @@
 {% load static %}
 {% block title %}{{ event.title }} | Eventos LAPOMED{% endblock %}
 {% block content %}
-<div class="bg-white pt-24">
-  {% if event.cover_image %}
-  <div class="w-full h-64 md:h-96 bg-cover bg-center" style="background-image:url('{{ event.cover_image.url }}');"></div>
-  {% endif %}
-  <article class="max-w-3xl mx-auto px-4 py-12 md:py-16">
-    <a href="{% url 'events_list' %}" class="text-sm text-gray-500 hover:text-lapomed-gold">← Todos os eventos</a>
-    <p class="text-[11px] font-bold uppercase tracking-widest text-lapomed-gold mt-6 mb-2">{{ event.get_category_display }}</p>
-    <h1 class="font-serif text-3xl md:text-4xl text-gray-900 mb-4">{{ event.title }}</h1>
-    <div class="flex flex-wrap gap-4 text-sm text-gray-600 mb-8 pb-8 border-b border-gray-100">
-      <span>🗓 {{ event.start_at|date:'d/m/Y H:i' }}{% if event.end_at %} – {{ event.end_at|date:'d/m/Y H:i' }}{% endif %}</span>
-      {% if event.location %}<span>📍 {{ event.location }}</span>{% endif %}
-    </div>
-    {% if event.description %}<div class="rich-text text-gray-700 leading-relaxed">{{ event.description|safe }}</div>{% endif %}
-    {% if event.registration_url %}
-    <div class="mt-10">
-      <a href="{{ event.registration_url }}" target="_blank" rel="noopener noreferrer"
-         class="inline-flex items-center gap-2 px-8 py-3 bg-lapomed-gold hover:brightness-95 text-gray-900 font-bold rounded-full shadow-md">Inscreva-se</a>
-    </div>
+<div class="bg-gray-50 pt-16">
+
+  {# ---------------- Hero / banner ---------------- #}
+  <header class="relative bg-[#0b2540] text-white overflow-hidden">
+    {% if event.cover_image %}
+      <div class="absolute inset-0 bg-cover bg-center opacity-40" style="background-image:url('{{ event.cover_image.url }}');"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-[#0b2540] via-[#0b2540]/70 to-[#0b2540]/30"></div>
     {% endif %}
-  </article>
+    <div class="relative max-w-5xl mx-auto px-4 py-16 md:py-24">
+      <a href="{% url 'events_list' %}" class="text-xs text-white/70 hover:text-lapomed-gold">← Todos os eventos</a>
+      <p class="text-[11px] font-bold uppercase tracking-widest text-lapomed-gold mt-6 mb-3">{{ event.get_category_display }}</p>
+      <h1 class="font-serif text-3xl md:text-5xl leading-tight">{{ event.title }}</h1>
+      {% if event.subtitle %}<p class="mt-3 text-lg md:text-2xl text-white/85 italic font-light">{{ event.subtitle }}</p>{% endif %}
+      <div class="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/90">
+        <span>🗓 {{ event.start_at|date:'d/m/Y' }}{% if event.start_at|time:'H:i' != '00:00' %} · {{ event.start_at|time:'H:i' }}{% endif %}{% if event.end_at %} – {{ event.end_at|date:'d/m/Y' }}{% endif %}</span>
+        {% if event.event_format %}<span>💻 {{ event.event_format }}</span>{% endif %}
+        {% if event.location %}<span>📍 {{ event.location }}</span>{% endif %}
+      </div>
+      {% if event.time_note %}<p class="mt-2 text-xs text-white/60">{{ event.time_note }}</p>{% endif %}
+      {% if event.registration_url %}
+      <a href="{{ event.registration_url }}" target="_blank" rel="noopener noreferrer"
+         class="mt-7 inline-flex items-center gap-2 px-7 py-3 bg-lapomed-gold hover:brightness-95 text-gray-900 font-bold rounded-full shadow-lg">
+         Acessar / Inscrever-se
+      </a>
+      {% endif %}
+    </div>
+  </header>
+
+  <div class="max-w-5xl mx-auto px-4 py-12 md:py-16">
+
+    {# ---------------- Descrição ---------------- #}
+    {% if event.description %}
+    <div class="rich-text text-gray-700 leading-relaxed max-w-3xl mb-14">{{ event.description|safe }}</div>
+    {% endif %}
+
+    {# ---------------- Programa ---------------- #}
+    {% if event.program_items.all %}
+    <section class="mb-14">
+      <h2 class="font-serif text-2xl text-gray-900 mb-6 flex items-center gap-3">
+        <span class="w-8 h-px bg-lapomed-gold"></span> Programa
+      </h2>
+      <ol class="relative border-l-2 border-gray-200 ml-2 space-y-6">
+        {% for item in event.program_items.all %}
+        {% if item.is_break %}
+        <li class="ml-5">
+          <span class="absolute -left-[7px] mt-1.5 w-3 h-3 rounded-full bg-gray-300"></span>
+          <div class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-gray-400">
+            {% if item.time_label %}<span>{{ item.time_label }}</span>{% endif %}
+            <span>{{ item.title }}</span>
+          </div>
+        </li>
+        {% else %}
+        <li class="ml-5">
+          <span class="absolute -left-[9px] mt-1 w-4 h-4 rounded-full bg-lapomed-gold ring-4 ring-gray-50"></span>
+          <div class="grid grid-cols-1 sm:grid-cols-[72px,1fr] gap-x-4 gap-y-1">
+            <span class="text-sm font-bold text-lapomed-gold whitespace-nowrap">{{ item.time_label }}</span>
+            <div>
+              {% if item.speakers %}<p class="text-sm font-semibold text-gray-900 whitespace-pre-line">{{ item.speakers }}</p>{% endif %}
+              {% if item.title %}<p class="text-sm text-gray-600 whitespace-pre-line mt-0.5">{{ item.title }}</p>{% endif %}
+            </div>
+          </div>
+        </li>
+        {% endif %}
+        {% endfor %}
+      </ol>
+    </section>
+    {% endif %}
+
+    {# ---------------- Informações práticas ---------------- #}
+    {% if event.registration_url or event.info_url or event.contact_name or event.contact_email or event.organizers %}
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-gray-200 pt-10">
+      <div class="space-y-4 text-sm text-gray-600">
+        {% if event.registration_url or event.info_url %}
+        <div>
+          <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">Acesso</h3>
+          {% if event.registration_url %}<a href="{{ event.registration_url }}" target="_blank" rel="noopener noreferrer" class="block text-lapomed-gold hover:underline break-words">{{ event.registration_url }}</a>{% endif %}
+          {% if event.info_url %}<a href="{{ event.info_url }}" target="_blank" rel="noopener noreferrer" class="block text-lapomed-gold hover:underline break-words">{{ event.info_url }}</a>{% endif %}
+        </div>
+        {% endif %}
+        {% if event.contact_name or event.contact_email %}
+        <div>
+          <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">Informações</h3>
+          {% if event.contact_name %}<p>{{ event.contact_name }}</p>{% endif %}
+          {% if event.contact_email %}<a href="mailto:{{ event.contact_email }}" class="text-lapomed-gold hover:underline">{{ event.contact_email }}</a>{% endif %}
+        </div>
+        {% endif %}
+      </div>
+      {% if event.organizers %}
+      <div class="text-sm text-gray-500">
+        <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">Organização / Apoio</h3>
+        <p class="whitespace-pre-line leading-relaxed">{{ event.organizers }}</p>
+      </div>
+      {% endif %}
+    </section>
+    {% endif %}
+
+  </div>
 </div>
 {% endblock %}

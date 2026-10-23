@@ -3,12 +3,73 @@
 {% block page_title %}{% if instance %}Editar evento{% else %}Novo evento{% endif %}{% endblock %}
 {% block extra_head %}{{ form.media }}{% endblock %}
 {% block content %}
-<form method="post" enctype="multipart/form-data" class="bg-white rounded-xl border border-gray-200 p-6 max-w-3xl">
+<form method="post" enctype="multipart/form-data" class="space-y-6 max-w-3xl">
   {% csrf_token %}
-  {% include 'intranet/partials/_form_fields.html' %}
-  <div class="flex items-center gap-3 mt-8 pt-5 border-t border-gray-100">
+
+  <div class="bg-white rounded-xl border border-gray-200 p-6">
+    {% include 'intranet/partials/_form_fields.html' %}
+  </div>
+
+  {# ---------------- Programa (agenda) ---------------- #}
+  <div class="bg-white rounded-xl border border-gray-200 p-6">
+    <div class="mb-4">
+      <h3 class="font-serif text-lg text-gray-900">Programa do evento (opcional)</h3>
+      <p class="text-xs text-gray-500 mt-1">A agenda que aparece na página pública: horário, palestrante(s) e título. Deixe o palestrante vazio em intervalos (ex.: BREAK, Discussão).</p>
+    </div>
+
+    <div class="hidden sm:grid grid-cols-[90px,1fr,1fr,auto] gap-2 px-1 mb-1 text-[11px] uppercase tracking-widest text-gray-400 font-semibold">
+      <span>Horário</span><span>Palestrante(s)</span><span>Título / Atividade</span><span></span>
+    </div>
+
+    <div id="progRows" class="space-y-2">
+      {% for it in instance.program_items.all %}
+      <div class="prog-row grid grid-cols-1 sm:grid-cols-[90px,1fr,1fr,auto] gap-2 items-start">
+        <input type="text" name="prog_time" value="{{ it.time_label }}" placeholder="9:45"
+               class="rounded-lg border border-gray-300 px-2 py-2 text-sm focus:border-lapomed-gold focus:outline-none">
+        <textarea name="prog_speakers" rows="2" placeholder="Nome (Instituição)"
+                  class="rounded-lg border border-gray-300 px-2 py-2 text-sm focus:border-lapomed-gold focus:outline-none">{{ it.speakers }}</textarea>
+        <textarea name="prog_title" rows="2" placeholder="Título da fala / atividade"
+                  class="rounded-lg border border-gray-300 px-2 py-2 text-sm focus:border-lapomed-gold focus:outline-none">{{ it.title }}</textarea>
+        <button type="button" class="prog-remove text-red-500 hover:text-red-700 text-sm px-2 py-2">✕</button>
+      </div>
+      {% endfor %}
+    </div>
+
+    <button type="button" id="addProg"
+            class="mt-3 inline-flex items-center gap-1 text-sm font-medium text-gray-600 hover:text-lapomed-gold">+ Adicionar linha</button>
+  </div>
+
+  <div class="flex items-center gap-3">
     <button type="submit" class="bg-lapomed-gold hover:brightness-95 text-gray-900 font-bold text-sm px-5 py-2.5 rounded-lg">Salvar</button>
     <a href="{% url 'intranet:events_list' %}" class="text-sm text-gray-500 hover:text-gray-800">Cancelar</a>
   </div>
 </form>
+{% endblock %}
+{% block extra_js %}
+<script>
+(function () {
+  "use strict";
+  var rowsEl = document.getElementById('progRows');
+  var addBtn = document.getElementById('addProg');
+
+  function makeRow() {
+    var div = document.createElement('div');
+    div.className = 'prog-row grid grid-cols-1 sm:grid-cols-[90px,1fr,1fr,auto] gap-2 items-start';
+    div.innerHTML =
+      '<input type="text" name="prog_time" placeholder="9:45" class="rounded-lg border border-gray-300 px-2 py-2 text-sm focus:border-lapomed-gold focus:outline-none">' +
+      '<textarea name="prog_speakers" rows="2" placeholder="Nome (Instituição)" class="rounded-lg border border-gray-300 px-2 py-2 text-sm focus:border-lapomed-gold focus:outline-none"></textarea>' +
+      '<textarea name="prog_title" rows="2" placeholder="Título da fala / atividade" class="rounded-lg border border-gray-300 px-2 py-2 text-sm focus:border-lapomed-gold focus:outline-none"></textarea>' +
+      '<button type="button" class="prog-remove text-red-500 hover:text-red-700 text-sm px-2 py-2">✕</button>';
+    return div;
+  }
+
+  if (addBtn) {
+    addBtn.addEventListener('click', function () { rowsEl.appendChild(makeRow()); });
+  }
+  rowsEl.addEventListener('click', function (e) {
+    var btn = e.target.closest('.prog-remove');
+    if (btn) { var r = btn.closest('.prog-row'); if (r) r.remove(); }
+  });
+})();
+</script>
 {% endblock %}

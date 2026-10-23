@@ -160,13 +160,24 @@ class Event(models.Model):
         ('outro', 'Outro'),
     ]
     title = models.CharField(max_length=200, verbose_name="Título")
+    subtitle = models.CharField(max_length=300, blank=True, verbose_name="Subtítulo",
+                                help_text="Ex.: Excavations and Research in Progress")
     slug = models.SlugField(max_length=220, unique=True, blank=True, verbose_name="Slug (URL)")
     description = HTMLField(blank=True, verbose_name="Descrição")
     start_at = models.DateTimeField(verbose_name="Início")
     end_at = models.DateTimeField(null=True, blank=True, verbose_name="Término")
     location = models.CharField(max_length=300, blank=True, verbose_name="Local")
+    event_format = models.CharField(max_length=200, blank=True, verbose_name="Formato",
+                                    help_text="Ex.: Online (Microsoft Teams) · Presencial — Auditório")
+    time_note = models.CharField(max_length=200, blank=True, verbose_name="Observação de horário",
+                                 help_text="Ex.: Horários em Brasília (UTC-3)")
     cover_image = models.ImageField(upload_to='events/', blank=True, null=True, verbose_name="Imagem de capa")
-    registration_url = models.URLField(blank=True, verbose_name="Link de inscrição")
+    registration_url = models.URLField(blank=True, verbose_name="Link de acesso / inscrição")
+    info_url = models.URLField(blank=True, verbose_name="Página do evento")
+    organizers = models.TextField(blank=True, verbose_name="Organização / Apoio",
+                                  help_text="Instituições organizadoras, financiamento, etc.")
+    contact_name = models.CharField(max_length=200, blank=True, verbose_name="Contato (nome)")
+    contact_email = models.EmailField(blank=True, verbose_name="Contato (e-mail)")
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='outro', verbose_name="Categoria")
     published = models.BooleanField(default=False, verbose_name="Publicado no site", help_text="Quando marcado, o evento aparece na página pública /eventos/.")
     created_by = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True, blank=True, related_name='events_created')
@@ -201,6 +212,35 @@ class Event(models.Model):
     def get_absolute_url(self):
         from django.urls import reverse
         return reverse('event_detail', args=[self.slug])
+
+
+class EventProgramItem(models.Model):
+    """Uma linha do programa/agenda de um evento (horário + palestrante + título)."""
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='program_items',
+                              verbose_name="Evento")
+    time_label = models.CharField(max_length=60, blank=True, verbose_name="Horário",
+                                  help_text="Ex.: 9:45, 10:00, 13:00")
+    speakers = models.TextField(blank=True, verbose_name="Palestrante(s)",
+                                help_text="Nome(s) e instituição. Deixe vazio em intervalos.")
+    title = models.TextField(blank=True, verbose_name="Título / Atividade",
+                             help_text="Título da fala ou atividade (ex.: Abertura, BREAK, Discussão).")
+    order = models.IntegerField(default=0, verbose_name="Ordem")
+
+    class Meta:
+        ordering = ['order', 'id']
+        verbose_name = "Item do programa"
+        verbose_name_plural = "Programa do evento"
+
+    def __str__(self):
+        return f"{self.time_label} — {self.title[:40]}".strip(" —")
+
+    def is_break(self):
+        """Linha sem palestrante e com cara de intervalo/encerramento — estilo diferente."""
+        if self.speakers.strip():
+            return False
+        t = (self.title or "").strip().lower()
+        return any(w in t for w in ("break", "intervalo", "discussion", "discuss",
+                                    "encerram", "closing", "remarks", "almoço", "almoco", "coffee"))
 
 
 # ===== MODELOS PARA PÁGINA "QUEM SOMOS" =====

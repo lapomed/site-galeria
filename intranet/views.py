@@ -13,7 +13,7 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from core.models import (
-    Event, Project, Collection, VirtualTour, Slide, Publication, TeamMember,
+    Event, EventProgramItem, Project, Collection, VirtualTour, Slide, Publication, TeamMember,
 )
 from .forms import EventForm, TaskForm, IntranetUserForm, _StyledModelForm
 from .models import Task
@@ -119,10 +119,26 @@ def event_form(request, pk=None):
         if not obj.created_by_id:
             obj.created_by = request.user
         obj.save()
+        _save_program(request, obj)
         messages.success(request, "Evento salvo com sucesso.")
         return redirect("intranet:events_list")
     return render(request, "intranet/events/form.html",
                   {"form": form, "instance": instance, "nav": "eventos"})
+
+
+def _save_program(request, event):
+    """Recria o programa do evento a partir das linhas dinâmicas do form."""
+    times = request.POST.getlist("prog_time")
+    speakers = request.POST.getlist("prog_speakers")
+    titles = request.POST.getlist("prog_title")
+    event.program_items.all().delete()
+    order = 0
+    for t, s, ti in zip(times, speakers, titles):
+        if t.strip() or s.strip() or ti.strip():
+            EventProgramItem.objects.create(
+                event=event, time_label=t.strip()[:60],
+                speakers=s.strip(), title=ti.strip(), order=order)
+            order += 1
 
 
 @menu_required("eventos")
