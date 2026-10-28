@@ -1,0 +1,3 @@
+<button type="button" class="menu-toggle text-xs font-bold px-3 py-1 rounded-full transition {% if item.active %}bg-green-100 text-green-700 hover:bg-green-200{% else %}bg-gray-200 text-gray-500 hover:bg-gray-300{% endif %}"
+        data-id="{{ item.pk }}" data-active="{% if item.active %}1{% else %}0{% endif %}"
+        aria-label="Ligar ou desligar este item do menu">{% if item.active %}Ativo{% else %}Desligado{% endif %}</button>

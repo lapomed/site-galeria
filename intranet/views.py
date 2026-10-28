@@ -14,8 +14,9 @@ from django.views.decorators.http import require_POST
 
 from core.models import (
     Event, EventProgramItem, Project, Collection, VirtualTour, Slide, Publication, TeamMember,
+    NavItem,
 )
-from .forms import EventForm, TaskForm, IntranetUserForm, _StyledModelForm
+from .forms import EventForm, TaskForm, IntranetUserForm, NavItemForm, _StyledModelForm
 from .models import Task
 from .permissions import (
     intranet_required, manager_required, menu_required, is_manager,
@@ -340,3 +341,64 @@ def content_delete(request, slug, pk):
     get_object_or_404(cfg["model"], pk=pk).delete()
     messages.success(request, f"{cfg['label']}: registro excluído.")
     return redirect("intranet:content_list", slug=slug)
+
+
+# ---------------------------------------------------------------------------
+# Menu do topo do site (NavItem): ligar/desligar, reordenar, criar links
+# ---------------------------------------------------------------------------
+@menu_required("conteudo")
+def menu_list(request):
+    # Itens de topo (sem pai), em ordem; os sub-itens vão aninhados no template.
+    tops = NavItem.objects.filter(parent__isnull=True).order_by("order", "id")
+    rows = []
+    for item in tops:
+        children = list(item.children.order_by("order", "id")) if item.kind == "social" else []
+        rows.append({"item": item, "children": children})
+    return render(request, "intranet/menu/list.html", {"rows": rows, "nav": "conteudo"})
+
+
+@menu_required("conteudo")
+def menu_form(request, pk=None):
+    instance = get_object_or_404(NavItem, pk=pk) if pk else None
+    form = NavItemForm(request.POST or None, instance=instance)
+    if request.method == "POST" and form.is_valid():
+        obj = form.save(commit=False)
+        if obj.order == 0 and not instance:
+            last = NavItem.objects.order_by("-order").first()
+            obj.order = (last.order + 1) if last else 0
+        obj.save()
+        messages.success(request, "Menu: item salvo.")
+        return redirect("intranet:menu_list")
+    return render(request, "intranet/menu/form.html",
+                  {"form": form, "instance": instance, "nav": "conteudo"})
+
+
+@menu_required("conteudo")
+@require_POST
+def menu_toggle(request, pk):
+    """Liga/desliga um item do menu com um clique (sem recarregar a página)."""
+    item = get_object_or_404(NavItem, pk=pk)
+    item.active = not item.active
+    item.save(update_fields=["active"])
+    return JsonResponse({"ok": True, "active": item.active})
+
+
+@menu_required("conteudo")
+@require_POST
+def menu_delete(request, pk):
+    get_object_or_404(NavItem, pk=pk).delete()
+    messages.success(request, "Menu: item excluído.")
+    return redirect("intranet:menu_list")
+
+
+@menu_required("conteudo")
+@require_POST
+def menu_reorder(request):
+    """Recebe {ordered_ids: [...]} e grava a nova ordem dos itens de topo."""
+    try:
+        ids = json.loads(request.body).get("ordered_ids", [])
+    except (ValueError, TypeError):
+        return JsonResponse({"ok": False}, status=400)
+    for position, pk in enumerate(ids):
+        NavItem.objects.filter(pk=pk).update(order=position)
+    return JsonResponse({"ok": True})
