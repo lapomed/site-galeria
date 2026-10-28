@@ -5,7 +5,14 @@ MENU_KEYS = ["dashboard", "eventos", "tarefas", "calendario",
 
 
 def intranet_perms(request):
-    """Expõe `perms` (acesso por menu) para os templates da intranet."""
+    """Expõe `perms` (acesso por menu) para os templates da intranet.
+
+    Só injeta em páginas da intranet. Fora delas o nome `perms` colidiria
+    com o PermWrapper que o admin do Django/Jazzmin usa, quebrando o admin
+    (KeyError 'auth' ao renderizar o menu do usuário).
+    """
+    if not request.path.startswith("/intranet/"):
+        return {}
     user = getattr(request, "user", None)
     if not user or not is_intranet_user(user):
         return {}

@@ -36,8 +36,22 @@
         </div>
         <div>
           <label class="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-1">Senha</label>
-          <input type="password" name="password" required
-                 class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-lapomed-gold focus:ring-1 focus:ring-lapomed-gold outline-none" />
+          <div class="relative">
+            <input type="password" name="password" id="id_password" required
+                   class="w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 text-sm focus:border-lapomed-gold focus:ring-1 focus:ring-lapomed-gold outline-none" />
+            <button type="button" id="toggle-password" aria-label="Mostrar senha" aria-pressed="false"
+                    class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 hover:text-gray-700 focus:outline-none">
+              <!-- olho (senha oculta) -->
+              <svg id="eye-show" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12s3.75-6.75 9.75-6.75S21.75 12 21.75 12s-3.75 6.75-9.75 6.75S2.25 12 2.25 12z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+              <!-- olho cortado (senha visível) -->
+              <svg id="eye-hide" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.22A10.5 10.5 0 0 0 2.25 12s3.75 6.75 9.75 6.75c1.64 0 3.13-.5 4.42-1.27M9.88 9.88a3 3 0 0 0 4.24 4.24M6.1 6.1l11.8 11.8M9.9 4.74A10 10 0 0 1 12 4.5c6 0 9.75 7.5 9.75 7.5a16.8 16.8 0 0 1-2.17 3.28" />
+              </svg>
+            </button>
+          </div>
         </div>
         <button type="submit"
                 class="w-full bg-lapomed-gold hover:brightness-95 text-gray-900 font-bold py-2.5 rounded-lg transition">Entrar</button>
@@ -47,5 +61,23 @@
       <a href="/" class="hover:text-gray-200">← Voltar ao site</a>
     </p>
   </div>
+  <script>
+    (function () {
+      var btn = document.getElementById('toggle-password');
+      var input = document.getElementById('id_password');
+      var show = document.getElementById('eye-show');
+      var hide = document.getElementById('eye-hide');
+      if (!btn || !input) return;
+      btn.addEventListener('click', function () {
+        var visible = input.type === 'text';
+        input.type = visible ? 'password' : 'text';
+        show.classList.toggle('hidden', !visible);
+        hide.classList.toggle('hidden', visible);
+        btn.setAttribute('aria-pressed', String(!visible));
+        btn.setAttribute('aria-label', visible ? 'Mostrar senha' : 'Ocultar senha');
+        input.focus();
+      });
+    })();
+  </script>
 </body>
 </html>
