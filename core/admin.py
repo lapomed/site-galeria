@@ -9,6 +9,7 @@ from .models import (
     AboutSection, TeamMember, Timeline, ResearchArea, Partnership,
     Publication, LearningResource, VirtualTour, TourCategory, SocialLink,
     CoalitvsGroup, CoalitvsMember, NavItem, LcpPage, ContactInfo, Event, EventProgramItem,
+    EventRegistration,
 )
 
 # ===== CONFIGURAÇÃO DO SITE ADMIN =====
@@ -529,14 +530,30 @@ class EventProgramItemInline(admin.TabularInline):
     ordering = ("order", "id")
 
 
+class EventRegistrationInline(admin.TabularInline):
+    model = EventRegistration
+    extra = 0
+    can_delete = True
+    fields = ("name", "email", "document_type", "document_number", "institution", "created_at")
+    readonly_fields = ("created_at",)
+
+
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
-    list_display = ("title", "start_at", "location", "published", "category")
-    list_filter = ("published", "category")
+    list_display = ("title", "start_at", "location", "published", "registration_open", "category")
+    list_filter = ("published", "registration_open", "category")
     search_fields = ("title", "description", "location")
     prepopulated_fields = {"slug": ("title",)}
     date_hierarchy = "start_at"
-    inlines = [EventProgramItemInline]
+    inlines = [EventProgramItemInline, EventRegistrationInline]
+
+
+@admin.register(EventRegistration)
+class EventRegistrationAdmin(admin.ModelAdmin):
+    list_display = ("name", "email", "institution", "event", "created_at")
+    list_filter = ("event",)
+    search_fields = ("name", "email", "institution", "document_number")
+    readonly_fields = ("created_at",)
 
 
 @admin.register(ContactInfo)

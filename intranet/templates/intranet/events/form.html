@@ -44,6 +44,78 @@
     <a href="{% url 'intranet:events_list' %}" class="text-sm text-gray-500 hover:text-gray-800">Cancelar</a>
   </div>
 </form>
+
+{% if instance %}
+<div class="bg-white rounded-xl border border-gray-200 p-6 max-w-3xl mt-6">
+  <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+    <div>
+      <h3 class="font-serif text-lg text-gray-900">Inscrições</h3>
+      <p class="text-xs text-gray-500 mt-1">{{ registrations|length }} inscrito(s).</p>
+    </div>
+    {% if registrations %}
+    <a href="{% url 'intranet:event_registrations_csv' instance.pk %}"
+       class="inline-flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:border-lapomed-gold">⬇ Exportar CSV</a>
+    {% endif %}
+  </div>
+
+  {% if instance.registration_open %}
+  <div class="mb-5 rounded-lg bg-gray-50 border border-gray-200 p-3">
+    <label class="block text-xs font-semibold text-gray-500 mb-1">Link público de inscrição (compartilhe no Instagram)</label>
+    <div class="flex gap-2">
+      <input id="regLink" type="text" readonly value="{{ request.scheme }}://{{ request.get_host }}{{ instance.get_register_url }}"
+             class="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white text-gray-700">
+      <button type="button" id="copyLink" class="rounded-lg bg-lapomed-gold hover:brightness-95 text-gray-900 font-bold text-sm px-4 py-2 whitespace-nowrap">Copiar</button>
+    </div>
+  </div>
+  {% else %}
+  <p class="mb-5 text-xs text-gray-500">Marque <strong>"Inscrições abertas (no site)"</strong> no formulário acima e salve para gerar o link público.</p>
+  {% endif %}
+
+  {% if registrations %}
+  <div class="overflow-x-auto border border-gray-100 rounded-lg">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 text-xs uppercase tracking-widest text-gray-500">
+        <tr>
+          <th class="text-left px-3 py-2">Nome</th>
+          <th class="text-left px-3 py-2">E-mail</th>
+          <th class="text-left px-3 py-2 hidden sm:table-cell">Documento</th>
+          <th class="text-left px-3 py-2">Instituição</th>
+          <th class="text-left px-3 py-2 hidden md:table-cell">Data</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        {% for r in registrations %}
+        <tr class="hover:bg-gray-50">
+          <td class="px-3 py-2 text-gray-800">{{ r.name }}</td>
+          <td class="px-3 py-2 text-gray-600">{{ r.email }}</td>
+          <td class="px-3 py-2 text-gray-600 hidden sm:table-cell">{% if r.document_type %}{{ r.get_document_type_display }}: {{ r.document_number }}{% else %}—{% endif %}</td>
+          <td class="px-3 py-2 text-gray-600">{{ r.institution }}</td>
+          <td class="px-3 py-2 text-gray-500 hidden md:table-cell whitespace-nowrap">{{ r.created_at|date:'d/m/Y H:i' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="text-sm text-gray-400 py-6 text-center">Ninguém se inscreveu ainda.</p>
+  {% endif %}
+</div>
+
+<script>
+  (function () {
+    var btn = document.getElementById('copyLink');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var inp = document.getElementById('regLink');
+      inp.select(); inp.setSelectionRange(0, 99999);
+      navigator.clipboard.writeText(inp.value).then(function () {
+        var old = btn.textContent; btn.textContent = 'Copiado!';
+        setTimeout(function () { btn.textContent = old; }, 1500);
+      }).catch(function () { document.execCommand('copy'); });
+    });
+  })();
+</script>
+{% endif %}
 {% endblock %}
 {% block extra_js %}
 <script>

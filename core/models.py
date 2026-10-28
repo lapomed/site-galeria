@@ -173,6 +173,9 @@ class Event(models.Model):
                                  help_text="Ex.: Horários em Brasília (UTC-3)")
     cover_image = models.ImageField(upload_to='events/', blank=True, null=True, verbose_name="Imagem de capa")
     registration_url = models.URLField(blank=True, verbose_name="Link de acesso / inscrição")
+    registration_open = models.BooleanField(
+        default=False, verbose_name="Inscrições abertas (no site)",
+        help_text="Quando marcado, gera a página pública de inscrição do evento.")
     info_url = models.URLField(blank=True, verbose_name="Página do evento")
     organizers = models.TextField(blank=True, verbose_name="Organização / Apoio",
                                   help_text="Instituições organizadoras, financiamento, etc.")
@@ -213,6 +216,10 @@ class Event(models.Model):
         from django.urls import reverse
         return reverse('event_detail', args=[self.slug])
 
+    def get_register_url(self):
+        from django.urls import reverse
+        return reverse('event_register', args=[self.slug])
+
 
 class EventProgramItem(models.Model):
     """Uma linha do programa/agenda de um evento (horário + palestrante + título)."""
@@ -241,6 +248,37 @@ class EventProgramItem(models.Model):
         t = (self.title or "").strip().lower()
         return any(w in t for w in ("break", "intervalo", "discussion", "discuss",
                                     "encerram", "closing", "remarks", "almoço", "almoco", "coffee"))
+
+
+class EventRegistration(models.Model):
+    """Inscrição pública de uma pessoa num evento."""
+    DOC_CHOICES = [
+        ("", "—"),
+        ("cpf", "CPF"),
+        ("rg", "RG"),
+        ("outro", "Outro"),
+    ]
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="registrations",
+                              verbose_name="Evento")
+    name = models.CharField(max_length=200, verbose_name="Nome")
+    email = models.EmailField(verbose_name="E-mail")
+    document_type = models.CharField(max_length=10, choices=DOC_CHOICES, blank=True,
+                                     verbose_name="Tipo de documento")
+    document_number = models.CharField(max_length=40, blank=True, verbose_name="Nº do documento")
+    institution = models.CharField(max_length=200, verbose_name="Universidade / Instituição")
+    consent = models.BooleanField(default=False, verbose_name="Consentimento (LGPD)")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "Inscrição"
+        verbose_name_plural = "Inscrições"
+        constraints = [
+            models.UniqueConstraint(fields=["event", "email"], name="uniq_event_email"),
+        ]
+
+    def __str__(self):
+        return f"{self.name} — {self.event.title}"
 
 
 # ===== MODELOS PARA PÁGINA "QUEM SOMOS" =====

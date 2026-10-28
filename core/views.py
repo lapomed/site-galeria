@@ -39,6 +39,30 @@ def event_detail(request, slug):
     event = get_object_or_404(Event, slug=slug, published=True)
     return render(request, 'core/event_detail.html', {'event': event})
 
+
+def event_register(request, slug):
+    from django.db import IntegrityError, transaction
+    from .forms import EventRegistrationForm
+    event = get_object_or_404(Event, slug=slug, published=True)
+    if not event.registration_open:
+        raise Http404("Inscrições não estão abertas para este evento.")
+    form = EventRegistrationForm(request.POST or None)
+    done = already = False
+    if request.method == 'POST' and form.is_valid():
+        if form.is_bot():
+            done = True  # honeypot preenchido: finge sucesso, não grava
+        else:
+            reg = form.save(commit=False)
+            reg.event = event
+            try:
+                with transaction.atomic():
+                    reg.save()
+                done = True
+            except IntegrityError:
+                already = True  # já inscrito (mesmo e-mail)
+    return render(request, 'core/event_register.html',
+                  {'event': event, 'form': form, 'done': done, 'already': already})
+
 def project_list(request):
     query = request.GET.get('q')
     projects = Project.objects.filter(active=True).order_by('order', '-created_at')

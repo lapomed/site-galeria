@@ -21,7 +21,12 @@
         {% if event.location %}<span>📍 {{ event.location }}</span>{% endif %}
       </div>
       {% if event.time_note %}<p class="mt-2 text-xs text-white/60">{{ event.time_note }}</p>{% endif %}
-      {% if event.registration_url %}
+      {% if event.registration_open %}
+      <a href="{% url 'event_register' event.slug %}"
+         class="mt-7 inline-flex items-center gap-2 px-7 py-3 bg-lapomed-gold hover:brightness-95 text-gray-900 font-bold rounded-full shadow-lg">
+         Inscreva-se
+      </a>
+      {% elif event.registration_url %}
       <a href="{{ event.registration_url }}" target="_blank" rel="noopener noreferrer"
          class="mt-7 inline-flex items-center gap-2 px-7 py-3 bg-lapomed-gold hover:brightness-95 text-gray-900 font-bold rounded-full shadow-lg">
          Acessar / Inscrever-se

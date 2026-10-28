@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from core.models import Event
+from core.models import Event, EventRegistration
 from .models import Task, IntranetAccess
 
 
@@ -150,3 +150,71 @@ class IntranetAccessTests(TestCase):
         self.assertTrue(acc.content_publicacoes)
         self.assertFalse(acc.menu_tarefas)
         self.assertFalse(acc.is_manager)
+
+
+class EventRegistrationTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.manager = User.objects.create_user("gestor2", password="x")
+        IntranetAccess.objects.create(user=cls.manager, is_manager=True)
+        cls.event = Event.objects.create(
+            title="Simpósio Inscrição", start_at=timezone.now(),
+            published=True, registration_open=True)
+
+    def _data(self, **over):
+        d = {"name": "Maria Silva", "email": "maria@ex.com",
+             "institution": "USP", "consent": "on"}
+        d.update(over)
+        return d
+
+    def test_register_success(self):
+        url = reverse("event_register", args=[self.event.slug])
+        r = self.client.post(url, self._data())
+        self.assertContains(r, "confirmada")
+        self.assertEqual(self.event.registrations.count(), 1)
+
+    def test_consent_required(self):
+        url = reverse("event_register", args=[self.event.slug])
+        data = self._data()
+        data.pop("consent")
+        self.client.post(url, data)
+        self.assertEqual(self.event.registrations.count(), 0)
+
+    def test_duplicate_email_blocked(self):
+        url = reverse("event_register", args=[self.event.slug])
+        self.client.post(url, self._data())
+        r = self.client.post(url, self._data(name="Outro Nome"))
+        self.assertContains(r, "já está inscrito")
+        self.assertEqual(self.event.registrations.count(), 1)
+
+    def test_closed_registration_404(self):
+        self.event.registration_open = False
+        self.event.save()
+        r = self.client.get(reverse("event_register", args=[self.event.slug]))
+        self.assertEqual(r.status_code, 404)
+
+    def test_invalid_cpf(self):
+        url = reverse("event_register", args=[self.event.slug])
+        self.client.post(url, self._data(document_type="cpf", document_number="111.111.111-11"))
+        self.assertEqual(self.event.registrations.count(), 0)
+
+    def test_valid_cpf_ok(self):
+        url = reverse("event_register", args=[self.event.slug])
+        # CPF válido de teste
+        self.client.post(url, self._data(document_type="cpf", document_number="529.982.247-25"))
+        self.assertEqual(self.event.registrations.count(), 1)
+
+    def test_honeypot_drops_silently(self):
+        url = reverse("event_register", args=[self.event.slug])
+        r = self.client.post(url, self._data(website="http://spam"))
+        self.assertContains(r, "confirmada")
+        self.assertEqual(self.event.registrations.count(), 0)
+
+    def test_csv_export_requires_login_and_lists(self):
+        EventRegistration.objects.create(event=self.event, name="Ana", email="a@x.com", institution="UFRJ")
+        csv_url = reverse("intranet:event_registrations_csv", args=[self.event.pk])
+        self.assertEqual(self.client.get(csv_url).status_code, 302)  # anônimo -> login
+        self.client.force_login(self.manager)
+        r = self.client.get(csv_url)
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("Ana", r.content.decode("utf-8"))
