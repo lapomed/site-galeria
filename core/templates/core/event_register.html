@@ -1,0 +1,75 @@
+{% extends 'core/base.html' %}
+{% block title %}Inscrição · {{ event.title }} | LAPOMED{% endblock %}
+{% block content %}
+<div class="bg-gray-50 pt-24 min-h-screen">
+  <div class="max-w-xl mx-auto px-4 py-10 md:py-14">
+    <a href="{% url 'event_detail' event.slug %}" class="text-sm text-gray-500 hover:text-lapomed-gold">← Voltar ao evento</a>
+
+    <p class="text-[11px] font-bold uppercase tracking-widest text-lapomed-gold mt-6 mb-2">Inscrição</p>
+    <h1 class="font-serif text-2xl md:text-3xl text-gray-900 mb-2">{{ event.title }}</h1>
+    <p class="text-sm text-gray-500 mb-8">🗓 {{ event.start_at|date:'d/m/Y' }}{% if event.event_format %} · {{ event.event_format }}{% endif %}</p>
+
+    {% if done %}
+      <div class="bg-white rounded-2xl border border-green-200 p-8 text-center shadow-sm">
+        <div class="text-4xl mb-3">✅</div>
+        <h2 class="font-serif text-xl text-gray-900 mb-2">Inscrição confirmada!</h2>
+        <p class="text-sm text-gray-600">Obrigado por se inscrever. Guardamos seus dados para a organização do evento.</p>
+        <a href="{% url 'event_detail' event.slug %}" class="inline-block mt-6 text-sm font-semibold text-lapomed-gold hover:underline">Ver detalhes do evento →</a>
+      </div>
+    {% else %}
+      {% if already %}
+      <div class="mb-6 rounded-lg px-4 py-3 text-sm bg-yellow-50 text-yellow-800 border border-yellow-200">
+        Este e-mail já está inscrito neste evento. Se precisar alterar algo, fale com a organização.
+      </div>
+      {% endif %}
+
+      <form method="post" class="bg-white rounded-2xl border border-gray-200 p-6 md:p-8 shadow-sm space-y-5">
+        {% csrf_token %}
+        {# honeypot — não preencher #}
+        <div class="hidden" aria-hidden="true">{{ form.website }}</div>
+
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">Nome completo *</label>
+          {{ form.name }}
+          {% if form.name.errors %}<p class="text-xs text-red-600 mt-1">{{ form.name.errors.0 }}</p>{% endif %}
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">E-mail *</label>
+          {{ form.email }}
+          {% if form.email.errors %}<p class="text-xs text-red-600 mt-1">{{ form.email.errors.0 }}</p>{% endif %}
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-[130px,1fr] gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 mb-1">Documento</label>
+            {{ form.document_type }}
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-500 mb-1">Nº do documento</label>
+            {{ form.document_number }}
+            {% if form.document_number.errors %}<p class="text-xs text-red-600 mt-1">{{ form.document_number.errors.0 }}</p>{% endif %}
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 mb-1">Universidade / Instituição *</label>
+          {{ form.institution }}
+          {% if form.institution.errors %}<p class="text-xs text-red-600 mt-1">{{ form.institution.errors.0 }}</p>{% endif %}
+        </div>
+
+        <label class="flex items-start gap-2 text-sm text-gray-600 cursor-pointer">
+          <input type="checkbox" name="consent" {% if form.consent.value %}checked{% endif %} class="mt-0.5 h-4 w-4 rounded border-gray-300 text-lapomed-gold" required>
+          <span>Autorizo o uso dos meus dados para a organização deste evento, conforme a LGPD.</span>
+        </label>
+        {% if form.consent.errors %}<p class="text-xs text-red-600 -mt-3">{{ form.consent.errors.0 }}</p>{% endif %}
+
+        <button type="submit" class="w-full px-6 py-3 bg-lapomed-gold hover:brightness-95 text-gray-900 font-bold rounded-full shadow-md">
+          Confirmar inscrição
+        </button>
+        <p class="text-[11px] text-gray-400 text-center">* campos obrigatórios</p>
+      </form>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

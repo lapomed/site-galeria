@@ -13,6 +13,7 @@ urlpatterns = [
     path("eventos/novo/", views.event_form, name="event_create"),
     path("eventos/<int:pk>/editar/", views.event_form, name="event_edit"),
     path("eventos/<int:pk>/excluir/", views.event_delete, name="event_delete"),
+    path("eventos/<int:pk>/inscritos.csv", views.event_registrations_csv, name="event_registrations_csv"),
 
     # Tarefas
     path("tarefas/", views.tasks_board, name="tasks_board"),

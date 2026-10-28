@@ -7,7 +7,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.forms import modelform_factory
-from django.http import JsonResponse, Http404
+from django.http import JsonResponse, Http404, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.views.decorators.http import require_POST
@@ -122,8 +122,26 @@ def event_form(request, pk=None):
         _save_program(request, obj)
         messages.success(request, "Evento salvo com sucesso.")
         return redirect("intranet:events_list")
-    return render(request, "intranet/events/form.html",
-                  {"form": form, "instance": instance, "nav": "eventos"})
+    return render(request, "intranet/events/form.html", {
+        "form": form, "instance": instance, "nav": "eventos",
+        "registrations": instance.registrations.all() if instance else None,
+    })
+
+
+@menu_required("eventos")
+def event_registrations_csv(request, pk):
+    import csv
+    event = get_object_or_404(Event, pk=pk)
+    resp = HttpResponse(content_type="text/csv; charset=utf-8")
+    resp["Content-Disposition"] = f'attachment; filename="inscritos-{event.slug}.csv"'
+    resp.write("﻿")  # BOM p/ o Excel abrir os acentos corretamente
+    w = csv.writer(resp)
+    w.writerow(["Nome", "E-mail", "Documento", "Numero", "Instituicao", "Data"])
+    for r in event.registrations.all():
+        w.writerow([r.name, r.email, r.get_document_type_display() if r.document_type else "",
+                    r.document_number, r.institution,
+                    r.created_at.strftime("%d/%m/%Y %H:%M")])
+    return resp
 
 
 def _save_program(request, event):

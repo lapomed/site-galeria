@@ -36,8 +36,8 @@ class EventForm(_StyledModelForm):
         model = Event
         fields = ["title", "subtitle", "description", "start_at", "end_at", "location",
                   "event_format", "time_note", "cover_image", "registration_url",
-                  "info_url", "organizers", "contact_name", "contact_email",
-                  "category", "published"]
+                  "registration_open", "info_url", "organizers", "contact_name",
+                  "contact_email", "category", "published"]
         widgets = {
             "start_at": _DTInput(),
             "end_at": _DTInput(),

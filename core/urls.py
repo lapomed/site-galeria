@@ -13,6 +13,7 @@ urlpatterns = [
     path('hub-aprendizado/', views.learning_hub, name='learning_hub'),
     path('colecoes/<str:category>/', views.digital_collections, name='digital_collections'),
     path('eventos/', views.events_list, name='events_list'),
+    path('eventos/<slug:slug>/inscricao/', views.event_register, name='event_register'),
     path('eventos/<slug:slug>/', views.event_detail, name='event_detail'),
     path('visitas-3d/', views.virtual_tours, name='virtual_tours'),
     path('visitas-3d/<slug:slug>/', views.virtual_tour_detail, name='virtual_tour_detail'),
