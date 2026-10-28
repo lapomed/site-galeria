@@ -1,0 +1,19 @@
+{% extends 'intranet/base_intranet.html' %}
+{% block title %}Menu do site | Intranet{% endblock %}
+{% block page_title %}🧭 Menu — {% if instance %}editar “{{ instance.label }}”{% else %}novo link{% endif %}{% endblock %}
+{% block content %}
+<form method="post" class="bg-white rounded-xl border border-gray-200 p-6 max-w-2xl">
+  {% csrf_token %}
+  {% include 'intranet/partials/_form_fields.html' %}
+  <div class="mt-5 rounded-lg bg-amber-50 border border-amber-200 px-4 py-3 text-xs text-amber-800">
+    <strong>Dica:</strong> para um link para outra página ou site, escolha o tipo
+    <em>Custom (URL livre)</em> e preencha a URL (ex.: <code>/contato/</code> ou
+    <code>https://exemplo.com</code>). Os tipos do sistema (Home, Projetos, Eventos…)
+    já apontam para as páginas prontas — basta ligar/desligar.
+  </div>
+  <div class="flex items-center gap-3 mt-6 pt-5 border-t border-gray-100">
+    <button type="submit" class="bg-lapomed-gold hover:brightness-95 text-gray-900 font-bold text-sm px-5 py-2.5 rounded-lg">Salvar</button>
+    <a href="{% url 'intranet:menu_list' %}" class="text-sm text-gray-500 hover:text-gray-800">Cancelar</a>
+  </div>
+</form>
+{% endblock %}

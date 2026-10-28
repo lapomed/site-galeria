@@ -31,6 +31,14 @@ urlpatterns = [
     path("equipe/conta/nova/", views.user_form, name="user_create"),
     path("equipe/conta/<int:pk>/editar/", views.user_form, name="user_edit"),
 
+    # Menu do topo do site (NavItem) — prefixo próprio p/ não colidir com conteudo/<slug>
+    path("menu/", views.menu_list, name="menu_list"),
+    path("menu/novo/", views.menu_form, name="menu_create"),
+    path("menu/<int:pk>/editar/", views.menu_form, name="menu_edit"),
+    path("menu/<int:pk>/toggle/", views.menu_toggle, name="menu_toggle"),
+    path("menu/<int:pk>/excluir/", views.menu_delete, name="menu_delete"),
+    path("menu/reordenar/", views.menu_reorder, name="menu_reorder"),
+
     # Conteúdo do site (genérico)
     path("conteudo/", views.content_index, name="content_index"),
     path("conteudo/<slug:slug>/", views.content_list, name="content_list"),

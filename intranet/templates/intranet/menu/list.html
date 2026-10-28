@@ -1,0 +1,109 @@
+{% extends 'intranet/base_intranet.html' %}
+{% block title %}Menu do site | Intranet{% endblock %}
+{% block page_title %}🧭 Menu do topo do site{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-4">
+  <a href="{% url 'intranet:content_index' %}" class="text-sm text-gray-500 hover:text-gray-800">← Conteúdo do site</a>
+  <a href="{% url 'intranet:menu_create' %}" class="bg-lapomed-gold hover:brightness-95 text-gray-900 font-bold text-sm px-4 py-2 rounded-lg">+ Adicionar link</a>
+</div>
+<p class="text-sm text-gray-500 mb-6">
+  Ligue ou desligue cada menu do topo com um clique no botão <strong>Ativo/Desligado</strong>.
+  Arraste pela alça <span class="text-gray-400">⠿</span> para reordenar. As mudanças entram no ar imediatamente.
+</p>
+
+<div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+  <ul id="menu-list" class="divide-y divide-gray-100">
+    {% for row in rows %}
+    <li class="menu-row" data-id="{{ row.item.pk }}">
+      <div class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50">
+        <span class="drag-handle cursor-move text-gray-300 hover:text-gray-500 select-none" title="Arraste para reordenar">⠿</span>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium text-gray-800 truncate">
+            {{ row.item.label }}
+            <span class="text-xs text-gray-400 font-normal">· {{ row.item.get_kind_display }}</span>
+          </p>
+          {% if row.item.custom_url %}<p class="text-xs text-gray-400 truncate">{{ row.item.custom_url }}</p>{% endif %}
+        </div>
+        {% include 'intranet/menu/_toggle.html' with item=row.item %}
+        <a href="{% url 'intranet:menu_edit' row.item.pk %}" class="text-sm text-gray-500 hover:text-lapomed-gold">Editar</a>
+        <form method="post" action="{% url 'intranet:menu_delete' row.item.pk %}" onsubmit="return confirm('Excluir este item do menu?');">
+          {% csrf_token %}<button class="text-sm text-red-500 hover:text-red-700">Excluir</button>
+        </form>
+      </div>
+      {% if row.children %}
+      <ul class="bg-gray-50/60 border-t border-gray-100">
+        {% for child in row.children %}
+        <li class="flex items-center gap-3 pl-12 pr-4 py-2.5 border-b border-gray-100 last:border-b-0">
+          <span class="text-gray-300">↳</span>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm text-gray-700 truncate">{{ child.label }}</p>
+            {% if child.custom_url %}<p class="text-xs text-gray-400 truncate">{{ child.custom_url }}</p>{% endif %}
+          </div>
+          {% include 'intranet/menu/_toggle.html' with item=child %}
+          <a href="{% url 'intranet:menu_edit' child.pk %}" class="text-sm text-gray-500 hover:text-lapomed-gold">Editar</a>
+          <form method="post" action="{% url 'intranet:menu_delete' child.pk %}" onsubmit="return confirm('Excluir este sub-item?');">
+            {% csrf_token %}<button class="text-sm text-red-500 hover:text-red-700">Excluir</button>
+          </form>
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </li>
+    {% empty %}<li class="px-4 py-10 text-center text-gray-400 text-sm">Nenhum item de menu cadastrado.</li>{% endfor %}
+  </ul>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function(){
+  function getCsrf(){var m=document.cookie.match(/csrftoken=([^;]+)/);return m?m[1]:'';}
+
+  // --- ligar/desligar (um clique) ---
+  document.querySelectorAll('.menu-toggle').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var pk = btn.getAttribute('data-id');
+      btn.disabled = true;
+      fetch('/intranet/menu/'+pk+'/toggle/', {method:'POST', headers:{'X-CSRFToken':getCsrf()}})
+        .then(function(r){return r.json();})
+        .then(function(d){
+          if(!d.ok){return;}
+          btn.setAttribute('data-active', d.active ? '1':'0');
+          btn.textContent = d.active ? 'Ativo' : 'Desligado';
+          btn.className = 'menu-toggle text-xs font-bold px-3 py-1 rounded-full transition ' +
+            (d.active ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                      : 'bg-gray-200 text-gray-500 hover:bg-gray-300');
+        })
+        .finally(function(){ btn.disabled = false; });
+    });
+  });
+
+  // --- arrastar para reordenar (itens de topo) ---
+  var list = document.getElementById('menu-list');
+  if(!list) return;
+  var dragged = null;
+  list.querySelectorAll('.menu-row').forEach(function(row){
+    var handle = row.querySelector('.drag-handle');
+    if(!handle) return;
+    handle.addEventListener('mousedown', function(){ row.setAttribute('draggable','true'); });
+    row.addEventListener('dragstart', function(){ dragged=row; setTimeout(function(){row.classList.add('opacity-40');},0); });
+    row.addEventListener('dragend', function(){
+      row.classList.remove('opacity-40'); row.removeAttribute('draggable'); dragged=null; persist();
+    });
+  });
+  list.addEventListener('dragover', function(e){
+    e.preventDefault();
+    var rows=[].slice.call(list.querySelectorAll('.menu-row:not(.opacity-40)'));
+    var after=null;
+    for(var i=0;i<rows.length;i++){var r=rows[i].getBoundingClientRect();if(e.clientY<r.top+r.height/2){after=rows[i];break;}}
+    if(dragged){ if(after){list.insertBefore(dragged,after);}else{list.appendChild(dragged);} }
+  });
+  function persist(){
+    var ids=[].slice.call(list.querySelectorAll('.menu-row')).map(function(x){return x.getAttribute('data-id');});
+    fetch("{% url 'intranet:menu_reorder' %}",{method:'POST',
+      headers:{'Content-Type':'application/json','X-CSRFToken':getCsrf()},
+      body:JSON.stringify({ordered_ids:ids})});
+  }
+})();
+</script>
+{% endblock %}

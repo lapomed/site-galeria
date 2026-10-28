@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from core.models import Event, EventRegistration
+from core.models import Event, EventRegistration, NavItem
 from .models import Task, IntranetAccess
 
 
@@ -218,3 +218,76 @@ class EventRegistrationTests(TestCase):
         r = self.client.get(csv_url)
         self.assertEqual(r.status_code, 200)
         self.assertIn("Ana", r.content.decode("utf-8"))
+
+
+class MenuManagementTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.manager = User.objects.create_user("gestor3", password="x")
+        IntranetAccess.objects.create(user=cls.manager, is_manager=True)
+        cls.outsider = User.objects.create_user("fora3", password="x")
+
+    def setUp(self):
+        self.client.force_login(self.manager)
+
+    def test_list_page_ok(self):
+        NavItem.objects.create(label="Home", kind="home", order=0)
+        r = self.client.get(reverse("intranet:menu_list"))
+        self.assertEqual(r.status_code, 200)
+        self.assertContains(r, "Home")
+
+    def test_outsider_blocked(self):
+        self.client.force_login(self.outsider)
+        self.assertEqual(self.client.get(reverse("intranet:menu_list")).status_code, 403)
+
+    def test_create_custom_link_assigns_order(self):
+        NavItem.objects.create(label="Home", kind="home", order=3)
+        r = self.client.post(reverse("intranet:menu_create"), {
+            "label": "Contato", "kind": "custom", "custom_url": "/contato/", "active": "on",
+        })
+        self.assertEqual(r.status_code, 302)
+        item = NavItem.objects.get(label="Contato")
+        self.assertTrue(item.active)
+        self.assertEqual(item.order, 4)  # após o maior order existente
+
+    def test_sublink_without_parent_rejected(self):
+        r = self.client.post(reverse("intranet:menu_create"), {
+            "label": "Instagram", "kind": "sublink", "custom_url": "https://insta",
+        })
+        self.assertEqual(r.status_code, 200)  # re-renderiza com erro
+        self.assertFalse(NavItem.objects.filter(label="Instagram").exists())
+
+    def test_sublink_with_social_parent_ok(self):
+        parent = NavItem.objects.create(label="Redes", kind="social", order=0)
+        r = self.client.post(reverse("intranet:menu_create"), {
+            "label": "Instagram", "kind": "sublink", "custom_url": "https://insta",
+            "parent": parent.pk,
+        })
+        self.assertEqual(r.status_code, 302)
+        child = NavItem.objects.get(label="Instagram")
+        self.assertEqual(child.parent_id, parent.pk)
+
+    def test_toggle_flips_active(self):
+        item = NavItem.objects.create(label="Eventos", kind="events", active=True, order=0)
+        r = self.client.post(reverse("intranet:menu_toggle", args=[item.pk]))
+        self.assertEqual(r.status_code, 200)
+        self.assertFalse(r.json()["active"])
+        item.refresh_from_db()
+        self.assertFalse(item.active)
+
+    def test_reorder_persists(self):
+        a = NavItem.objects.create(label="A", kind="custom", custom_url="/a/", order=0)
+        b = NavItem.objects.create(label="B", kind="custom", custom_url="/b/", order=1)
+        r = self.client.post(reverse("intranet:menu_reorder"),
+                             data=json.dumps({"ordered_ids": [b.pk, a.pk]}),
+                             content_type="application/json")
+        self.assertEqual(r.status_code, 200)
+        a.refresh_from_db(); b.refresh_from_db()
+        self.assertEqual(b.order, 0)
+        self.assertEqual(a.order, 1)
+
+    def test_delete_removes(self):
+        item = NavItem.objects.create(label="X", kind="custom", custom_url="/x/", order=0)
+        r = self.client.post(reverse("intranet:menu_delete", args=[item.pk]))
+        self.assertEqual(r.status_code, 302)
+        self.assertFalse(NavItem.objects.filter(pk=item.pk).exists())

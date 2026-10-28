@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 
-from core.models import Event
+from core.models import Event, NavItem
 from .models import Task, IntranetAccess
 
 # classe base de estilo (Tailwind) aplicada aos inputs
@@ -48,6 +48,20 @@ class EventForm(_StyledModelForm):
         super().__init__(*args, **kwargs)
         for f in ("start_at", "end_at"):
             self.fields[f].input_formats = ["%Y-%m-%dT%H:%M", "%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M"]
+
+
+class NavItemForm(_StyledModelForm):
+    """Item do menu do topo do site. As regras (sub-item precisa de pai etc.)
+    vêm do NavItem.clean() e são validadas automaticamente pelo ModelForm."""
+    class Meta:
+        model = NavItem
+        fields = ["label", "kind", "custom_url", "parent", "open_in_new_tab", "active"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Só itens de dropdown (Redes) podem ser "pai" de um sub-item.
+        self.fields["parent"].queryset = NavItem.objects.filter(kind="social").order_by("order")
+        self.fields["parent"].required = False
 
 
 class TaskForm(_StyledModelForm):
