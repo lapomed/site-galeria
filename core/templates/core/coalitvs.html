@@ -189,9 +189,13 @@
   // ---- Map ----
   const map = L.map('coalitvsMap', { worldCopyJump: true, scrollWheelZoom: true })
     .setView([20, 0], 2);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-    attribution: '&copy; OpenStreetMap &copy; CARTO',
-    subdomains: 'abcd', maxZoom: 19
+  // Basemap escuro da Esri — gratuito e SEM necessidade de API key.
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+    attribution: 'Tiles &copy; Esri', maxZoom: 19, maxNativeZoom: 16
+  }).addTo(map);
+  // Rótulos (países/cidades) por cima, mantendo o mapa escuro com nomes.
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}', {
+    maxZoom: 19, maxNativeZoom: 16
   }).addTo(map);
 
   const markerCluster = L.markerClusterGroup({
