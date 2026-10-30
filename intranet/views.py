@@ -14,7 +14,8 @@ from django.views.decorators.http import require_POST
 
 from core.models import (
     Event, EventProgramItem, Project, Collection, VirtualTour, Slide, Publication, TeamMember,
-    NavItem,
+    NavItem, Artifact, TourCategory, LearningResource, Timeline, Partnership, AboutSection,
+    ResearchArea, CoalitvsGroup, CoalitvsMember, SocialLink, ContactInfo, LcpPage,
 )
 from .forms import EventForm, TaskForm, IntranetUserForm, NavItemForm, _StyledModelForm
 from .models import Task
@@ -27,13 +28,32 @@ from .permissions import (
 # Registro de CRUD de conteúdo do site (genérico)
 # role: "professor" (só professor) ou "intranet" (professor + colaborador)
 # ---------------------------------------------------------------------------
+# slug -> modelo editável pelo CRUD genérico de "Conteúdo do site".
+# Eventos e Navegação (menu) têm telas dedicadas e ficam de fora daqui.
 CONTENT_REGISTRY = {
-    "projetos":    {"model": Project,     "label": "Projetos",          "icon": "🏛️"},
-    "colecoes":    {"model": Collection,  "label": "Coleções Digitais",  "icon": "🗂️"},
-    "visitas-3d":  {"model": VirtualTour, "label": "Visitas 3D",         "icon": "🥽"},
-    "slides":      {"model": Slide,       "label": "Slides da Home",     "icon": "🏠"},
-    "publicacoes": {"model": Publication, "label": "Publicações",        "icon": "📚"},
-    "equipe":      {"model": TeamMember,  "label": "Equipe",             "icon": "👥"},
+    # Projetos e acervo
+    "projetos":        {"model": Project,        "label": "Projetos",                 "icon": "🏛️"},
+    "artefatos":       {"model": Artifact,       "label": "Artefatos (de projetos)",  "icon": "🏺"},
+    "colecoes":        {"model": Collection,     "label": "Coleções Digitais",        "icon": "🗂️"},
+    "visitas-3d":      {"model": VirtualTour,    "label": "Visitas 3D — Tours",       "icon": "🥽"},
+    "categorias-3d":   {"model": TourCategory,   "label": "Visitas 3D — Categorias",  "icon": "🏷️"},
+    # Home e aprendizado
+    "slides":          {"model": Slide,          "label": "Slides da Home",           "icon": "🏠"},
+    "hub":             {"model": LearningResource,"label": "Hub de Aprendizado",      "icon": "🎓"},
+    "publicacoes":     {"model": Publication,    "label": "Publicações",              "icon": "📚"},
+    "lcp":             {"model": LcpPage,        "label": "LCP — Página",             "icon": "🏺"},
+    # Quem Somos
+    "equipe":          {"model": TeamMember,     "label": "Equipe",                   "icon": "👥"},
+    "secoes-sobre":    {"model": AboutSection,   "label": "Quem Somos — Seções",      "icon": "📄"},
+    "linha-do-tempo":  {"model": Timeline,       "label": "Quem Somos — Linha do Tempo","icon": "🕰️"},
+    "areas-pesquisa":  {"model": ResearchArea,   "label": "Quem Somos — Áreas de Pesquisa","icon": "🔬"},
+    "parcerias":       {"model": Partnership,    "label": "Quem Somos — Parcerias",   "icon": "🤝"},
+    # COALITVS
+    "coalitvs-grupos": {"model": CoalitvsGroup,  "label": "COALITVS — Grupos",        "icon": "🌐"},
+    "coalitvs-membros":{"model": CoalitvsMember, "label": "COALITVS — Pesquisadores", "icon": "🧑‍🔬"},
+    # Rodapé / contato
+    "redes":           {"model": SocialLink,     "label": "Redes Sociais",            "icon": "🔗"},
+    "contato":         {"model": ContactInfo,    "label": "Contato — Informações",    "icon": "✉️"},
 }
 
 
