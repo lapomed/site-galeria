@@ -169,3 +169,65 @@ class RepoFileAcervoTests(TestCase):
             RepoFile(name="orig.kml", titulo_publico="Portos").display_title(),
             "Portos",
         )
+
+
+@override_settings(
+    B2_ENDPOINT="https://s3.example.com", B2_REGION="r",
+    B2_KEY_ID="k", B2_APP_KEY="s", B2_BUCKET="b",
+    STORAGES={
+        "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+        "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+    },
+)
+class CuradoriaTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.member = User.objects.create_user("colab", password="x")
+        IntranetAccess.objects.create(user=cls.member, menu_repositorio=True)
+
+    def setUp(self):
+        self.client.force_login(self.member)
+
+    def _novo(self, name, key):
+        return RepoFile.objects.create(name=name, object_key=key, status="ready")
+
+    def _publicar(self, f, titulo="Portos"):
+        return self.client.post(reverse("repositorio:file_update", args=[f.pk]), {
+            "name": f.name, "acervo_form": "1", "publico": "on",
+            "titulo_publico": titulo, "ordem": "0",
+        })
+
+    def test_publicar_gera_slug_e_data(self):
+        f = self._novo("portos.kml", "k/p.kml")
+        self._publicar(f)
+        f.refresh_from_db()
+        self.assertTrue(f.publico)
+        self.assertEqual(f.public_slug, "portos")
+        self.assertIsNotNone(f.publicado_em)
+
+    def test_slug_colide_recebe_sufixo(self):
+        a = self._novo("a.kml", "k/a.kml")
+        b = self._novo("b.kml", "k/b.kml")
+        self._publicar(a, "Portos")
+        self._publicar(b, "Portos")
+        a.refresh_from_db(); b.refresh_from_db()
+        self.assertEqual({a.public_slug, b.public_slug}, {"portos", "portos-2"})
+
+    def test_despublicar_mantem_slug(self):
+        f = self._novo("c.kml", "k/c.kml")
+        self._publicar(f)
+        # despublica: marcador presente, checkbox ausente
+        self.client.post(reverse("repositorio:file_update", args=[f.pk]), {
+            "name": f.name, "acervo_form": "1", "titulo_publico": "Portos", "ordem": "0",
+        })
+        f.refresh_from_db()
+        self.assertFalse(f.publico)
+        self.assertEqual(f.public_slug, "portos")
+
+    def test_acervo_list_so_publicos(self):
+        pub = self._novo("pub.kml", "k/pub.kml")
+        priv = self._novo("priv.kml", "k/priv.kml")
+        self._publicar(pub)
+        r = self.client.get(reverse("repositorio:acervo_list"))
+        self.assertIn(pub, list(r.context["files"]))
+        self.assertNotIn(priv, list(r.context["files"]))

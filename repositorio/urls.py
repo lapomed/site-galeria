@@ -25,6 +25,9 @@ urlpatterns = [
     path("upload/concluir/", views.upload_complete, name="upload_complete"),
     path("upload/abortar/", views.upload_abort, name="upload_abort"),
 
+    # Acervo público (curadoria)
+    path("acervo/", views.acervo_list, name="acervo_list"),
+
     # Modelos de metadados
     path("modelos/", views.templates_list, name="templates"),
     path("modelos/novo/", views.template_form, name="template_create"),

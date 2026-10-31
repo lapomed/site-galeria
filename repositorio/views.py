@@ -4,6 +4,8 @@ from django.contrib import messages
 from django.db.models import ProtectedError
 from django.http import JsonResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
+from django.utils import timezone
+from django.utils.text import slugify
 from django.views.decorators.http import require_POST
 
 from intranet.permissions import menu_required
@@ -22,6 +24,20 @@ def _json_body(request):
         return json.loads(request.body or "{}")
     except (ValueError, TypeError):
         return {}
+
+
+def _unique_public_slug(title, exclude_pk=None):
+    """Slug único para o acervo; colisões recebem sufixo -2, -3…"""
+    base = slugify(title or "")[:290] or "item"
+    slug = base
+    qs = RepoFile.objects.all()
+    if exclude_pk:
+        qs = qs.exclude(pk=exclude_pk)
+    i = 2
+    while qs.filter(public_slug=slug).exists():
+        slug = f"{base}-{i}"
+        i += 1
+    return slug
 
 
 def _browse(request, folder):
@@ -136,6 +152,26 @@ def file_update(request, pk):
                 obj.metadata = {str(k): v for k, v in data.items()}
         except (ValueError, TypeError):
             messages.error(request, "Metadados inválidos; nada foi alterado neles.")
+
+    # publicação no acervo (só quando o formulário do acervo foi enviado)
+    if request.POST.get("acervo_form"):
+        obj.titulo_publico = (request.POST.get("titulo_publico") or "").strip()
+        obj.descricao_publica = request.POST.get("descricao_publica") or ""
+        obj.regiao = (request.POST.get("regiao") or "").strip()
+        try:
+            obj.ordem = int(request.POST.get("ordem") or 0)
+        except (ValueError, TypeError):
+            obj.ordem = 0
+        if request.FILES.get("capa"):
+            obj.capa = request.FILES["capa"]
+        obj.publico = bool(request.POST.get("publico"))
+        if obj.publico:
+            if not obj.public_slug:
+                obj.public_slug = _unique_public_slug(
+                    obj.titulo_publico or obj.name, exclude_pk=obj.pk,
+                )
+            if not obj.publicado_em:
+                obj.publicado_em = timezone.now()
 
     obj.save()
     messages.success(request, "Arquivo atualizado.")
@@ -281,6 +317,15 @@ def upload_abort(request):
     if obj.status == "uploading":
         obj.delete()
     return JsonResponse({"ok": True})
+
+
+# ---------------------------------------------------------------------------
+# Acervo público (curadoria)
+# ---------------------------------------------------------------------------
+@menu_required(MENU)
+def acervo_list(request):
+    files = RepoFile.objects.filter(publico=True).order_by("ordem", "-publicado_em")
+    return render(request, "repositorio/acervo_list.html", {"files": files, "nav": MENU})
 
 
 # ---------------------------------------------------------------------------
