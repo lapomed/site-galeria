@@ -141,3 +141,14 @@ class PublicViewsTests(TestCase):
         self.assertEqual(r.context["page_obj"].number, 2)
         # a página 2 só contém itens do tipo mapa
         self.assertTrue(all(f.kind() == "map" for f in r.context["page_obj"]))
+
+
+@override_settings(STORAGES={
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+})
+class NavTests(TestCase):
+    def test_botao_acervo_no_topo(self):
+        r = self.client.get(reverse("home"))
+        self.assertContains(r, "Acervo Digital")
+        self.assertContains(r, reverse("acervo:index"))
