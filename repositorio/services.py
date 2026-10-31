@@ -119,6 +119,21 @@ def presign_get(key, filename=None, expires=3600):
     return client.generate_presigned_url("get_object", Params=params, ExpiresIn=expires)
 
 
+def fetch_bytes(key):
+    """Baixa o objeto inteiro para a memória do servidor (uso: acervo público).
+    Os uploads continuam indo direto navegador→bucket; isto é só para leitura."""
+    client = b2_client()
+    resp = client.get_object(Bucket=settings.B2_BUCKET, Key=key)
+    return resp["Body"].read()
+
+
+def open_object(key):
+    """Abre o objeto para streaming (retorna o Body do boto3, iterável em chunks)."""
+    client = b2_client()
+    resp = client.get_object(Bucket=settings.B2_BUCKET, Key=key)
+    return resp["Body"], resp.get("ContentType") or "application/octet-stream"
+
+
 def head_size(key):
     """Tamanho real do objeto no bucket (bytes) após o upload concluir."""
     try:

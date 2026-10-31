@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "core",
     "intranet",
     "repositorio",
+    "acervo",
     "tailwind",
     "lapomed",
     "django_browser_reload",
