@@ -149,3 +149,23 @@ class RepositorioTests(TestCase):
         t = MetadataTemplate.objects.get(name="Cerâmica")
         # duplicatas removidas pelo clean_fields_list
         self.assertEqual(t.fields, ["Período", "Sítio"])
+
+
+class RepoFileAcervoTests(TestCase):
+    """Campos/métodos de publicação do acervo público no RepoFile."""
+
+    def test_kind_mapeia_extensoes(self):
+        self.assertEqual(RepoFile(name="a.kml").kind(), "map")
+        self.assertEqual(RepoFile(name="a.kmz").kind(), "map")
+        self.assertEqual(RepoFile(name="a.glb").kind(), "3d")
+        self.assertEqual(RepoFile(name="a.gltf").kind(), "3d")
+        self.assertEqual(RepoFile(name="a.xlsx").kind(), "data")
+        self.assertEqual(RepoFile(name="a.jpg").kind(), "image")
+        self.assertEqual(RepoFile(name="a.pdf").kind(), "other")
+
+    def test_display_title_cai_para_name(self):
+        self.assertEqual(RepoFile(name="orig.kml").display_title(), "orig.kml")
+        self.assertEqual(
+            RepoFile(name="orig.kml", titulo_publico="Portos").display_title(),
+            "Portos",
+        )

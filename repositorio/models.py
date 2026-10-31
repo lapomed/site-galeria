@@ -108,6 +108,28 @@ class RepoFile(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    # --- Publicação no acervo público (curadoria por item) ---
+    publico = models.BooleanField(default=False, verbose_name="Publicar no acervo")
+    public_slug = models.SlugField(
+        max_length=300, unique=True, null=True, blank=True, verbose_name="Slug público",
+    )
+    titulo_publico = models.CharField(max_length=200, blank=True, verbose_name="Título público")
+    descricao_publica = models.TextField(blank=True, verbose_name="Descrição pública")
+    regiao = models.CharField(max_length=100, blank=True, verbose_name="Região")
+    ordem = models.PositiveIntegerField(default=0, verbose_name="Ordem no acervo")
+    capa = models.ImageField(
+        upload_to="acervo/capas/", null=True, blank=True, verbose_name="Capa (opcional)",
+    )
+    publicado_em = models.DateTimeField(null=True, blank=True, verbose_name="Publicado em")
+
+    # Extensões reconhecidas por cada visualizador do acervo
+    KIND_BY_EXT = {
+        "kml": "map", "kmz": "map",
+        "glb": "3d", "gltf": "3d",
+        "xlsx": "data", "xls": "data", "csv": "data",
+        "jpg": "image", "jpeg": "image", "png": "image", "webp": "image", "gif": "image",
+    }
+
     class Meta:
         ordering = ["-created_at"]
         verbose_name = "Arquivo"
@@ -122,3 +144,15 @@ class RepoFile(models.Model):
     def extension(self):
         base = self.original_filename or self.name
         return base.rsplit(".", 1)[-1].lower() if "." in base else ""
+
+    def kind(self):
+        """Tipo de visualizador do acervo: map | 3d | data | image | other."""
+        return self.KIND_BY_EXT.get(self.extension(), "other")
+
+    def display_title(self):
+        """Título exibido no acervo (cai para o nome do arquivo se vazio)."""
+        return self.titulo_publico or self.name
+
+    def public_url(self):
+        from django.urls import reverse
+        return reverse("acervo:item", args=[self.public_slug])
