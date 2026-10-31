@@ -1,4 +1,5 @@
 from django.db import migrations, models
+from django.db.utils import OperationalError
 from django.utils.text import slugify
 import tinymce.models
 
@@ -22,6 +23,41 @@ def noop(apps, schema_editor):
     pass
 
 
+def pg_slug_cleanup(apps, schema_editor):
+    """Remove constraints/índices UNIQUE residuais — só faz sentido no Postgres."""
+    if schema_editor.connection.vendor != "postgresql":
+        return
+    schema_editor.execute("ALTER TABLE core_publication DROP CONSTRAINT IF EXISTS core_publication_slug_key;")
+    schema_editor.execute("DROP INDEX IF EXISTS core_publication_slug_key;")
+    schema_editor.execute("DROP INDEX IF EXISTS core_publication_slug_22a8e2db_like;")
+
+
+def add_slug_column(apps, schema_editor):
+    """Cria a coluna slug (sem unique). Postgres usa IF NOT EXISTS; SQLite/outros
+    tentam e ignoram se a coluna já existir (estados parciais)."""
+    if schema_editor.connection.vendor == "postgresql":
+        schema_editor.execute(
+            "ALTER TABLE core_publication ADD COLUMN IF NOT EXISTS slug varchar(300) NOT NULL DEFAULT '';"
+        )
+    else:
+        try:
+            schema_editor.execute(
+                "ALTER TABLE core_publication ADD COLUMN slug varchar(300) NOT NULL DEFAULT '';"
+            )
+        except OperationalError:
+            pass
+
+
+def drop_slug_column(apps, schema_editor):
+    if schema_editor.connection.vendor == "postgresql":
+        schema_editor.execute("ALTER TABLE core_publication DROP COLUMN IF EXISTS slug;")
+    else:
+        try:
+            schema_editor.execute("ALTER TABLE core_publication DROP COLUMN slug;")
+        except OperationalError:
+            pass
+
+
 class Migration(migrations.Migration):
 
     # atomic=False permite que cada operacao seja commitada antes da proxima,
@@ -33,23 +69,11 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        # 1) Limpa qualquer constraint UNIQUE residual de tentativas anteriores
-        migrations.RunSQL(
-            sql=[
-                "ALTER TABLE core_publication DROP CONSTRAINT IF EXISTS core_publication_slug_key;",
-                "DROP INDEX IF EXISTS core_publication_slug_key;",
-                "DROP INDEX IF EXISTS core_publication_slug_22a8e2db_like;",
-            ],
-            reverse_sql=migrations.RunSQL.noop,
-            state_operations=[],
-        ),
-        # 2) Garante que a coluna slug exista (sem unique) — usa IF NOT EXISTS
-        #    para sobreviver a estados parciais de migrations anteriores.
-        migrations.RunSQL(
-            sql=[
-                "ALTER TABLE core_publication ADD COLUMN IF NOT EXISTS slug varchar(300) NOT NULL DEFAULT '';",
-            ],
-            reverse_sql="ALTER TABLE core_publication DROP COLUMN IF EXISTS slug;",
+        # 1) Limpa qualquer constraint UNIQUE residual de tentativas anteriores (Postgres)
+        migrations.RunPython(pg_slug_cleanup, migrations.RunPython.noop),
+        # 2) Garante que a coluna slug exista (sem unique), de forma portável
+        migrations.SeparateDatabaseAndState(
+            database_operations=[migrations.RunPython(add_slug_column, drop_slug_column)],
             state_operations=[
                 migrations.AddField(
                     model_name="publication",

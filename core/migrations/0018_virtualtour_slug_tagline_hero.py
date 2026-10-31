@@ -1,4 +1,5 @@
 from django.db import migrations, models
+from django.db.utils import OperationalError
 from django.utils.text import slugify
 
 
@@ -21,6 +22,31 @@ def noop(apps, schema_editor):
     pass
 
 
+def add_slug_column(apps, schema_editor):
+    """Cria core_virtualtour.slug de forma portável (Postgres IF NOT EXISTS; SQLite tenta/ignora)."""
+    if schema_editor.connection.vendor == "postgresql":
+        schema_editor.execute(
+            "ALTER TABLE core_virtualtour ADD COLUMN IF NOT EXISTS slug varchar(300) NOT NULL DEFAULT '';"
+        )
+    else:
+        try:
+            schema_editor.execute(
+                "ALTER TABLE core_virtualtour ADD COLUMN slug varchar(300) NOT NULL DEFAULT '';"
+            )
+        except OperationalError:
+            pass
+
+
+def drop_slug_column(apps, schema_editor):
+    if schema_editor.connection.vendor == "postgresql":
+        schema_editor.execute("ALTER TABLE core_virtualtour DROP COLUMN IF EXISTS slug;")
+    else:
+        try:
+            schema_editor.execute("ALTER TABLE core_virtualtour DROP COLUMN slug;")
+        except OperationalError:
+            pass
+
+
 class Migration(migrations.Migration):
 
     atomic = False
@@ -30,11 +56,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunSQL(
-            sql=[
-                "ALTER TABLE core_virtualtour ADD COLUMN IF NOT EXISTS slug varchar(300) NOT NULL DEFAULT '';",
-            ],
-            reverse_sql="ALTER TABLE core_virtualtour DROP COLUMN IF EXISTS slug;",
+        migrations.SeparateDatabaseAndState(
+            database_operations=[migrations.RunPython(add_slug_column, drop_slug_column)],
             state_operations=[
                 migrations.AddField(
                     model_name="virtualtour",
