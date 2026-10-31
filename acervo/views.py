@@ -65,7 +65,7 @@ def atlas(request):
             continue
         try:
             gj = cache.converted(f, "map")
-        except services.StorageNotConfigured:
+        except services.STORAGE_ERRORS:
             continue
         for feat in (gj or {}).get("features", []):
             props = dict(feat.get("properties") or {})
@@ -80,7 +80,7 @@ def item_geo(request, slug):
         raise Http404
     try:
         return JsonResponse(cache.converted(f, "map"))
-    except services.StorageNotConfigured:
+    except services.STORAGE_ERRORS:
         return HttpResponse(status=503)
 
 
@@ -90,7 +90,7 @@ def item_table(request, slug):
         raise Http404
     try:
         return JsonResponse(cache.converted(f, "data"))
-    except services.StorageNotConfigured:
+    except services.STORAGE_ERRORS:
         return HttpResponse(status=503)
 
 
@@ -99,7 +99,7 @@ def item_raw(request, slug):
     f = _get_item(slug)
     try:
         body, ctype = services.open_object(f.object_key)
-    except services.StorageNotConfigured:
+    except services.STORAGE_ERRORS:
         raise Http404
     resp = StreamingHttpResponse(body.iter_chunks(), content_type=f.content_type or ctype)
     resp["Content-Disposition"] = "inline"
@@ -110,6 +110,6 @@ def item_download(request, slug):
     f = _get_item(slug)
     try:
         url = services.presign_get(f.object_key, f.original_filename or f.name)
-    except services.StorageNotConfigured:
+    except services.STORAGE_ERRORS:
         raise Http404
     return redirect(url)

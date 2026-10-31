@@ -58,11 +58,12 @@
   var map = L.map('item-map').setView([37.5, 18], 5);
   L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {maxZoom:19, maxNativeZoom:16, attribution:'Tiles &copy; Esri'}).addTo(map);
   L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}', {maxZoom:19, maxNativeZoom:16}).addTo(map);
+  function esc(s){ return String(s).replace(/[&<>"']/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; }); }
   fetch("{% url 'acervo:item_geo' file.public_slug %}").then(function(r){return r.json();}).then(function(gj){
     var layer = L.geoJSON(gj, {
       style: {color:'#f0c300', weight:2, fillOpacity:.15},
       pointToLayer: function(f, ll){ return L.circleMarker(ll, {radius:6, color:'#1a1a1a', weight:2, fillColor:'#f0c300', fillOpacity:1}); },
-      onEachFeature: function(f, l){ if(f.properties && f.properties.name){ l.bindPopup('<b>'+f.properties.name+'</b>'); } }
+      onEachFeature: function(f, l){ if(f.properties && f.properties.name){ l.bindPopup('<b>'+esc(f.properties.name)+'</b>'); } }
     }).addTo(map);
     try { map.fitBounds(layer.getBounds(), {padding:[30,30]}); } catch(e){}
   });
@@ -71,13 +72,14 @@
 {% elif file.kind == 'data' %}
 <script>
 (function(){
+  function esc(s){ return String(s).replace(/[&<>"']/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; }); }
   fetch("{% url 'acervo:item_table' file.public_slug %}").then(function(r){return r.json();}).then(function(d){
     var box = document.getElementById('item-table');
     if(!d.columns || !d.columns.length){ box.innerHTML = '<p class="p-4 text-gray-500">Sem dados para exibir.</p>'; return; }
     var h = '<table class="w-full"><thead class="bg-gray-50 text-gray-600 font-bold text-left"><tr>';
-    d.columns.forEach(function(c){ h += '<th class="px-3 py-2">'+c+'</th>'; });
+    d.columns.forEach(function(c){ h += '<th class="px-3 py-2">'+esc(c)+'</th>'; });
     h += '</tr></thead><tbody>';
-    (d.rows||[]).forEach(function(row){ h += '<tr class="border-t border-gray-100">'; row.forEach(function(v){ h += '<td class="px-3 py-2">'+(v==null?'':v)+'</td>'; }); h += '</tr>'; });
+    (d.rows||[]).forEach(function(row){ h += '<tr class="border-t border-gray-100">'; row.forEach(function(v){ h += '<td class="px-3 py-2">'+esc(v==null?'':v)+'</td>'; }); h += '</tr>'; });
     h += '</tbody></table>';
     box.innerHTML = h;
     var note = document.getElementById('table-note');

@@ -82,12 +82,13 @@
   var gold = '#f0c300';
   var points = L.layerGroup().addTo(map);
   var routes = L.layerGroup().addTo(map);
+  function esc(s){ return String(s).replace(/[&<>"']/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; }); }
   fetch("{% url 'acervo:atlas' %}").then(function(r){return r.json();}).then(function(gj){
     var bounds = [];
     (gj.features||[]).forEach(function(feat){
       var p = feat.properties||{}, g = feat.geometry||{};
-      var href = '/acervo/item/' + p.item + '/';
-      var popup = '<b>'+(p.name||p.titulo||'')+'</b><br><a href="'+href+'" style="color:#b58900;font-weight:700">Abrir item →</a>';
+      var href = '/acervo/item/' + encodeURIComponent(p.item) + '/';
+      var popup = '<b>'+esc(p.name||p.titulo||'')+'</b><br><a href="'+href+'" style="color:#b58900;font-weight:700">Abrir item →</a>';
       if(g.type === 'Point'){
         var ll = [g.coordinates[1], g.coordinates[0]];
         bounds.push(ll);

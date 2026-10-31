@@ -22,6 +22,11 @@ class StorageNotConfigured(RuntimeError):
     """B2 sem credenciais/endpoint configurados."""
 
 
+# Falhas de storage que o acervo público deve tratar como indisponibilidade
+# (404/503), nunca 500: sem config, objeto ausente, erro de rede/boto3.
+STORAGE_ERRORS = (StorageNotConfigured, BotoCoreError, ClientError)
+
+
 def is_configured():
     return bool(
         boto3 and settings.B2_ENDPOINT and settings.B2_KEY_ID

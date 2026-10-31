@@ -2,6 +2,8 @@ import io
 import zipfile
 from unittest import mock
 
+from botocore.exceptions import BotoCoreError
+
 from django.core.cache import cache as dj_cache
 from django.test import TestCase, override_settings
 from django.urls import reverse
@@ -141,6 +143,32 @@ class PublicViewsTests(TestCase):
         self.assertEqual(r.context["page_obj"].number, 2)
         # a página 2 só contém itens do tipo mapa
         self.assertTrue(all(f.kind() == "map" for f in r.context["page_obj"]))
+
+    # --- C1: erros de storage do boto3 degradam, não 500 ---
+    @mock.patch("repositorio.services.fetch_bytes", side_effect=BotoCoreError())
+    def test_geo_erro_storage_nao_500(self, _fb):
+        r = self.client.get(reverse("acervo:item_geo", args=[self.pub_map.public_slug]))
+        self.assertIn(r.status_code, (404, 503))
+
+    @mock.patch("repositorio.services.fetch_bytes", side_effect=BotoCoreError())
+    def test_atlas_nao_500_com_erro_storage(self, _fb):
+        r = self.client.get(reverse("acervo:atlas"))
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.json()["features"], [])
+
+    @mock.patch("repositorio.services.open_object", side_effect=BotoCoreError())
+    def test_item_raw_objeto_ausente_404(self, _oo):
+        r = self.client.get(reverse("acervo:item_raw", args=[self.pub_map.public_slug]))
+        self.assertEqual(r.status_code, 404)
+
+    # --- I1: escape de conteúdo de arquivo nas páginas públicas ---
+    def test_item_data_tem_escape(self):
+        r = self.client.get(reverse("acervo:item", args=[self.pub_data.public_slug]))
+        self.assertContains(r, "function esc(")
+
+    def test_atlas_page_tem_escape(self):
+        r = self.client.get(reverse("acervo:index"))
+        self.assertContains(r, "function esc(")
 
 
 @override_settings(STORAGES={
