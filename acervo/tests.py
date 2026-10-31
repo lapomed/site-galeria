@@ -1,9 +1,14 @@
 import io
 import zipfile
+from unittest import mock
 
-from django.test import TestCase
+from django.core.cache import cache as dj_cache
+from django.test import TestCase, override_settings
+from django.urls import reverse
 
 from acervo.converters import kml_to_geojson, kmz_to_geojson, xlsx_to_rows
+from repositorio.models import RepoFile
+from repositorio.services import StorageNotConfigured
 
 
 SAMPLE_KML = b"""<?xml version="1.0" encoding="UTF-8"?>
@@ -74,3 +79,65 @@ class ConvertersTests(TestCase):
     def test_xlsx_primeira_aba_vazia_nao_quebra(self):
         out = xlsx_to_rows(_make_empty_xlsx())
         self.assertEqual(out["rows"], [])
+
+
+@override_settings(
+    B2_ENDPOINT="https://s3.example.com", B2_REGION="r",
+    B2_KEY_ID="k", B2_APP_KEY="s", B2_BUCKET="b",
+    STORAGES={
+        "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+        "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+    },
+)
+class PublicViewsTests(TestCase):
+    def setUp(self):
+        dj_cache.clear()
+        self.pub_map = RepoFile.objects.create(
+            name="portos.kml", object_key="k/portos.kml", status="ready",
+            publico=True, public_slug="portos", regiao="Levante",
+        )
+        self.pub_data = RepoFile.objects.create(
+            name="dados.xlsx", object_key="k/dados.xlsx", status="ready",
+            publico=True, public_slug="dados",
+        )
+        self.privado = RepoFile.objects.create(
+            name="secreto.kml", object_key="k/secreto.kml", status="ready",
+            publico=False, public_slug="secreto",
+        )
+
+    def test_item_nao_publico_404(self):
+        r = self.client.get(reverse("acervo:item", args=[self.privado.public_slug]))
+        self.assertEqual(r.status_code, 404)
+
+    def test_item_publico_200(self):
+        r = self.client.get(reverse("acervo:item", args=[self.pub_map.public_slug]))
+        self.assertEqual(r.status_code, 200)
+
+    @mock.patch("repositorio.services.fetch_bytes", return_value=SAMPLE_KML)
+    def test_atlas_so_inclui_map_publico(self, _fb):
+        data = self.client.get(reverse("acervo:atlas")).json()
+        nomes = {f["properties"]["item"] for f in data["features"]}
+        self.assertIn(self.pub_map.public_slug, nomes)
+        self.assertNotIn(self.privado.public_slug, nomes)
+
+    @mock.patch("repositorio.services.presign_get", return_value="https://b2/signed")
+    def test_download_redireciona_presign(self, _pg):
+        r = self.client.get(reverse("acervo:item_download", args=[self.pub_map.public_slug]))
+        self.assertEqual(r.status_code, 302)
+
+    @mock.patch("repositorio.services.fetch_bytes", side_effect=StorageNotConfigured)
+    def test_geo_json_storage_ausente_nao_500(self, _fb):
+        r = self.client.get(reverse("acervo:item_geo", args=[self.pub_map.public_slug]))
+        self.assertIn(r.status_code, (404, 503))
+
+    def test_grade_paginada_preserva_filtro(self):
+        for i in range(15):
+            RepoFile.objects.create(
+                name=f"m{i}.kml", object_key=f"k/m{i}.kml", status="ready",
+                publico=True, public_slug=f"m{i}",
+            )
+        r = self.client.get(reverse("acervo:index"), {"tipo": "map", "page": 2})
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.context["page_obj"].number, 2)
+        # a página 2 só contém itens do tipo mapa
+        self.assertTrue(all(f.kind() == "map" for f in r.context["page_obj"]))

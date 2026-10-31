@@ -1,0 +1,112 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Acervo Digital | Lapomed{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>#acervo-map{height:460px;border-radius:1rem;z-index:0}.leaflet-popup-content{font-family:'Lato',sans-serif}</style>
+{% endblock %}
+
+{% block content %}
+<section class="bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 text-white">
+  <div class="max-w-7xl mx-auto px-6 py-10">
+    <p class="font-serif text-[11px] font-bold uppercase tracking-[0.3em] text-lapomed-gold mb-3">Acervo Digital</p>
+    <h1 class="font-serif text-3xl md:text-4xl font-bold leading-tight mb-3">Portos Antigos do Mediterrâneo</h1>
+    <p class="text-gray-300 max-w-2xl leading-relaxed">Um atlas arqueológico navegável: explore sítios portuários, rotas de navegação, modelos 3D e dados de campo.</p>
+    <div class="flex flex-wrap gap-6 mt-6 text-sm">
+      <div><span class="font-serif text-2xl font-bold text-lapomed-gold">{{ counts.map }}</span> <span class="text-gray-400">mapas</span></div>
+      <div><span class="font-serif text-2xl font-bold text-lapomed-gold">{{ counts.data }}</span> <span class="text-gray-400">conjuntos de dados</span></div>
+      <div><span class="font-serif text-2xl font-bold text-lapomed-gold">{{ counts.3d }}</span> <span class="text-gray-400">modelos 3D</span></div>
+    </div>
+  </div>
+</section>
+
+<main class="max-w-7xl mx-auto px-6 py-10">
+  <div class="grid lg:grid-cols-[240px_1fr] gap-6 mb-14">
+    <aside class="space-y-2">
+      <p class="font-serif text-[11px] font-bold uppercase tracking-[0.2em] text-gray-500 mb-3">Filtrar por região</p>
+      <a href="?{% if tipo %}tipo={{ tipo }}{% endif %}" class="block text-sm rounded-lg px-4 py-2.5 border {% if not regiao %}bg-lapomed-gold text-gray-900 font-bold border-lapomed-gold{% else %}bg-white border-gray-200 hover:border-lapomed-gold{% endif %}">Todas as regiões</a>
+      {% for r in regioes %}
+      <a href="?regiao={{ r|urlencode }}{% if tipo %}&tipo={{ tipo }}{% endif %}" class="block text-sm rounded-lg px-4 py-2.5 border {% if regiao == r %}bg-lapomed-gold text-gray-900 font-bold border-lapomed-gold{% else %}bg-white border-gray-200 hover:border-lapomed-gold{% endif %}">{{ r }}</a>
+      {% endfor %}
+      <label class="flex items-center gap-2 text-sm text-gray-600 mt-4 cursor-pointer"><input id="routeToggle" type="checkbox" checked class="accent-lapomed-gold w-4 h-4"> Mostrar rotas</label>
+    </aside>
+    <div class="relative">
+      <div id="acervo-map"></div>
+      <div class="absolute top-3 right-3 z-[400] bg-white/90 rounded-lg px-3 py-2 text-[11px] text-gray-600 shadow">Clique num ponto para abrir o item</div>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap items-end justify-between gap-3 mb-5">
+    <h2 class="font-serif text-2xl font-bold">Itens do acervo</h2>
+    <div class="flex flex-wrap gap-2 text-[11px]">
+      {% for key, label in tipo_labels %}
+      <a href="?tipo={{ key }}{% if regiao %}&regiao={{ regiao|urlencode }}{% endif %}" class="uppercase font-bold tracking-wide rounded-full px-3 py-1 border {% if tipo == key %}bg-gray-900 text-white border-gray-900{% else %}bg-white border-gray-200 text-gray-600 hover:border-gray-400{% endif %}">{{ label }}</a>
+      {% endfor %}
+      <a href="?{% if regiao %}regiao={{ regiao|urlencode }}{% endif %}" class="uppercase font-bold tracking-wide rounded-full px-3 py-1 border {% if not tipo %}bg-gray-900 text-white border-gray-900{% else %}bg-white border-gray-200 text-gray-600 hover:border-gray-400{% endif %}">Todos</a>
+    </div>
+  </div>
+
+  <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for f in page_obj %}
+    <a href="{{ f.public_url }}" class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition block">
+      <div class="h-32 flex items-center justify-center text-5xl {% if f.kind == 'map' %}bg-sky-50{% elif f.kind == '3d' %}bg-violet-50{% elif f.kind == 'data' %}bg-emerald-50{% else %}bg-gray-50{% endif %}">
+        {% if f.capa %}<img src="{{ f.capa.url }}" class="w-full h-full object-cover" alt="">{% else %}{% if f.kind == 'map' %}🗺️{% elif f.kind == '3d' %}🧊{% elif f.kind == 'data' %}📊{% elif f.kind == 'image' %}🖼️{% else %}📄{% endif %}{% endif %}
+      </div>
+      <div class="p-4">
+        <span class="text-[10px] uppercase font-bold tracking-wide rounded-full border px-2.5 py-0.5 text-gray-600">{% if f.kind == 'map' %}🗺️ Mapa{% elif f.kind == '3d' %}🧊 Modelo 3D{% elif f.kind == 'data' %}📊 Dados{% elif f.kind == 'image' %}🖼️ Imagem{% else %}📄 Arquivo{% endif %}</span>
+        <h3 class="font-serif font-bold text-[15px] mt-2 leading-snug">{{ f.display_title }}</h3>
+        <p class="text-[12px] text-gray-500 mt-1">{{ f.extension|upper }}{% if f.regiao %} · {{ f.regiao }}{% endif %} · {{ f.human_size }}</p>
+      </div>
+    </a>
+    {% empty %}
+    <p class="text-gray-500 col-span-full py-10 text-center">Nenhum item publicado neste filtro ainda.</p>
+    {% endfor %}
+  </div>
+
+  {% if page_obj.has_other_pages %}
+  <div class="flex justify-center items-center gap-3 mt-10 text-sm">
+    {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}{% if tipo %}&tipo={{ tipo }}{% endif %}{% if regiao %}&regiao={{ regiao|urlencode }}{% endif %}" class="rounded-full border border-gray-300 px-4 py-2 hover:border-lapomed-gold">← Anterior</a>{% endif %}
+    <span class="text-gray-500">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}{% if tipo %}&tipo={{ tipo }}{% endif %}{% if regiao %}&regiao={{ regiao|urlencode }}{% endif %}" class="rounded-full border border-gray-300 px-4 py-2 hover:border-lapomed-gold">Próxima →</a>{% endif %}
+  </div>
+  {% endif %}
+</main>
+
+<script>
+(function(){
+  var map = L.map('acervo-map', {scrollWheelZoom:false}).setView([37.5, 18], 5);
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {maxZoom:19, maxNativeZoom:16, attribution:'Tiles &copy; Esri'}).addTo(map);
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}', {maxZoom:19, maxNativeZoom:16}).addTo(map);
+  var gold = '#f0c300';
+  var points = L.layerGroup().addTo(map);
+  var routes = L.layerGroup().addTo(map);
+  fetch("{% url 'acervo:atlas' %}").then(function(r){return r.json();}).then(function(gj){
+    var bounds = [];
+    (gj.features||[]).forEach(function(feat){
+      var p = feat.properties||{}, g = feat.geometry||{};
+      var href = '/acervo/item/' + p.item + '/';
+      var popup = '<b>'+(p.name||p.titulo||'')+'</b><br><a href="'+href+'" style="color:#b58900;font-weight:700">Abrir item →</a>';
+      if(g.type === 'Point'){
+        var ll = [g.coordinates[1], g.coordinates[0]];
+        bounds.push(ll);
+        L.circleMarker(ll, {radius:6, color:'#1a1a1a', weight:2, fillColor:gold, fillOpacity:1}).bindPopup(popup).addTo(points);
+      } else if(g.type === 'LineString'){
+        var pts = g.coordinates.map(function(c){return [c[1], c[0]];});
+        pts.forEach(function(x){bounds.push(x);});
+        L.polyline(pts, {color:gold, weight:2, dashArray:'6 6', opacity:.85}).bindPopup(popup).addTo(routes);
+      } else if(g.type === 'Polygon'){
+        var ring = (g.coordinates[0]||[]).map(function(c){return [c[1], c[0]];});
+        ring.forEach(function(x){bounds.push(x);});
+        L.polygon(ring, {color:gold, weight:2, fillOpacity:.15}).bindPopup(popup).addTo(routes);
+      }
+    });
+    if(bounds.length){ map.fitBounds(bounds, {padding:[30,30]}); }
+  });
+  document.getElementById('routeToggle').addEventListener('change', function(e){
+    if(e.target.checked){ routes.addTo(map); } else { map.removeLayer(routes); }
+  });
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}{{ file.display_title }} | Acervo Digital{% endblock %}
+
+{% block extra_head %}
+{% if file.kind == 'map' %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>#item-map{height:460px;border-radius:1rem;z-index:0}</style>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<main class="max-w-5xl mx-auto px-6 py-10">
+  <a href="{% url 'acervo:index' %}" class="text-[12px] font-bold uppercase tracking-wide text-gray-500 hover:text-lapomed-gold">← Acervo</a>
+
+  <div class="mt-3 mb-6">
+    <span class="text-[11px] uppercase font-bold tracking-wide text-lapomed-gold">{% if file.kind == 'map' %}🗺️ Mapa{% elif file.kind == '3d' %}🧊 Modelo 3D{% elif file.kind == 'data' %}📊 Dados{% elif file.kind == 'image' %}🖼️ Imagem{% else %}📄 Arquivo{% endif %}</span>
+    <h1 class="font-serif text-3xl font-bold leading-tight">{{ file.display_title }}</h1>
+    {% if file.regiao %}<p class="text-gray-500 mt-1">{{ file.regiao }}</p>{% endif %}
+  </div>
+
+  {% if file.kind == 'map' %}
+    <div id="item-map"></div>
+  {% elif file.kind == '3d' %}
+    <model-viewer src="{% url 'acervo:item_raw' file.public_slug %}" camera-controls auto-rotate shadow-intensity="1" style="width:100%;height:480px;background:#f3f4f6;border-radius:1rem" alt="{{ file.display_title }}"></model-viewer>
+  {% elif file.kind == 'data' %}
+    <div id="item-table" class="overflow-auto rounded-xl border border-gray-200 text-sm">
+      <p class="p-4 text-gray-500">Carregando prévia…</p>
+    </div>
+    <p id="table-note" class="text-[12px] text-gray-500 mt-2"></p>
+  {% elif file.kind == 'image' %}
+    <img src="{% url 'acervo:item_raw' file.public_slug %}" alt="{{ file.display_title }}" class="w-full rounded-xl border border-gray-200">
+  {% else %}
+    <div class="rounded-xl border border-gray-200 bg-gray-50 p-10 text-center text-gray-500">
+      <div class="text-5xl mb-3">📄</div>Pré-visualização indisponível para este tipo de arquivo.
+    </div>
+  {% endif %}
+
+  {% if file.descricao_publica %}
+  <div class="prose max-w-none mt-6 text-gray-700">{{ file.descricao_publica|linebreaks }}</div>
+  {% endif %}
+
+  {% if file.metadata %}
+  <div class="mt-6 rounded-xl border border-gray-200 divide-y">
+    {% for k, v in file.metadata.items %}
+    <div class="flex gap-4 px-4 py-2 text-sm"><span class="font-bold text-gray-600 w-40 shrink-0">{{ k }}</span><span class="text-gray-800">{{ v }}</span></div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <a href="{% url 'acervo:item_download' file.public_slug %}" class="inline-block mt-6 text-[13px] font-bold text-gray-900 bg-lapomed-gold hover:brightness-95 rounded-full px-6 py-2.5 transition">⬇ Baixar arquivo original ({{ file.extension|upper }})</a>
+</main>
+
+{% if file.kind == 'map' %}
+<script>
+(function(){
+  var map = L.map('item-map').setView([37.5, 18], 5);
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {maxZoom:19, maxNativeZoom:16, attribution:'Tiles &copy; Esri'}).addTo(map);
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}', {maxZoom:19, maxNativeZoom:16}).addTo(map);
+  fetch("{% url 'acervo:item_geo' file.public_slug %}").then(function(r){return r.json();}).then(function(gj){
+    var layer = L.geoJSON(gj, {
+      style: {color:'#f0c300', weight:2, fillOpacity:.15},
+      pointToLayer: function(f, ll){ return L.circleMarker(ll, {radius:6, color:'#1a1a1a', weight:2, fillColor:'#f0c300', fillOpacity:1}); },
+      onEachFeature: function(f, l){ if(f.properties && f.properties.name){ l.bindPopup('<b>'+f.properties.name+'</b>'); } }
+    }).addTo(map);
+    try { map.fitBounds(layer.getBounds(), {padding:[30,30]}); } catch(e){}
+  });
+})();
+</script>
+{% elif file.kind == 'data' %}
+<script>
+(function(){
+  fetch("{% url 'acervo:item_table' file.public_slug %}").then(function(r){return r.json();}).then(function(d){
+    var box = document.getElementById('item-table');
+    if(!d.columns || !d.columns.length){ box.innerHTML = '<p class="p-4 text-gray-500">Sem dados para exibir.</p>'; return; }
+    var h = '<table class="w-full"><thead class="bg-gray-50 text-gray-600 font-bold text-left"><tr>';
+    d.columns.forEach(function(c){ h += '<th class="px-3 py-2">'+c+'</th>'; });
+    h += '</tr></thead><tbody>';
+    (d.rows||[]).forEach(function(row){ h += '<tr class="border-t border-gray-100">'; row.forEach(function(v){ h += '<td class="px-3 py-2">'+(v==null?'':v)+'</td>'; }); h += '</tr>'; });
+    h += '</tbody></table>';
+    box.innerHTML = h;
+    var note = document.getElementById('table-note');
+    note.textContent = d.truncated ? 'Prévia das primeiras ' + (d.rows||[]).length + ' linhas · baixe o arquivo para ver tudo.' : (d.rows||[]).length + ' linha(s).';
+  });
+})();
+</script>
+{% endif %}
+{% endblock %}
