@@ -105,7 +105,12 @@ Design system do site: Cinzel (serifa), Lato, `lapomed-gold` (#f0c300), cards
   `/acervo/atlas.geojson`; marcadores dourados; popup com nome + link "Abrir item →";
   filtro por `regiao` (botões) e toggle "mostrar rotas" (liga/desliga as geometrias de linha).
 - **Grade** de itens (cards) com chip de tipo (🗺️ Mapa / 🧊 3D / 📊 Dados / 🖼️ Imagem),
-  título, subtítulo (ex.: "KMZ · 18 sítios"), capa opcional. Filtro de tipo client-side.
+  título, subtítulo (ex.: "KMZ · 18 sítios"), capa opcional.
+- **Filtros + paginação** (server-side, via `GET`): filtro por tipo (`?tipo=map`) e por
+  região (`?regiao=...`) combináveis com a paginação. A grade usa `django.core.paginator`
+  (ex.: 12 itens por página), preservando os parâmetros de filtro na navegação de páginas
+  (`?tipo=map&page=2`). O **mapa-atlas mostra sempre todos** os itens geográficos públicos
+  (não é paginado); a paginação vale só para a grade de cards.
 
 ### `item.html` — página dedicada
 Cabeçalho (chip de tipo + título + região) e, conforme `kind()`:
@@ -147,12 +152,22 @@ Sempre: bloco de **metadados** (`RepoFile.metadata` dinâmico) + botão **Baixar
 - `xlsx_to_rows` com fixture pequeno → colunas e linhas, respeitando `max_rows`.
 - `item_download` redireciona (mock de `presign_get`), e só para item público.
 - `atlas.geojson` inclui só itens `map` públicos e ignora não-públicos.
+- Grade: paginação server-side funciona e preserva filtros (`?tipo=map&page=2`); o atlas
+  continua mostrando todos os itens geográficos independentemente da página.
 - Botão: `base.html` renderiza "Acervo Digital" apontando para `acervo:index`.
 - Curadoria: `file_update` publica (gera slug, seta `publicado_em`) e despublica.
 
+## Impacto no restante do site
+
+**A home principal (`/`, `core/templates/core/home.html`) NÃO é tocada** — carrossel, widget
+de eventos e tudo mais ficam como estão. A única alteração em arquivo compartilhado é o
+**rótulo e o href do botão "Galeria Digital"** no `core/templates/core/base.html` (cabeçalho),
+que passa a ser "Acervo Digital" → `{% url 'acervo:index' %}`. Nenhuma outra view ou template
+público existente é alterado.
+
 ## Fora de escopo (v1)
 
-- Busca textual no acervo; paginação (56 itens cabem numa grade).
+- Busca textual no acervo (os filtros por tipo/região + paginação cobrem a navegação).
 - Edição de geometria/mapa pelo site; anotação colaborativa.
 - Conversão de formatos exóticos além dos que existem hoje (cartão + download cobre o resto).
 - Galerias aninhadas de imagem por item (uma imagem por arquivo nesta versão).
