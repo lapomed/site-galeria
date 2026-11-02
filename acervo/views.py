@@ -5,7 +5,7 @@ O bucket continua privado: conteúdo é convertido/transmitido pelo servidor.
 """
 from django.core.paginator import Paginator
 from django.http import Http404, HttpResponse, JsonResponse, StreamingHttpResponse
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, render
 
 from repositorio import services
 from repositorio.models import RepoFile
@@ -94,9 +94,18 @@ def item_table(request, slug):
         return HttpResponse(status=503)
 
 
+# Tipos cujo visualizador precisa dos bytes no navegador para renderizar.
+# Para mapas/planilhas o conteúdo chega convertido (geo.json/tabela.json), então
+# o bruto nunca é exposto — o acervo público não permite baixar arquivos.
+RAW_KINDS = {"3d", "image"}
+
+
 def item_raw(request, slug):
-    """Transmite os bytes do objeto (GLB/imagem) pela origem do site — sem CORS no bucket."""
+    """Transmite os bytes do objeto (GLB/imagem) pela origem do site — sem CORS no bucket.
+    Só para 3D e imagem, que precisam do arquivo para renderizar; demais tipos → 404."""
     f = _get_item(slug)
+    if f.kind() not in RAW_KINDS:
+        raise Http404
     try:
         body, ctype = services.open_object(f.object_key)
     except services.STORAGE_ERRORS:
@@ -104,12 +113,3 @@ def item_raw(request, slug):
     resp = StreamingHttpResponse(body.iter_chunks(), content_type=f.content_type or ctype)
     resp["Content-Disposition"] = "inline"
     return resp
-
-
-def item_download(request, slug):
-    f = _get_item(slug)
-    try:
-        url = services.presign_get(f.object_key, f.original_filename or f.name)
-    except services.STORAGE_ERRORS:
-        raise Http404
-    return redirect(url)

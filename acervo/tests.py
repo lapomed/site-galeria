@@ -102,6 +102,10 @@ class PublicViewsTests(TestCase):
             name="dados.xlsx", object_key="k/dados.xlsx", status="ready",
             publico=True, public_slug="dados",
         )
+        self.pub_3d = RepoFile.objects.create(
+            name="vaso.glb", object_key="k/vaso.glb", status="ready",
+            publico=True, public_slug="vaso",
+        )
         self.privado = RepoFile.objects.create(
             name="secreto.kml", object_key="k/secreto.kml", status="ready",
             publico=False, public_slug="secreto",
@@ -122,10 +126,30 @@ class PublicViewsTests(TestCase):
         self.assertIn(self.pub_map.public_slug, nomes)
         self.assertNotIn(self.privado.public_slug, nomes)
 
-    @mock.patch("repositorio.services.presign_get", return_value="https://b2/signed")
-    def test_download_redireciona_presign(self, _pg):
-        r = self.client.get(reverse("acervo:item_download", args=[self.pub_map.public_slug]))
-        self.assertEqual(r.status_code, 302)
+    def test_sem_rota_de_download(self):
+        # O acervo público não expõe download de arquivo original.
+        from django.urls import NoReverseMatch
+        with self.assertRaises(NoReverseMatch):
+            reverse("acervo:item_download", args=[self.pub_map.public_slug])
+
+    def test_pagina_item_sem_botao_baixar(self):
+        r = self.client.get(reverse("acervo:item", args=[self.pub_map.public_slug]))
+        self.assertNotContains(r, "Baixar")
+
+    def test_raw_bloqueado_para_mapa(self):
+        # Mapas são servidos convertidos (geo.json); o bruto nunca é exposto.
+        r = self.client.get(reverse("acervo:item_raw", args=[self.pub_map.public_slug]))
+        self.assertEqual(r.status_code, 404)
+
+    def test_raw_bloqueado_para_planilha(self):
+        r = self.client.get(reverse("acervo:item_raw", args=[self.pub_data.public_slug]))
+        self.assertEqual(r.status_code, 404)
+
+    @mock.patch("repositorio.services.open_object", return_value=(mock.MagicMock(), "model/gltf-binary"))
+    def test_raw_liberado_para_3d(self, _oo):
+        _oo.return_value[0].iter_chunks.return_value = iter([b"glb"])
+        r = self.client.get(reverse("acervo:item_raw", args=[self.pub_3d.public_slug]))
+        self.assertEqual(r.status_code, 200)
 
     @mock.patch("repositorio.services.fetch_bytes", side_effect=StorageNotConfigured)
     def test_geo_json_storage_ausente_nao_500(self, _fb):
@@ -158,7 +182,7 @@ class PublicViewsTests(TestCase):
 
     @mock.patch("repositorio.services.open_object", side_effect=BotoCoreError())
     def test_item_raw_objeto_ausente_404(self, _oo):
-        r = self.client.get(reverse("acervo:item_raw", args=[self.pub_map.public_slug]))
+        r = self.client.get(reverse("acervo:item_raw", args=[self.pub_3d.public_slug]))
         self.assertEqual(r.status_code, 404)
 
     # --- I1: escape de conteúdo de arquivo nas páginas públicas ---
