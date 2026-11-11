@@ -189,12 +189,9 @@
   // ---- Map ----
   const map = L.map('coalitvsMap', { worldCopyJump: true, scrollWheelZoom: true })
     .setView([20, 0], 2);
-  // Basemap escuro da Esri — gratuito e SEM necessidade de API key.
-  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
-    attribution: 'Tiles &copy; Esri', maxZoom: 19, maxNativeZoom: 16
-  }).addTo(map);
-  // Rótulos (países/cidades) por cima, mantendo o mapa escuro com nomes.
-  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}', {
+  // Basemap National Geographic da Esri — gratuito e SEM API key; rótulos embutidos.
+  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}', {
+    attribution: 'Tiles &copy; Esri &mdash; National Geographic, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC',
     maxZoom: 19, maxNativeZoom: 16
   }).addTo(map);
 
