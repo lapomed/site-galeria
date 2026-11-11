@@ -189,11 +189,16 @@
   // ---- Map ----
   const map = L.map('coalitvsMap', { worldCopyJump: true, scrollWheelZoom: true })
     .setView([20, 0], 2);
-  // Basemap National Geographic da Esri — gratuito e SEM API key; rótulos embutidos.
-  L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}', {
-    attribution: 'Tiles &copy; Esri &mdash; National Geographic, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC',
-    maxZoom: 19, maxNativeZoom: 16
-  }).addTo(map);
+  // Basemaps Esri — gratuitos e SEM API key. Seletor: NatGeo (padrão), Terreno, Satélite.
+  const ESRI = 'https://server.arcgisonline.com/ArcGIS/rest/services/', _o = { maxZoom: 19, maxNativeZoom: 16 };
+  const bNat = L.tileLayer(ESRI + 'NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}', Object.assign({ attribution: 'Tiles &copy; Esri &mdash; National Geographic, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC' }, _o));
+  const bTopo = L.tileLayer(ESRI + 'World_Topo_Map/MapServer/tile/{z}/{y}/{x}', Object.assign({ attribution: 'Tiles &copy; Esri' }, _o));
+  const bSat = L.layerGroup([
+    L.tileLayer(ESRI + 'World_Imagery/MapServer/tile/{z}/{y}/{x}', Object.assign({ attribution: 'Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics' }, _o)),
+    L.tileLayer(ESRI + 'Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', Object.assign({}, _o))
+  ]);
+  bNat.addTo(map);
+  L.control.layers({ 'NatGeo': bNat, 'Terreno': bTopo, 'Satélite': bSat }, null, { position: 'topright' }).addTo(map);
 
   const markerCluster = L.markerClusterGroup({
     showCoverageOnHover: false,
