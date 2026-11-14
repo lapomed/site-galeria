@@ -31,6 +31,7 @@ def home(request):
         'research_areas': ResearchArea.objects.filter(active=True).order_by('order')[:6],
         'partnerships': Partnership.objects.filter(active=True).order_by('order'),
         'featured_projects': Project.objects.filter(active=True).order_by('order', '-created_at')[:3],
+        'mosaic_projects': Project.objects.filter(active=True).order_by('order', '-created_at')[:4],
     })
 
 

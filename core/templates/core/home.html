@@ -135,13 +135,25 @@
       </div>
     </div>
     <div class="relative">
-      {% if about.image %}
-      <img src="{{ about.image.url }}" alt="LAPOMED" class="w-full h-[460px] object-cover rounded-2xl shadow-xl">
-      {% else %}
-      <div class="w-full h-[460px] rounded-2xl shadow-xl overflow-hidden relative" style="background:linear-gradient(135deg,#1f2937,#111827);">
-        <img src="{% static 'logo/emblema-logo-lapomed.jpeg' %}" alt="LAPOMED" class="absolute inset-0 w-full h-full object-contain p-16 opacity-90">
+      <!-- Mini mosaico de projetos (clicáveis) -->
+      <div class="grid grid-cols-2 gap-3">
+        {% if mosaic_projects %}
+          {% for p in mosaic_projects %}
+          <a href="{% url 'project_detail' p.slug %}" class="group relative block aspect-square rounded-xl overflow-hidden bg-gray-200 shadow-md">
+            {% if p.cover_image %}<img src="{{ p.cover_image.url }}" alt="{{ p.title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+            {% else %}<div class="w-full h-full" style="background:linear-gradient(135deg,#1f2937,#111827);"></div>{% endif %}
+            <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition"></div>
+            <span class="absolute inset-x-0 bottom-0 p-3 text-white text-[12px] font-bold leading-snug translate-y-1 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition">{{ p.title }}</span>
+          </a>
+          {% endfor %}
+        {% else %}
+          {# Exemplo: vira os projetos reais (capa + link) assim que forem cadastrados #}
+          <a href="{% url 'project_list' %}" class="group relative block aspect-square rounded-xl overflow-hidden bg-gray-200 shadow-md"><img src="{% static 'img/pesquisa/espacial.jpg' %}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500"><div class="absolute inset-0 bg-gradient-to-t from-black/75 to-transparent opacity-0 group-hover:opacity-100 transition"></div><span class="absolute inset-x-0 bottom-0 p-3 text-white text-[12px] font-bold opacity-0 group-hover:opacity-100 transition">Ver projetos →</span></a>
+          <a href="{% url 'project_list' %}" class="group relative block aspect-square rounded-xl overflow-hidden bg-gray-200 shadow-md"><img src="{% static 'img/pesquisa/paisagem.jpg' %}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500"><div class="absolute inset-0 bg-gradient-to-t from-black/75 to-transparent opacity-0 group-hover:opacity-100 transition"></div><span class="absolute inset-x-0 bottom-0 p-3 text-white text-[12px] font-bold opacity-0 group-hover:opacity-100 transition">Ver projetos →</span></a>
+          <a href="{% url 'project_list' %}" class="group relative block aspect-square rounded-xl overflow-hidden bg-gray-200 shadow-md"><img src="{% static 'img/pesquisa/geoarqueologia.jpg' %}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500"><div class="absolute inset-0 bg-gradient-to-t from-black/75 to-transparent opacity-0 group-hover:opacity-100 transition"></div><span class="absolute inset-x-0 bottom-0 p-3 text-white text-[12px] font-bold opacity-0 group-hover:opacity-100 transition">Ver projetos →</span></a>
+          <a href="{% url 'project_list' %}" class="group relative block aspect-square rounded-xl overflow-hidden bg-gray-200 shadow-md"><img src="{% static 'img/pesquisa/microarqueologia.jpg' %}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition duration-500"><div class="absolute inset-0 bg-gradient-to-t from-black/75 to-transparent opacity-0 group-hover:opacity-100 transition"></div><span class="absolute inset-x-0 bottom-0 p-3 text-white text-[12px] font-bold opacity-0 group-hover:opacity-100 transition">Ver projetos →</span></a>
+        {% endif %}
       </div>
-      {% endif %}
       <div class="absolute -bottom-5 -left-5 bg-lapomed-gold text-gray-900 rounded-xl px-6 py-4 shadow-lg hidden sm:block">
         <div class="font-serif text-2xl font-bold leading-none">USP</div>
         <div class="text-[11px] font-bold uppercase tracking-wider">Universidade de São Paulo</div>
