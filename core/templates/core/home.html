@@ -1,126 +1,307 @@
 {% extends 'core/base.html' %}
 {% load static %}
-{% block body_class %}no-scroll{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* ---- Landing page ---- */
+  .lp-hero { height: 100vh; min-height: 560px; }
+  .scroll-cue { animation: lp-bounce 2.4s infinite; }
+  @keyframes lp-bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-9px); }
+    60% { transform: translateY(-4px); }
+  }
+  .eyebrow { font-family: 'Cinzel', serif; font-size: 11px; font-weight: 700;
+             text-transform: uppercase; letter-spacing: 0.3em; color: #b8900b; }
+  /* Marquee de logos dos parceiros */
+  .logo-marquee { overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+                  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+  .logo-track { display: flex; width: max-content; align-items: center; gap: 4.5rem;
+                animation: lp-scroll 38s linear infinite; }
+  .logo-marquee:hover .logo-track { animation-play-state: paused; }
+  .logo-track img { height: 56px; width: auto; object-fit: contain;
+                    filter: grayscale(1); opacity: .65; transition: all .3s; }
+  .logo-track img:hover { filter: grayscale(0); opacity: 1; }
+  @keyframes lp-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce) {
+    .logo-track { animation: none; flex-wrap: wrap; justify-content: center; }
+    .scroll-cue { animation: none; }
+  }
+  .video-facade { cursor: pointer; }
+  .video-facade .play { transition: transform .3s, background .3s; }
+  .video-facade:hover .play { transform: scale(1.08); background: #f0c300; color: #111; }
+</style>
+{% endblock %}
+
 {% block content %}
-{% if upcoming_events %}
-<div class="hidden lg:block fixed top-24 right-6 z-40 w-80 rounded-2xl backdrop-blur-md bg-black/45 border border-white/15 shadow-2xl overflow-hidden">
-  <div class="h-1 bg-lapomed-gold"></div>
-  <div class="p-5">
-    <p class="font-serif text-[11px] font-bold uppercase tracking-[0.25em] text-lapomed-gold mb-4">Próximos eventos</p>
-    <ul class="space-y-4">
-      {% for e in upcoming_events %}
-      <li>
-        <a href="{% url 'event_detail' e.slug %}" class="flex gap-3 group">
-          <div class="flex-shrink-0 w-12 text-center rounded-lg bg-lapomed-gold/15 border border-lapomed-gold/30 py-1.5">
-            <div class="text-lg font-bold text-lapomed-gold leading-none">{{ e.start_at|date:'d' }}</div>
-            <div class="text-[9px] uppercase tracking-wider text-lapomed-gold/80 mt-0.5">{{ e.start_at|date:'M' }}</div>
-          </div>
-          <div class="min-w-0">
-            <p class="text-[13px] font-bold text-white leading-snug group-hover:text-lapomed-gold transition-colors">{{ e.title }}</p>
-            {% if e.subtitle %}<p class="text-[11px] text-gray-300 mt-1 leading-snug">{{ e.subtitle }}</p>{% endif %}
-            <p class="text-[11px] text-gray-400 mt-0.5">🕐 {{ e.start_at|date:'H:i' }}{% if e.location %} · 📍 {{ e.location }}{% endif %}</p>
-          </div>
-        </a>
-      </li>
-      {% if not forloop.last %}<li class="h-px bg-white/10"></li>{% endif %}
-      {% endfor %}
-    </ul>
-    <a href="{% url 'events_list' %}" class="mt-5 block text-center text-[12px] font-bold text-gray-900 bg-lapomed-gold hover:brightness-95 rounded-full py-2 transition">Ver todos os eventos</a>
-  </div>
-</div>
-{% endif %}
-{% if slides %}
-<div
-  id="default-carousel"
-  class="relative w-full h-full"
-  data-carousel="slide"
-  data-carousel-interval="8000"
->
-  <!-- Carousel wrapper -->
-  <div class="relative overflow-hidden h-full">
-    {% for slide in slides %}
-    <div class="hidden duration-[3000ms] ease-in-out h-full" data-carousel-item="{% if forloop.first %}active{% endif %}">
-      <div
-        class="absolute inset-0 bg-cover bg-center transition-opacity duration-[3000ms] carousel-zoom-bg"
-        style="background-image: url('{{ slide.image.url }}');"
-      >
-        <div class="absolute inset-0 bg-black/40"></div>
-      </div>
-      <div class="absolute bottom-16 left-8 right-8 md:right-auto md:left-20 lg:left-32 z-30 max-w-4xl">
-        <h1
-          style="
-            color: #ffffff;
-            font-family: 'Abril Fatface', serif;
-            text-transform: none;
-            text-decoration: none;
-          "
-          class="mb-6 leading-none text-[1.7rem] md:text-[2.2em]"
-        >
-          {{ slide.title }}
-        </h1>
-        <p class="text-base md:text-xl font-sans text-gray-300 max-w-3xl leading-relaxed whitespace-pre-line">
-          {{ slide.subtitle }}
-        </p>
-        {% if slide.link %}
-        <div class="mt-8">
-          <a
-            href="{{ slide.link }}"
-            class="inline-block px-10 py-4 border-2 border-white text-white font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-300"
-          >
-            Ver mais
-          </a>
+
+<!-- ===================== 1. HERO ===================== -->
+<section class="lp-hero relative w-full">
+  {% if slides %}
+  <div id="default-carousel" class="relative w-full h-full" data-carousel="slide" data-carousel-interval="8000">
+    <div class="relative overflow-hidden h-full">
+      {% for slide in slides %}
+      <div class="hidden duration-[3000ms] ease-in-out h-full" data-carousel-item="{% if forloop.first %}active{% endif %}">
+        <div class="absolute inset-0 bg-cover bg-center transition-opacity duration-[3000ms] carousel-zoom-bg"
+             style="background-image: url('{{ slide.image.url }}');">
+          <div class="absolute inset-0 bg-black/45"></div>
         </div>
+        <div class="absolute bottom-24 left-8 right-8 md:right-auto md:left-20 lg:left-32 z-30 max-w-4xl">
+          <h1 style="color:#fff; font-family:'Abril Fatface', serif;" class="mb-6 leading-none text-[1.7rem] md:text-[2.2em]">{{ slide.title }}</h1>
+          <p class="text-base md:text-xl font-sans text-gray-200 max-w-3xl leading-relaxed whitespace-pre-line">{{ slide.subtitle }}</p>
+          {% if slide.link %}
+          <div class="mt-8">
+            <a href="{{ slide.link }}" class="inline-block px-10 py-4 border-2 border-white text-white font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all duration-300">Ver mais</a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="absolute bottom-8 left-8 md:left-20 lg:left-32 z-40 flex space-x-2">
+      {% for s in slides %}
+      <button type="button" class="indicator-bar{% if forloop.first %} active{% endif %}" data-carousel-slide-to="{{ forloop.counter0 }}" aria-label="Slide {{ forloop.counter }}"></button>
+      {% endfor %}
+    </div>
+  </div>
+  {% else %}
+  <!-- Estado vazio: hero elegante -->
+  <div class="relative w-full h-full" style="background-color:#111827;">
+    <div class="absolute inset-0" style="background:linear-gradient(135deg,#111827 0%,#1f2937 50%,#111827 100%);"></div>
+    <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-8">
+      <h1 style="font-family:'Abril Fatface', serif;" class="text-4xl md:text-6xl text-white mb-6">Laboratório de Arqueologia</h1>
+      <p class="text-lg md:text-xl max-w-2xl leading-relaxed mb-10" style="color:#9ca3af;">Preservando e digitalizando o patrimônio arqueológico para as futuras gerações.</p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="{% url 'project_list' %}" class="inline-block px-10 py-4 border-2 border-white text-white font-bold uppercase tracking-widest text-sm hover:bg-white hover:text-black transition-all duration-300">Ver Projetos</a>
+        <a href="#apresentacao" class="inline-block px-10 py-4 border-2 text-sm font-bold uppercase tracking-widest transition-all duration-300" style="border-color:#4b5563;color:#9ca3af;" onmouseover="this.style.borderColor='#fff';this.style.color='#fff';" onmouseout="this.style.borderColor='#4b5563';this.style.color='#9ca3af';">Conheça o LAPOMED</a>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Widget de próximos eventos (rola junto com o hero) -->
+  {% if upcoming_events %}
+  <div class="hidden lg:block absolute top-24 right-6 z-40 w-80 rounded-2xl backdrop-blur-md bg-black/45 border border-white/15 shadow-2xl overflow-hidden">
+    <div class="h-1 bg-lapomed-gold"></div>
+    <div class="p-5">
+      <p class="eyebrow mb-4" style="color:#f0c300;">Próximos eventos</p>
+      <ul class="space-y-4">
+        {% for e in upcoming_events %}
+        <li>
+          <a href="{% url 'event_detail' e.slug %}" class="flex gap-3 group">
+            <div class="flex-shrink-0 w-12 text-center rounded-lg bg-lapomed-gold/15 border border-lapomed-gold/30 py-1.5">
+              <div class="text-lg font-bold text-lapomed-gold leading-none">{{ e.start_at|date:'d' }}</div>
+              <div class="text-[9px] uppercase tracking-wider text-lapomed-gold/80 mt-0.5">{{ e.start_at|date:'M' }}</div>
+            </div>
+            <div class="min-w-0">
+              <p class="text-[13px] font-bold text-white leading-snug group-hover:text-lapomed-gold transition-colors">{{ e.title }}</p>
+              {% if e.subtitle %}<p class="text-[11px] text-gray-300 mt-1 leading-snug">{{ e.subtitle }}</p>{% endif %}
+              <p class="text-[11px] text-gray-400 mt-0.5">🕐 {{ e.start_at|date:'H:i' }}{% if e.location %} · 📍 {{ e.location }}{% endif %}</p>
+            </div>
+          </a>
+        </li>
+        {% if not forloop.last %}<li class="h-px bg-white/10"></li>{% endif %}
+        {% endfor %}
+      </ul>
+      <a href="{% url 'events_list' %}" class="mt-5 block text-center text-[12px] font-bold text-gray-900 bg-lapomed-gold hover:brightness-95 rounded-full py-2 transition">Ver todos os eventos</a>
+    </div>
+  </div>
+  {% endif %}
+
+  <a href="#apresentacao" class="hidden md:block absolute bottom-6 left-1/2 -translate-x-1/2 z-40 text-white/80 hover:text-white" aria-label="Rolar para baixo">
+    <svg class="scroll-cue w-9 h-9" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 9l-7 7-7-7"></path></svg>
+  </a>
+</section>
+
+<!-- ===================== 2. APRESENTAÇÃO ===================== -->
+<section id="apresentacao" class="bg-white py-24 lg:py-32">
+  <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-14 lg:gap-20 items-center">
+    <div>
+      <p class="eyebrow mb-4">Apresentação</p>
+      <h2 class="font-serif text-3xl md:text-4xl font-bold text-gray-900 leading-tight mb-6" style="text-wrap:balance;">
+        {% if about.title and about.title != 'Sobre o LAPOMED' %}{{ about.title }}{% else %}Arqueometria espacial e arqueologia digital{% endif %}
+      </h2>
+      <div class="text-gray-600 text-lg leading-relaxed space-y-4">
+        {% if about.content %}
+          {{ about.content|linebreaks|safe }}
+        {% else %}
+          <p>O <strong>LAPOMED</strong> — Laboratório de Arqueologia da USP — é pioneiro no Brasil em Arqueometria Espacial, dedicado à pesquisa avançada em arqueologia espacial, arqueologia da paisagem, geoarqueologia e microarqueologia.</p>
+          <p>Unimos tecnologia digital, modelos 3D e dados de campo para preservar e dar acesso público ao patrimônio arqueológico do Mediterrâneo Antigo e do Brasil.</p>
         {% endif %}
       </div>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="{% url 'project_list' %}" class="inline-block text-[13px] font-bold text-gray-900 bg-lapomed-gold hover:brightness-95 rounded-full px-7 py-3 transition">Ver projetos</a>
+        <a href="#quem-somos" class="inline-block text-[13px] font-bold text-gray-700 border border-gray-300 hover:border-lapomed-gold rounded-full px-7 py-3 transition">Quem somos</a>
+      </div>
     </div>
-    {% endfor %}
-  </div>
-
-  <!-- Indicator Bars (CyArk style) - overlay fixo acima dos slides -->
-  <div class="absolute bottom-5 left-8 md:bottom-72 md:left-20 lg:left-32 z-40 flex space-x-2">
-    {% for s in slides %}
-    <button
-      type="button"
-      class="indicator-bar{% if forloop.first %} active{% endif %}"
-      data-carousel-slide-to="{{ forloop.counter0 }}"
-      aria-label="Slide {{ forloop.counter }}"
-    ></button>
-    {% endfor %}
-  </div>
-</div>
-
-{% else %}
-<!-- Estado vazio: hero elegante quando não há slides cadastrados -->
-<div class="relative w-full h-full" style="background-color: #111827;">
-  <div class="absolute inset-0" style="background: linear-gradient(135deg, #111827 0%, #1f2937 50%, #111827 100%);"></div>
-  <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-8">
-    <h1
-      style="font-family: 'Abril Fatface', serif;"
-      class="text-4xl md:text-6xl text-white mb-6"
-    >
-      Laboratório de Arqueologia
-    </h1>
-    <p class="text-lg md:text-xl max-w-2xl leading-relaxed mb-10" style="color: #9ca3af;">
-      Preservando e digitalizando o patrimônio arqueológico para as futuras gerações.
-    </p>
-    <div class="flex space-x-4">
-      <a
-        href="{% url 'project_list' %}"
-        class="inline-block px-10 py-4 border-2 border-white text-white font-bold uppercase tracking-widest text-sm hover:bg-white hover:text-black transition-all duration-300"
-      >
-        Ver Projetos
-      </a>
-      <a
-        href="{% url 'about' %}"
-        class="inline-block px-10 py-4 border-2 text-sm font-bold uppercase tracking-widest transition-all duration-300"
-        style="border-color: #4b5563; color: #9ca3af;"
-        onmouseover="this.style.borderColor='#fff';this.style.color='#fff';"
-        onmouseout="this.style.borderColor='#4b5563';this.style.color='#9ca3af';"
-      >
-        Quem Somos
-      </a>
+    <div class="relative">
+      {% if about.image %}
+      <img src="{{ about.image.url }}" alt="LAPOMED" class="w-full h-[460px] object-cover rounded-2xl shadow-xl">
+      {% else %}
+      <div class="w-full h-[460px] rounded-2xl shadow-xl overflow-hidden relative" style="background:linear-gradient(135deg,#1f2937,#111827);">
+        <img src="{% static 'logo/emblema-logo-lapomed.jpeg' %}" alt="LAPOMED" class="absolute inset-0 w-full h-full object-contain p-16 opacity-90">
+      </div>
+      {% endif %}
+      <div class="absolute -bottom-5 -left-5 bg-lapomed-gold text-gray-900 rounded-xl px-6 py-4 shadow-lg hidden sm:block">
+        <div class="font-serif text-2xl font-bold leading-none">USP</div>
+        <div class="text-[11px] font-bold uppercase tracking-wider">Universidade de São Paulo</div>
+      </div>
     </div>
   </div>
-</div>
-{% endif %}
+</section>
+
+<!-- ===================== 3. VÍDEO ===================== -->
+{% comment %} Para ativar o vídeo, defina o ID do YouTube abaixo (ex.: "dQw4w9WgXcQ"). {% endcomment %}
+{% with home_video_id="" %}
+<section class="relative py-24 lg:py-28" style="background:#0f172a;">
+  <div class="max-w-5xl mx-auto px-6 text-center">
+    <p class="eyebrow mb-4" style="color:#f0c300;">LAPOMED em vídeo</p>
+    <h2 class="font-serif text-3xl md:text-4xl font-bold text-white leading-tight mb-10" style="text-wrap:balance;">Conheça o laboratório e nossas pesquisas</h2>
+    <div id="home-video" data-video-id="{{ home_video_id }}"
+         class="video-facade relative mx-auto w-full max-w-4xl aspect-video rounded-2xl overflow-hidden shadow-2xl border border-white/10"
+         style="background:radial-gradient(circle at 50% 40%, #1e293b, #0b1220);">
+      <img src="{% static 'logo/logo_lapomed_com_fundo_sem_escrita.png' %}" alt="" class="absolute inset-0 w-full h-full object-contain p-20 opacity-10">
+      <div class="absolute inset-0 flex flex-col items-center justify-center gap-4">
+        <span class="play w-20 h-20 rounded-full bg-white/90 text-gray-900 flex items-center justify-center shadow-xl">
+          <svg class="w-8 h-8 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </span>
+        <span class="text-white/70 text-sm font-medium">{% if home_video_id %}Assistir ao vídeo{% else %}Vídeo institucional em breve{% endif %}</span>
+      </div>
+    </div>
+  </div>
+</section>
+{% endwith %}
+
+<!-- ===================== 4. LINHAS DE PESQUISA ===================== -->
+<section id="pesquisa" class="py-24 lg:py-28" style="background:#faf9f6;">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-14">
+      <p class="eyebrow mb-4">Linhas de pesquisa</p>
+      <h2 class="font-serif text-3xl md:text-4xl font-bold text-gray-900 leading-tight" style="text-wrap:balance;">Como investigamos o passado</h2>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {% if research_areas %}
+        {% for area in research_areas %}
+        <div class="bg-white rounded-xl border border-gray-200 p-7 hover:shadow-lg hover:-translate-y-1 transition">
+          <div class="text-4xl mb-4">{{ area.icon|default:"🏺" }}</div>
+          <h3 class="font-serif font-bold text-lg text-gray-900 mb-2 leading-snug">{{ area.title }}</h3>
+          <p class="text-sm text-gray-600 leading-relaxed">{{ area.description|truncatewords:28 }}</p>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="bg-white rounded-xl border border-gray-200 p-7 hover:shadow-lg hover:-translate-y-1 transition"><div class="text-4xl mb-4">🛰️</div><h3 class="font-serif font-bold text-lg text-gray-900 mb-2 leading-snug">Arqueologia Espacial</h3><p class="text-sm text-gray-600 leading-relaxed">Sensoriamento remoto, SIG e análise espacial aplicados à identificação e ao estudo de sítios.</p></div>
+        <div class="bg-white rounded-xl border border-gray-200 p-7 hover:shadow-lg hover:-translate-y-1 transition"><div class="text-4xl mb-4">🏞️</div><h3 class="font-serif font-bold text-lg text-gray-900 mb-2 leading-snug">Arqueologia da Paisagem</h3><p class="text-sm text-gray-600 leading-relaxed">Relações entre comunidades antigas e o território ao longo do tempo.</p></div>
+        <div class="bg-white rounded-xl border border-gray-200 p-7 hover:shadow-lg hover:-translate-y-1 transition"><div class="text-4xl mb-4">🪨</div><h3 class="font-serif font-bold text-lg text-gray-900 mb-2 leading-snug">Geoarqueologia</h3><p class="text-sm text-gray-600 leading-relaxed">Métodos geológicos e geofísicos para entender a formação dos registros arqueológicos.</p></div>
+        <div class="bg-white rounded-xl border border-gray-200 p-7 hover:shadow-lg hover:-translate-y-1 transition"><div class="text-4xl mb-4">🔬</div><h3 class="font-serif font-bold text-lg text-gray-900 mb-2 leading-snug">Microarqueologia</h3><p class="text-sm text-gray-600 leading-relaxed">Análise de vestígios em escala micro para reconstruir práticas e materialidades.</p></div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 5. PROJETOS EM DESTAQUE ===================== -->
+<section class="bg-white py-24 lg:py-28">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="flex flex-wrap items-end justify-between gap-4 mb-12">
+      <div>
+        <p class="eyebrow mb-4">Projetos</p>
+        <h2 class="font-serif text-3xl md:text-4xl font-bold text-gray-900 leading-tight" style="text-wrap:balance;">Pesquisas em destaque</h2>
+      </div>
+      <a href="{% url 'project_list' %}" class="text-[13px] font-bold text-gray-700 border border-gray-300 hover:border-lapomed-gold rounded-full px-6 py-2.5 transition">Ver todos os projetos →</a>
+    </div>
+    {% if featured_projects %}
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-7">
+      {% for p in featured_projects %}
+      <a href="{% url 'project_detail' p.slug %}" class="group bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-xl transition block">
+        <div class="h-52 overflow-hidden bg-gray-100">
+          {% if p.cover_image %}<img src="{{ p.cover_image.url }}" alt="{{ p.title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">{% endif %}
+        </div>
+        <div class="p-6">
+          {% if p.location %}<p class="eyebrow mb-2" style="letter-spacing:.2em;">📍 {{ p.location }}</p>{% endif %}
+          <h3 class="font-serif font-bold text-xl text-gray-900 leading-snug group-hover:text-lapomed-gold transition">{{ p.title }}</h3>
+          <p class="text-sm text-gray-600 mt-2 leading-relaxed">{{ p.description|striptags|truncatewords:22 }}</p>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="rounded-2xl border border-gray-200 bg-gray-50 p-14 text-center">
+      <div class="text-5xl mb-4">🏺</div>
+      <p class="text-gray-600 max-w-xl mx-auto leading-relaxed">Nossos projetos de pesquisa serão exibidos aqui. Explore o acervo digital e as coleções enquanto o conteúdo é publicado.</p>
+      <a href="{% url 'project_list' %}" class="inline-block mt-6 text-[13px] font-bold text-gray-900 bg-lapomed-gold hover:brightness-95 rounded-full px-7 py-3 transition">Ir para Projetos</a>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- ===================== 6. QUEM SOMOS ===================== -->
+<section id="quem-somos" class="py-24 lg:py-32 text-white" style="background:#111;">
+  <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-14 lg:gap-20 items-center">
+    <div class="order-2 lg:order-1 relative">
+      <img src="{% static 'logo/logo_lapomed_com_fundo_sem_escrita.png' %}" alt="LAPOMED" class="w-40 h-40 object-contain mb-8">
+      <blockquote class="font-serif text-2xl md:text-3xl leading-snug text-lapomed-gold" style="text-wrap:balance;">
+        {% if about.mission %}{{ about.mission }}{% else %}Inovação digital e preservação do patrimônio cultural para as futuras gerações.{% endif %}
+      </blockquote>
+    </div>
+    <div class="order-1 lg:order-2">
+      <p class="eyebrow mb-4" style="color:#f0c300;">Quem somos</p>
+      <h2 class="font-serif text-3xl md:text-4xl font-bold leading-tight mb-6" style="text-wrap:balance;">Um laboratório da Universidade de São Paulo</h2>
+      <div class="text-gray-300 text-lg leading-relaxed space-y-4">
+        {% if about.content %}
+          {{ about.content|striptags|truncatewords:70 }}
+        {% else %}
+          <p>Somos pioneiros no Brasil em Arqueometria Espacial, reunindo pesquisadores, estudantes e uma rede internacional de colaboração científica em torno da arqueologia espacial, da paisagem, geoarqueologia e microarqueologia.</p>
+          <p>Nosso trabalho une pesquisa de campo, métodos quantitativos e tecnologias digitais para compreender — e tornar público — o patrimônio arqueológico.</p>
+        {% endif %}
+      </div>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="{% url 'team' %}" class="inline-block text-[13px] font-bold text-gray-900 bg-lapomed-gold hover:brightness-95 rounded-full px-7 py-3 transition">Conheça a equipe</a>
+        <a href="{% url 'coalitvs' %}" class="inline-block text-[13px] font-bold text-white border border-white/30 hover:border-lapomed-gold rounded-full px-7 py-3 transition">Rede COALITVS</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 7. PARCEIROS ===================== -->
+<section class="bg-white py-20 lg:py-24 border-t border-gray-100">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-12">
+      <p class="eyebrow mb-4">Apoio e parcerias</p>
+      <h2 class="font-serif text-2xl md:text-3xl font-bold text-gray-900 leading-tight">Instituições que apoiam o LAPOMED</h2>
+    </div>
+    <div class="logo-marquee">
+      <div class="logo-track">
+        {% comment %} Duas cópias do conjunto para loop contínuo {% endcomment %}
+        {% for _ in "12" %}
+        <img src="{% static 'logo/logo_usp.jpg' %}" alt="Universidade de São Paulo">
+        <img src="{% static 'logo/fapesp-logo.png' %}" alt="FAPESP">
+        <img src="{% static 'logo/inova_usp.png' %}" alt="INOVA USP">
+        <img src="{% static 'logo/logo-stanford-university-512.png' %}" alt="Stanford University">
+        {% for partner in partnerships %}
+          {% if partner.logo %}<img src="{{ partner.logo.url }}" alt="{{ partner.name }}">{% endif %}
+        {% endfor %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Vídeo: click-to-load (só carrega o YouTube quando o usuário clica)
+  (function () {
+    var f = document.getElementById('home-video');
+    if (!f) return;
+    f.addEventListener('click', function () {
+      var id = f.getAttribute('data-video-id');
+      if (!id) return; // sem vídeo definido ainda
+      var ifr = document.createElement('iframe');
+      ifr.setAttribute('src', 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1&rel=0');
+      ifr.setAttribute('title', 'Vídeo institucional do LAPOMED');
+      ifr.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+      ifr.setAttribute('allowfullscreen', '');
+      ifr.className = 'absolute inset-0 w-full h-full';
+      f.innerHTML = '';
+      f.appendChild(ifr);
+    });
+  })();
+</script>
 {% endblock %}
