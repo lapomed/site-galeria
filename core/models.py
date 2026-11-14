@@ -30,6 +30,10 @@ class Project(models.Model):
         default=True, db_index=True, verbose_name="Ativo",
         help_text="Quando desativado, o projeto fica oculto da página pública. Continua acessível via link de compartilhamento.",
     )
+    home_featured = models.BooleanField(
+        default=False, verbose_name="Destacar na home",
+        help_text="Marque para exibir este projeto no mosaico da página inicial. Se nenhum projeto for marcado, a home mostra os primeiros pela ordem.",
+    )
     share_token = models.UUIDField(
         default=uuid.uuid4, unique=True, editable=False,
         verbose_name="Token de compartilhamento",

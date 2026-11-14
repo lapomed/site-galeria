@@ -93,16 +93,16 @@ class SlideAdmin(admin.ModelAdmin):
 # ===== PROJETOS =====
 @admin.register(Project)
 class ProjectAdmin(SortableAdminMixin, admin.ModelAdmin):
-    list_display = ('title', 'location', 'active', 'share_link_button', 'created_at')
-    list_editable = ('active',)
-    list_filter = ('active',)
+    list_display = ('title', 'location', 'active', 'home_featured', 'share_link_button', 'created_at')
+    list_editable = ('active', 'home_featured')
+    list_filter = ('active', 'home_featured')
     search_fields = ('title', 'location')
     inlines = [ArtifactInline, CollectionInline]
     readonly_fields = ('share_link_full',)
     actions = ['regenerate_share_token']
     fieldsets = (
         ('Identificação', {
-            'fields': ('title', 'slug', 'location', 'cover_image', 'description')
+            'fields': ('title', 'slug', 'location', 'cover_image', 'description', 'home_featured')
         }),
         ('Compartilhamento privado', {
             'fields': ('active', 'share_link_full'),

@@ -24,14 +24,19 @@ def home(request):
     upcoming_events = Event.objects.filter(
         published=True, start_at__gte=timezone.now()
     ).order_by('start_at')[:3]
+
+    active_projects = Project.objects.filter(active=True).order_by('order', '-created_at')
+    # Mosaico da home: projetos marcados "Destacar na home"; se nenhum, os primeiros.
+    mosaic_projects = list(active_projects.filter(home_featured=True)[:4]) or list(active_projects[:4])
+
     return render(request, 'core/home.html', {
         'slides': slides,
         'upcoming_events': upcoming_events,
         'about': AboutSection.objects.filter(active=True).order_by('order').first(),
         'research_areas': ResearchArea.objects.filter(active=True).order_by('order')[:6],
         'partnerships': Partnership.objects.filter(active=True).order_by('order'),
-        'featured_projects': Project.objects.filter(active=True).order_by('order', '-created_at')[:3],
-        'mosaic_projects': Project.objects.filter(active=True).order_by('order', '-created_at')[:4],
+        'featured_projects': active_projects[:3],
+        'mosaic_projects': mosaic_projects,
     })
 
 
