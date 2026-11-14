@@ -354,10 +354,15 @@ class ResearchArea(models.Model):
     title = models.CharField(max_length=200, verbose_name="Título")
     description = models.TextField(verbose_name="Descrição")
     icon = models.CharField(
-        max_length=50, 
-        blank=True, 
+        max_length=50,
+        blank=True,
         verbose_name="Ícone (emoji ou classe CSS)",
         help_text="Ex: 🏺 ou fa-flask"
+    )
+    image = models.ImageField(
+        upload_to='research_areas/', blank=True, null=True,
+        verbose_name="Imagem",
+        help_text="Foto que representa a linha de pesquisa (exibida no card da home).",
     )
     order = models.IntegerField(default=0, verbose_name="Ordem")
     active = models.BooleanField(default=True, verbose_name="Ativo")

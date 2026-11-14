@@ -182,17 +182,34 @@
     <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
       {% if research_areas %}
         {% for area in research_areas %}
-        <div class="bg-white rounded-xl border border-gray-200 p-7 hover:shadow-lg hover:-translate-y-1 transition">
-          <div class="text-4xl mb-4">{{ area.icon|default:"🏺" }}</div>
-          <h3 class="font-serif font-bold text-lg text-gray-900 mb-2 leading-snug">{{ area.title }}</h3>
-          <p class="text-sm text-gray-600 leading-relaxed">{{ area.description|truncatewords:28 }}</p>
+        <div class="group bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition">
+          <div class="h-40 overflow-hidden bg-gray-100">
+            {% if area.image %}<img src="{{ area.image.url }}" alt="{{ area.title }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+            {% else %}<div class="w-full h-full" style="background:linear-gradient(135deg,#1f2937,#111827);"></div>{% endif %}
+          </div>
+          <div class="p-6">
+            <h3 class="font-serif font-bold text-lg text-gray-900 mb-2 leading-snug">{{ area.title }}</h3>
+            <p class="text-sm text-gray-600 leading-relaxed">{{ area.description|truncatewords:26 }}</p>
+          </div>
         </div>
         {% endfor %}
       {% else %}
-        <div class="bg-white rounded-xl border border-gray-200 p-7 hover:shadow-lg hover:-translate-y-1 transition"><div class="text-4xl mb-4">🛰️</div><h3 class="font-serif font-bold text-lg text-gray-900 mb-2 leading-snug">Arqueologia Espacial</h3><p class="text-sm text-gray-600 leading-relaxed">Sensoriamento remoto, SIG e análise espacial aplicados à identificação e ao estudo de sítios.</p></div>
-        <div class="bg-white rounded-xl border border-gray-200 p-7 hover:shadow-lg hover:-translate-y-1 transition"><div class="text-4xl mb-4">🏞️</div><h3 class="font-serif font-bold text-lg text-gray-900 mb-2 leading-snug">Arqueologia da Paisagem</h3><p class="text-sm text-gray-600 leading-relaxed">Relações entre comunidades antigas e o território ao longo do tempo.</p></div>
-        <div class="bg-white rounded-xl border border-gray-200 p-7 hover:shadow-lg hover:-translate-y-1 transition"><div class="text-4xl mb-4">🪨</div><h3 class="font-serif font-bold text-lg text-gray-900 mb-2 leading-snug">Geoarqueologia</h3><p class="text-sm text-gray-600 leading-relaxed">Métodos geológicos e geofísicos para entender a formação dos registros arqueológicos.</p></div>
-        <div class="bg-white rounded-xl border border-gray-200 p-7 hover:shadow-lg hover:-translate-y-1 transition"><div class="text-4xl mb-4">🔬</div><h3 class="font-serif font-bold text-lg text-gray-900 mb-2 leading-snug">Microarqueologia</h3><p class="text-sm text-gray-600 leading-relaxed">Análise de vestígios em escala micro para reconstruir práticas e materialidades.</p></div>
+        <div class="group bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition">
+          <div class="h-40 overflow-hidden bg-gray-100"><img src="{% static 'img/pesquisa/espacial.jpg' %}" alt="Arqueologia Espacial" class="w-full h-full object-cover group-hover:scale-105 transition duration-500"></div>
+          <div class="p-6"><h3 class="font-serif font-bold text-lg text-gray-900 mb-2 leading-snug">Arqueologia Espacial</h3><p class="text-sm text-gray-600 leading-relaxed">Sensoriamento remoto, SIG e análise espacial aplicados à identificação e ao estudo de sítios.</p></div>
+        </div>
+        <div class="group bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition">
+          <div class="h-40 overflow-hidden bg-gray-100"><img src="{% static 'img/pesquisa/paisagem.jpg' %}" alt="Arqueologia da Paisagem" class="w-full h-full object-cover group-hover:scale-105 transition duration-500"></div>
+          <div class="p-6"><h3 class="font-serif font-bold text-lg text-gray-900 mb-2 leading-snug">Arqueologia da Paisagem</h3><p class="text-sm text-gray-600 leading-relaxed">Relações entre comunidades antigas e o território ao longo do tempo.</p></div>
+        </div>
+        <div class="group bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition">
+          <div class="h-40 overflow-hidden bg-gray-100"><img src="{% static 'img/pesquisa/geoarqueologia.jpg' %}" alt="Geoarqueologia" class="w-full h-full object-cover group-hover:scale-105 transition duration-500"></div>
+          <div class="p-6"><h3 class="font-serif font-bold text-lg text-gray-900 mb-2 leading-snug">Geoarqueologia</h3><p class="text-sm text-gray-600 leading-relaxed">Métodos geológicos e geofísicos para entender a formação dos registros arqueológicos.</p></div>
+        </div>
+        <div class="group bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition">
+          <div class="h-40 overflow-hidden bg-gray-100"><img src="{% static 'img/pesquisa/microarqueologia.jpg' %}" alt="Microarqueologia" class="w-full h-full object-cover group-hover:scale-105 transition duration-500"></div>
+          <div class="p-6"><h3 class="font-serif font-bold text-lg text-gray-900 mb-2 leading-snug">Microarqueologia</h3><p class="text-sm text-gray-600 leading-relaxed">Análise de vestígios em escala micro para reconstruir práticas e materialidades.</p></div>
+        </div>
       {% endif %}
     </div>
   </div>
