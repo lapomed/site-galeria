@@ -118,14 +118,11 @@
       <h2 class="font-serif text-3xl md:text-4xl font-bold text-gray-900 leading-tight mb-6" style="text-wrap:balance;">
         {% if about.title and about.title != 'Sobre o LAPOMED' %}{{ about.title }}{% else %}Arqueometria espacial e arqueologia digital{% endif %}
       </h2>
+      {# Texto autoral da Apresentacao: fala do QUE E a area (arqueometria espacial +
+         arqueologia digital). A parte institucional ("quem somos") fica na secao Quem Somos. #}
       <div class="text-gray-600 text-base leading-relaxed space-y-4">
-        {% if about_intro %}
-          {# Resumo curto (2 primeiros paragrafos); texto completo na secao Quem Somos abaixo #}
-          {{ about_intro|linebreaks }}
-        {% else %}
-          <p>O <strong>LAPOMED</strong> — Laboratório de Arqueologia da USP — é pioneiro no Brasil em Arqueometria Espacial, dedicado à pesquisa avançada em arqueologia espacial, arqueologia da paisagem, geoarqueologia e microarqueologia.</p>
-          <p>Unimos tecnologia digital, modelos 3D e dados de campo para preservar e dar acesso público ao patrimônio arqueológico do Mediterrâneo Antigo e do Brasil.</p>
-        {% endif %}
+        <p>A <strong>arqueometria espacial</strong> investiga como as sociedades do passado ocuparam, usaram e transformaram o território. Reúne a arqueologia espacial, a arqueologia da paisagem, a geoarqueologia e a microarqueologia, aplicando métodos quantitativos e analíticos à leitura dos vestígios materiais.</p>
+        <p>A isso soma-se a <strong>arqueologia digital</strong>: modelos 3D, humanidades digitais e dados de campo que registram, interpretam e preservam o patrimônio arqueológico — e o tornam acessível ao público, de forma aberta e duradoura.</p>
       </div>
       <div class="mt-8 flex flex-wrap gap-3">
         <a href="{% url 'project_list' %}" class="inline-block text-[13px] font-bold text-gray-900 bg-lapomed-gold hover:brightness-95 rounded-full px-7 py-3 transition">Ver projetos</a>
