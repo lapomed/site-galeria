@@ -27,9 +27,6 @@
     .logo-track { animation: none; flex-wrap: wrap; justify-content: center; }
     .scroll-cue { animation: none; }
   }
-  .video-facade { cursor: pointer; }
-  .video-facade .play { transition: transform .3s, background .3s; }
-  .video-facade:hover .play { transform: scale(1.08); background: #f0c300; color: #111; }
 </style>
 {% endblock %}
 
@@ -163,26 +160,28 @@
 </section>
 
 <!-- ===================== 3. VÍDEO ===================== -->
-{% comment %} Para ativar o vídeo, defina o ID do YouTube abaixo (ex.: "dQw4w9WgXcQ"). {% endcomment %}
-{% with home_video_id="" %}
+{% comment %}
+  Vídeo institucional. Placeholder gerado a partir das imagens do site
+  (static/video/lapomed-institucional.mp4). Para trocar pelo vídeo final:
+  basta substituir o arquivo .mp4 (e o poster) em static/ e rodar collectstatic.
+{% endcomment %}
 <section class="relative py-24 lg:py-28" style="background:#0f172a;">
   <div class="max-w-5xl mx-auto px-6 text-center">
     <p class="eyebrow mb-4" style="color:#f0c300;">LAPOMED em vídeo</p>
     <h2 class="font-serif text-3xl md:text-4xl font-bold text-white leading-tight mb-10" style="text-wrap:balance;">Conheça o laboratório e nossas pesquisas</h2>
-    <div id="home-video" data-video-id="{{ home_video_id }}"
-         class="video-facade relative mx-auto w-full max-w-4xl aspect-video rounded-2xl overflow-hidden shadow-2xl border border-white/10"
-         style="background:radial-gradient(circle at 50% 40%, #1e293b, #0b1220);">
-      <img src="{% static 'logo/logo_lapomed_com_fundo_sem_escrita.png' %}" alt="" class="absolute inset-0 w-full h-full object-contain p-20 opacity-10">
-      <div class="absolute inset-0 flex flex-col items-center justify-center gap-4">
-        <span class="play w-20 h-20 rounded-full bg-white/90 text-gray-900 flex items-center justify-center shadow-xl">
-          <svg class="w-8 h-8 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-        </span>
-        <span class="text-white/70 text-sm font-medium">{% if home_video_id %}Assistir ao vídeo{% else %}Vídeo institucional em breve{% endif %}</span>
-      </div>
+    <div class="relative mx-auto w-full max-w-4xl aspect-video rounded-2xl overflow-hidden shadow-2xl border border-white/10 bg-black">
+      <video
+        class="absolute inset-0 w-full h-full object-cover"
+        poster="{% static 'video/lapomed-poster.jpg' %}"
+        preload="metadata"
+        controls muted loop playsinline
+        autoplay>
+        <source src="{% static 'video/lapomed-institucional.mp4' %}" type="video/mp4">
+        Seu navegador não suporta vídeo HTML5.
+      </video>
     </div>
   </div>
 </section>
-{% endwith %}
 
 <!-- ===================== 4. LINHAS DE PESQUISA ===================== -->
 <section id="pesquisa" class="py-24 lg:py-28" style="background:#faf9f6;">
@@ -313,24 +312,4 @@
     </div>
   </div>
 </section>
-
-<script>
-  // Vídeo: click-to-load (só carrega o YouTube quando o usuário clica)
-  (function () {
-    var f = document.getElementById('home-video');
-    if (!f) return;
-    f.addEventListener('click', function () {
-      var id = f.getAttribute('data-video-id');
-      if (!id) return; // sem vídeo definido ainda
-      var ifr = document.createElement('iframe');
-      ifr.setAttribute('src', 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1&rel=0');
-      ifr.setAttribute('title', 'Vídeo institucional do LAPOMED');
-      ifr.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
-      ifr.setAttribute('allowfullscreen', '');
-      ifr.className = 'absolute inset-0 w-full h-full';
-      f.innerHTML = '';
-      f.appendChild(ifr);
-    });
-  })();
-</script>
 {% endblock %}
