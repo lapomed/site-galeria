@@ -29,10 +29,22 @@ def home(request):
     # Mosaico da home: projetos marcados "Destacar na home"; se nenhum, os primeiros.
     mosaic_projects = list(active_projects.filter(home_featured=True)[:4]) or list(active_projects[:4])
 
+    about = AboutSection.objects.filter(active=True).order_by('order').first()
+    # Resumo da Apresentacao: 2 primeiros paragrafos (corte limpo, sem cortar frase),
+    # para equilibrar com o mosaico ao lado. Texto completo fica na secao Quem Somos.
+    about_intro = ''
+    if about and about.content:
+        import re
+        paras = [p.strip() for p in re.split(r'\n\s*\n', about.content) if p.strip()]
+        if len(paras) <= 1:
+            paras = [p.strip() for p in re.split(r'[\r\n]+', about.content) if p.strip()]
+        about_intro = '\n\n'.join(paras[:2])
+
     return render(request, 'core/home.html', {
         'slides': slides,
         'upcoming_events': upcoming_events,
-        'about': AboutSection.objects.filter(active=True).order_by('order').first(),
+        'about': about,
+        'about_intro': about_intro,
         'research_areas': ResearchArea.objects.filter(active=True).order_by('order')[:6],
         'partnerships': Partnership.objects.filter(active=True).order_by('order'),
         'featured_projects': active_projects[:3],
