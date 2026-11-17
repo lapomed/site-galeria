@@ -18,7 +18,7 @@
   .logo-marquee { overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
                   mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
   .logo-track { display: flex; width: max-content; align-items: center; gap: 4.5rem;
-                animation: lp-scroll 38s linear infinite; }
+                animation: lp-scroll 76s linear infinite; }
   .logo-marquee:hover .logo-track { animation-play-state: paused; }
   .logo-track img { height: 56px; width: auto; object-fit: contain;
                     filter: grayscale(1); opacity: .65; transition: all .3s; }
@@ -291,10 +291,11 @@
       <p class="eyebrow mb-4">Apoio e parcerias</p>
       <h2 class="font-serif text-2xl md:text-3xl font-bold text-gray-900 leading-tight">Instituições que apoiam o LAPOMED</h2>
     </div>
-    <div class="logo-marquee">
-      <div class="logo-track">
-        {% comment %} Duas cópias do conjunto para loop contínuo {% endcomment %}
-        {% for _ in "12" %}
+  </div>
+  <div class="logo-marquee">
+    <div class="logo-track">
+        {% comment %} Varias copias do conjunto p/ preencher a largura toda e loop continuo {% endcomment %}
+        {% for _ in "1234" %}
         <img src="{% static 'logo/logo_usp.jpg' %}" alt="Universidade de São Paulo">
         <img src="{% static 'logo/fapesp-logo.png' %}" alt="FAPESP">
         <img src="{% static 'logo/inova_usp.png' %}" alt="INOVA USP">
@@ -306,7 +307,6 @@
           {% if partner.logo %}<img src="{{ partner.logo.url }}" alt="{{ partner.name }}">{% endif %}
         {% endfor %}
         {% endfor %}
-      </div>
     </div>
   </div>
 </section>
