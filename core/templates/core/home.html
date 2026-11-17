@@ -1,5 +1,6 @@
 {% extends 'core/base.html' %}
 {% load static %}
+{% load rich_text_filters %}
 
 {% block extra_head %}
 <style>
@@ -240,7 +241,7 @@
         <div class="p-6">
           {% if p.location %}<p class="eyebrow mb-2" style="letter-spacing:.2em;">📍 {{ p.location }}</p>{% endif %}
           <h3 class="font-serif font-bold text-xl text-gray-900 leading-snug group-hover:text-lapomed-gold transition">{{ p.title }}</h3>
-          <p class="text-sm text-gray-600 mt-2 leading-relaxed">{{ p.description|striptags|truncatewords:22 }}</p>
+          <p class="text-sm text-gray-600 mt-2 leading-relaxed">{{ p.description|striptags|unescape_entities|truncatewords:22 }}</p>
         </div>
       </a>
       {% endfor %}
@@ -269,7 +270,7 @@
       <h2 class="font-serif text-3xl md:text-4xl font-bold leading-tight mb-6" style="text-wrap:balance;">Um laboratório da Universidade de São Paulo</h2>
       <div class="text-gray-300 text-lg leading-relaxed space-y-4">
         {% if about.content %}
-          {{ about.content|striptags|truncatewords:70 }}
+          {{ about.content|striptags|unescape_entities|truncatewords:70 }}
         {% else %}
           <p>Somos pioneiros no Brasil em Arqueometria Espacial, reunindo pesquisadores, estudantes e uma rede internacional de colaboração científica em torno da arqueologia espacial, da paisagem, geoarqueologia e microarqueologia.</p>
           <p>Nosso trabalho une pesquisa de campo, métodos quantitativos e tecnologias digitais para compreender — e tornar público — o patrimônio arqueológico.</p>

@@ -1,5 +1,6 @@
 {% extends 'core/base.html' %}
 {% load static %}
+{% load rich_text_filters %}
 {% block content %}
 <div class="bg-white pt-24">
   <section class="py-20 px-4 min-h-[60vh]">
@@ -38,7 +39,7 @@
               {% if item.cover_image %}<img src="{{ item.cover_image.url }}" alt="{{ item.title }}" class="w-full h-48 object-cover">{% endif %}
               <div class="p-6">
                 <h3 class="font-serif text-xl text-gray-900 mb-2 group-hover:text-lapomed-gold transition-colors">{{ item.title }}</h3>
-                <p class="text-sm text-gray-600">{{ item.description|striptags|truncatewords:20 }}</p>
+                <p class="text-sm text-gray-600">{{ item.description|striptags|unescape_entities|truncatewords:20 }}</p>
                 {% if item.images.all %}
                   <p class="text-[10px] uppercase tracking-widest text-gray-400 mt-3">{{ item.images.count }} foto{{ item.images.count|pluralize:"s" }}</p>
                 {% endif %}
